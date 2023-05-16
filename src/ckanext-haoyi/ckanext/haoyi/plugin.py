@@ -33,7 +33,8 @@ class HaoyiPlugin(plugins.SingletonPlugin):
         # Add plugin url rules to Blueprint object
         rules = [
             ('/myfirstplugin', 'myfirstplugin', myfirstplugin),
-            ('/teethplugin', 'teethplugin', teethplugin),
+            # ('/teethplugin', 'teethplugin', teethplugin),
+            ('/', 'teethplugin', teethplugin),
             # ('/hello_html_plugin', 'hello_html_plugin', hello_html_plugin),
             # ('/bootstrap_plugin', 'bootstrap_plugin', bootstrap_plugin),
         ]
