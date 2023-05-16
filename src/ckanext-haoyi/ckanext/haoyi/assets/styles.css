@@ -1,0 +1,872 @@
+html {
+    height: 100%;
+}
+
+body {
+    background:-webkit-radial-gradient(#b10000, #8b00b6, #000000);
+    font-family: 'Courier New', Courier, monospace;
+    color: whitesmoke;
+    overflow-y: scroll;
+}
+
+h3 {
+    margin: 2px;
+    color: #dddddd;
+}
+
+h4 {
+    margin: 2px;
+    color: #e0e0e0;
+}
+
+p {
+    margin: 2px;
+}
+
+
+/*--------------- Fixed Elements for buttons, inputs, dropdowns ---------------*/
+label {
+    display: inline-flex;
+    align-content: center;
+    /* justify-content: center; */
+    align-items: flex-end;
+    border-radius: 5px;
+    justify-self: center;
+}
+
+input[type=checkbox] {
+    display: none;
+}
+
+input[type="checkbox"] + label {
+    opacity: 0.4;
+    width: 55px;
+    height: 55px;
+    background-image: url(images/tooth_uncheckbox.png);
+    background-size: 50px 50px;
+    background-repeat: no-repeat;
+    background-color: white;
+    color: black;
+    border-radius: 50px;
+    transition: 0.5s;
+    justify-self: center;
+}
+
+input[type="checkbox"]:hover + label {
+    display: inline-flex;
+    align-content: center;
+    justify-content: center;
+    align-items: flex-end;
+    opacity: 0.7;
+    width: 55px;
+    height: 55px;
+    background-image: url(images/tooth_checkbox.png);
+    background-size: 50px 50px;
+    background-repeat: round;
+    background-color: white;
+    color: black;
+    border-radius: 50px;
+}
+
+input[type="checkbox"]:checked + label {
+    display: inline-flex;
+    align-content: center;
+    justify-content: center;
+    align-items: flex-end;
+    opacity: 1;
+    width: 70px;
+    height: 70px;
+    background-image: url(images/tooth_checkbox.png);
+    background-size: 50px 50px;
+    background-repeat: round;
+    background-color: white;
+    color: black;
+    border-radius: 50px;
+}
+
+input {
+    background-color: gray;
+}
+
+input[type="text"] {
+    border-radius: 5px;
+}
+
+input::placeholder {
+    color: white;
+    opacity: 0.8;
+}
+
+select {
+    background-color: gray;
+    color: white;
+    border-radius: 5px;
+}
+
+button[type="submit"] {
+    background-color: green;
+    border-radius: 5px;
+}
+
+button[type="submit"]:hover {
+    background-color: #c70000;
+    border-radius: 5px;
+}
+
+
+/*--------------- Fixed Classes for buttons, inputs, questions ---------------*/
+.headerQn {
+    align-content: center;
+    justify-content: flex-start;
+    align-items: center;
+    display: grid;
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 1;
+    grid-row-end: 1;
+}
+
+.categories {
+    align-content: center;
+    justify-content: flex-start;
+    align-items: center;
+    display: grid;
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 2;
+    grid-row-end: 2;
+    row-gap: 10px;
+}
+
+.subCategory {
+    display: block;
+    border: groove black;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.subHeader {
+    align-content: center;
+    justify-content: flex-start;
+    align-items: center;
+    display: grid;
+    grid-column-start: 1;
+    grid-column-end: 5;
+    grid-row-start: 2;
+    grid-row-end: 2;
+}
+
+.allButtons {
+    display: grid;
+    grid-template-columns: repeat(7, 130px);
+    grid-template-rows: 90px;
+    grid-column-start: 1;
+    grid-column-end: 5;
+    grid-row-start: 3;
+    grid-row-end: 3;
+}
+
+.eachButton {
+    display: grid;
+    grid-template-columns: 120px;
+    grid-template-rows: auto 90px;
+}
+
+.allInputTexts {
+    display: grid;
+    grid-template-columns: repeat(5, 160px);
+    grid-template-rows: 90px;
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 4;
+    grid-row-end: 4;
+}
+
+.eachInputText {
+    display: grid;
+    grid-template-columns: 155px;
+    grid-template-rows: 30px 40px;
+}
+
+
+
+
+/*----------------------- Classes for different groups -----------------------*/
+.main { 
+    /* background: -webkit-radial-gradient(top Right, #757575, #4d4d4d, #222222); */
+    border-radius: 20px;
+    display: grid;
+    height: 100%;
+    width: 100%;
+    row-gap: 10px;
+    grid-template-columns: auto;
+    padding: 10px 0 10px 0;
+}
+
+.AttendanceDiv2 {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: auto auto;
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 1;
+    grid-row-end: 1;
+}
+
+.TOPDiv2 {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: auto auto;
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 2;
+    grid-row-end: 2;
+}
+
+.RFADiv2 {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: auto auto;
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 3;
+    grid-row-end: 3;
+}
+
+.CCDiv2 {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: auto auto;
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 4;
+    grid-row-end: 4;
+}
+
+.OEDiv2 {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: auto auto;
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 5;
+    grid-row-end: 5;
+}
+
+.submittingDiv {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: 25px;
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 6;
+    grid-row-end: 6;
+}
+
+.displayDiv {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: 25px;
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 10;
+    grid-row-end: 10;
+    row-gap: 10px;
+    background-color: black;
+    padding-top: 20px;
+    border-radius: 5px;
+}
+
+
+/*------------------------------ For DisplayDiv ------------------------------*/
+#CopyButton {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: auto;
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 1;
+    grid-row-end: 1;
+    color: #ffebcd;
+    background: #424242;
+    border-radius: 10px;
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+#CopyButton:hover {
+    background: #b22222;
+}
+
+#AttendanceDiv2display {
+    display: grid;
+    grid-template-columns: 80px auto;
+    grid-template-rows: auto;
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 2;
+}
+
+#topDiv2display {
+    display: grid;
+    grid-template-columns: 80px auto;
+    grid-template-rows: auto;
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 3;
+    grid-row-end: 3;
+}
+
+#rfaDiv2display {
+    display: grid;
+    grid-template-columns: 80px auto;
+    grid-template-rows: auto;
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 4;
+    grid-row-end: 4;
+}
+
+
+#CCDiv2display {
+    display: grid;
+    grid-template-columns: 80px auto;
+    grid-template-rows: auto;
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 5;
+    grid-row-end: 5;
+}
+
+#oeDiv2display {
+    display: grid;
+    grid-template-columns: 80px auto;
+    grid-template-rows: auto;
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 6;
+    grid-row-end: 6;
+}
+
+h3[id$="header"] {
+    display: grid;
+    grid-template-columns: 100px auto;
+    grid-template-rows: auto;
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    grid-row-end: 1;
+}
+
+h4[id$="Subheader"] {
+    background-color: #494949;
+    display: grid;
+    grid-template-columns: 100px auto;
+    /* grid-template-rows: 50px; */
+    grid-column-start: 2;
+    grid-column-end: 3;
+    /* grid-row-start: 2;
+    grid-row-end: 2; */
+}
+
+div[id$="checkboxDisplay"] {
+    display: grid;
+    grid-column-start: 2;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 2;
+}
+
+div[id$="inputTextDisplay"] {
+    display: grid;
+    grid-column-start: 2;
+    grid-column-end: 2;
+    grid-row-start: 3;
+    grid-row-end: 3;
+}
+
+#CCcategories {
+    display: none;
+}
+
+#OEcategories {
+    display: none;
+} 
+
+#Attendancecategories {
+    display: none;
+}
+
+
+
+
+
+/* select {
+    background-color: gray;
+    color: white;
+    border-radius: 5px;
+}
+
+input {
+    background-color: gray;
+}
+
+input[type="text"] {
+    border-radius: 5px;
+}
+
+input::placeholder {
+    color: white;
+    opacity: 0.8;
+}
+
+button {
+    margin-top: 10px;
+    width: 100%;
+    height: 100px;
+    border-radius: 5px;
+    border-color: #ea08ff;
+    background-color: #009213;
+    color: white;
+}
+
+button:hover {
+    background:-webkit-radial-gradient(#00ccff, #ec5fff);
+    color: black;
+}
+
+input[type="checkbox"] + label {
+    color:black;
+    background-image: url(images/tooth_uncheckbox.png);
+    border-radius: 50px;
+    background-repeat: round;
+    transition-duration: 0.2s;
+    opacity: 0.4;
+    display: inline-flex;
+    width: 50px;
+    height: 50px;
+}
+
+input[type="checkbox"]:hover + label {
+    background-image: url(images/tooth_uncheckbox.png);
+    border-radius: 50px;
+    background-repeat: round;
+    opacity: 0.8;
+    width: 70px;
+    height: 70px;
+}
+
+input[type="checkbox"]:checked + label {
+    opacity: 1;
+    background-image: url('images/tooth_checkbox.png');
+    border-radius: 50px;
+    background-repeat: round;
+    width: 65px;
+    height: 65px;
+    border-color: #6e6e6e;
+}
+
+.attendanceDiv {
+grid-column-start: 1;
+grid-column-end: 2;
+display: flex;
+justify-content: left;
+width: 100%;
+height: 50px;
+}
+
+.notAttendingDiv {
+display: flex;
+gap: 5px;
+}
+
+.notAttendingDiv input {
+background: -webkit-radial-gradient(bottom left, #757575, #4d4d4d, #222222);
+color: honeydew;
+}
+
+.topDiv {
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
+
+.RFADiv {
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
+
+.gingivitisDiv {
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
+
+.CleanTeethDiv {
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
+
+.submittingDiv {
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
+
+.displayDiv {
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
+
+.CC5W1H {
+    display: grid;
+    grid-template-columns: 22% 22% 22% 35%;
+    grid-template-rows: repeat(auto-fit, 150px);
+    column-gap: 10px;
+    row-gap: 5px;
+    margin-top: 5px;
+}
+
+.WherePain {
+    display: none;
+    grid-template-columns: auto;
+    grid-template-rows: 40px repeat(4, 30px 75px) repeat(4, 20px);
+    padding: 5px 5px 5px 5px;
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 14;
+    column-gap: 5px;
+    row-gap: 5px;
+    border: groove black;
+    border-radius: 10px;
+}
+
+.WherePain #whereQn {
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.WherePain input[type="checkbox"] {
+    display: none;
+}
+
+.WherePain input[type="checkbox"] + label {
+    color:black;
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.WherePain  label + input[type="text"]{
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.WhenPain {
+    display: none;
+    grid-template-columns: auto;
+    grid-template-rows: 40px repeat(8, 30px 75px) repeat(4, 20px);
+    padding: 5px 5px 5px 5px;
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    grid-row-end: 22;
+    column-gap: 5px;
+    row-gap: 5px;
+    border: groove black;
+    border-radius: 10px;
+}
+
+.WhenPain #whenQn {
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.WhenPain input[type="checkbox"] {
+    display: none;
+}
+
+.WhenPain input[type="checkbox"] + label {
+    color:black;
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.WhenPain  label + input[type="text"]{
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.WorsenFactorsDiv {
+    display: none;
+    grid-template-columns: auto;
+    grid-template-rows: 40px repeat(12, 30px 75px);
+    padding: 5px 5px 5px 5px;
+    grid-column-start: 3;
+    grid-column-end: 4;
+    grid-row-start: 1;
+    grid-row-end: 12;
+    column-gap: 5px;
+    row-gap: 5px;
+    border: groove black;
+    border-radius: 10px;
+}
+
+.WorsenFactorsDiv #worsenQn {
+    grid-column-start: 1;
+    grid-column-end: 4;
+}
+
+.WorsenFactorsDiv input[type="checkbox"] {
+    display: none;
+}
+
+.WorsenFactorsDiv input[type="checkbox"] + label {
+    color:black;
+    grid-column-start: 1;
+    grid-column-end: 4;
+}
+
+.WorsenFactorsDiv  label + input[type="text"]{
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.ForPosture {
+    display: none;
+    grid-template-columns: auto;
+    grid-template-rows: repeat(auto-fit, 30px 75px);
+    padding: 5px 5px 5px 15px;
+    column-gap: 5px;
+    row-gap: 5px;
+}
+
+.BetterFactorsDiv {
+    display: none;
+    grid-template-columns: auto;
+    grid-template-rows: 40px repeat(4, 30px 75px) repeat(6, 20px);
+    padding: 5px 5px 5px 5px;
+    grid-column-start: 4;
+    grid-column-end: 5;
+    grid-row-start: 1;
+    grid-row-end: 15;
+    column-gap: 5px;
+    row-gap: 5px;
+    border: groove black;
+    border-radius: 10px;
+}
+
+.BetterFactorsDiv #betterQn {
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.BetterFactorsDiv input[type="checkbox"] {
+    display: none;
+}
+
+.BetterFactorsDiv input[type="checkbox"] + label {
+    color:black;
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.BetterFactorsDiv  label + input[type="text"]{
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.PainDurationDiv {
+    display: none;
+    grid-template-columns: auto;
+    padding: 5px 5px 5px 5px;
+    grid-column-start: 1;
+    grid-column-end: 4;
+    grid-row-start: 22;
+    grid-row-end: 24;
+    column-gap: 5px;
+    row-gap: 5px;
+    border: groove black;
+    border-radius: 10px;
+}
+
+.PainScoreDiv {
+    display: none;
+    grid-template-columns: auto;
+    padding: 5px 5px 5px 5px;
+    grid-column-start: 1;
+    grid-column-end: 4;
+    grid-row-start: 24;
+    grid-row-end: 26;
+    column-gap: 5px;
+    row-gap: 5px;
+    border: groove black;
+    border-radius: 10px;
+}
+
+.HistoryDiv {
+    display: none;
+    grid-template-columns: auto;
+    padding: 5px 5px 5px 5px;
+    grid-column-start: 1;
+    grid-column-end: 4;
+    grid-row-start: 26;
+    grid-row-end: 28;
+    column-gap: 5px;
+    row-gap: 5px;
+    border: groove black;
+    border-radius: 10px;
+}
+
+.SleepAffectingDiv {
+    display: none;
+    grid-template-columns: auto;
+    grid-template-rows: 40px repeat(3, 30px 75px) repeat(2, 20px);
+    padding: 5px 5px 5px 5px;
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 28;
+    grid-row-end: 36;
+    column-gap: 5px;
+    row-gap: 5px;
+    border: groove black;
+    border-radius: 10px;
+}
+
+.SleepAffectingDiv #sleepQn {
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.SleepAffectingDiv input[type="checkbox"] {
+    display: none;
+}
+
+.SleepAffectingDiv input[type="checkbox"] + label {
+    color:black;
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.SleepAffectingDiv  label + input[type="text"]{
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.PossibleCauseDiv {
+    display: none;
+    grid-template-columns: auto;
+    grid-template-rows: 40px repeat(7, 30px 75px) repeat(2, 20px);
+    padding: 5px 5px 5px 5px;
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 28;
+    grid-row-end: 36;
+    column-gap: 5px;
+    row-gap: 5px;
+    border: groove black;
+    border-radius: 10px;
+}
+
+.PossibleCauseDiv #possibilityQn {
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.PossibleCauseDiv input[type="checkbox"] {
+    display: none;
+}
+
+.PossibleCauseDiv input[type="checkbox"] + label {
+    color:black;
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+
+.PossibleCauseDiv  label + input[type="text"]{
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.OEDiv {
+    display: grid;
+    grid-template-columns: 200px;
+    grid-template-rows: auto auto repeat(4, 30px 75px) repeat(4, 20px);
+    column-gap: 10px;
+    row-gap: 5px;
+    margin-top: 5px;
+}
+
+.OEDiv h2 {
+    padding: 0;
+    margin: 0;
+}
+
+.OEDiv h3 {
+    padding: 0;
+    margin: 0;
+}
+
+.OEDiv input[type="checkbox"] {
+    display: none;
+}
+
+.OEDiv input[type="checkbox"] + label {
+    color:black;
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.OEDiv  label + input[type="text"]{
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+button {
+    display: inline-flex;
+    align-content: center;
+    justify-content: center;
+    align-items: flex-end;
+    opacity: 0.4;
+    width: 55px;
+    height: 60px;
+    background-image: url(images/tooth_uncheckbox.png);
+    background-size: 50px 50px;
+    background-repeat: no-repeat;
+    background-color: white;
+    color: black;
+    border-radius: 50px;
+}
+
+button:hover {
+    display: inline-flex;
+    align-content: center;
+    justify-content: center;
+    align-items: flex-end;
+    opacity: 0.7;
+    width: 65px;
+    height: 70px;
+    background-image: url(images/tooth_uncheckbox.png);
+    background-size: 50px 50px;
+    background-repeat: round;
+    background-color: white;
+    color: black;
+    border-radius: 50px;
+}
+
+button:focus {
+    display: inline-flex;
+    align-content: center;
+    justify-content: center;
+    align-items: flex-end;
+    opacity: 1;
+    width: 65px;
+    height: 70px;
+    background-image: url(images/tooth_uncheckbox.png);
+    background-size: 50px 50px;
+    background-repeat: round;
+    background-color: #707070;
+    color: black;
+    border-radius: 50px;
+} */
+
+

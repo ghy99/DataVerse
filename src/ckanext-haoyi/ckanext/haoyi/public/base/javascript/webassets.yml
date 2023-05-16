@@ -1,0 +1,5 @@
+teeth:
+  filters: rjsmin
+  output: base/%(version)s_main.js
+  contents:
+    - script2.js

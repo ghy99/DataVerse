@@ -28,6 +28,7 @@ services:
     volumes:
       - ckan_storage:/var/lib/ckan
       - ./src:/srv/app/src_extensions
+      - ./templates:/srv/app/src/ckan/ckan/templates # this can create new volumes!
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:5000"]
