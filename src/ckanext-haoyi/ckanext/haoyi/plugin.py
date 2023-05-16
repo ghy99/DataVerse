@@ -21,6 +21,8 @@ class HaoyiPlugin(plugins.SingletonPlugin):
         toolkit.add_public_directory(config_, "public")
         toolkit.add_resource("assets", "haoyi")
 
+    # IBlueprint
+
     def get_blueprint(self):
         u'''Return a Flask Blueprint object to be registered by the app.'''
         
