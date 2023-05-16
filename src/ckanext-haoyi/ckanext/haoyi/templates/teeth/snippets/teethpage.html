@@ -1,0 +1,27 @@
+<!-- Did not add the extend thing cos it duplicates the whole body im assuming, so it had a duplicated header tag -->
+
+{% block content %}
+    {% block attendanceDiv %}
+        {% snippet 'teeth/snippets/attendanceDiv.html' %}
+    {% endblock %}
+
+    {% block TOPDiv %}
+        {% snippet 'teeth/snippets/TOPDiv.html' %}
+    {% endblock %}
+
+    {% block RFADiv %}
+        {% snippet 'teeth/snippets/RFADiv.html' %}
+    {% endblock %}
+
+    {% block CCDiv %}
+        {% snippet 'teeth/snippets/CCDiv.html' %}
+    {% endblock %}
+
+    {% block OEDiv %}
+        {% snippet 'teeth/snippets/OEDiv.html' %}
+    {% endblock %}
+
+    {% block displayDiv %}
+        {% snippet 'teeth/snippets/displayDiv.html' %}
+    {% endblock %}
+{% endblock %}
