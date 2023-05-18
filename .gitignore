@@ -12,3 +12,4 @@ ckan/*
 nginx/*
 postgresql/*
 .env.example
+venv/
