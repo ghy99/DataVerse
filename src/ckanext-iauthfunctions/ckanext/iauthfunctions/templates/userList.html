@@ -1,0 +1,43 @@
+{%- block doctype %}
+<!DOCTYPE html>
+{% endblock -%}
+
+{%- block htmltag -%}
+    {% set lang = h.lang() %}
+    <html lang="en">
+{%- endblock -%}
+<head {% block headtag %}{% endblock %}>
+    {%- block meta -%}
+    <meta charset="utf-8" />
+    <meta name="csrf_field_name" content="{{ g.csrf_field_name }}" />
+    <meta name="{{ g.csrf_field_name }}" content="{{ csrf_token() }}" />
+
+    {% block meta_generator %}
+    <meta name="generator" content="ckan {{ h.ckan_version() }}" />{% endblock %}
+    {% block meta_viewport %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">{% endblock %}
+    {%- endblock -%}
+    <title>
+        {%- block title -%}
+        {%- block subtitle %}{% endblock -%}
+        {%- if self.subtitle()|trim %} {{ g.template_title_delimiter }} {% endif -%}
+        {{ g.site_title }}
+        {%- endblock -%}
+    </title>
+</head>
+<body>
+    HIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+    <div class="control-group">
+    <label class="form-label" for="field-country_code">{{ _("user list") }}</label>
+    <div class="controls">
+        <div>test1</div>
+        <div>test2</div>
+        {% for userid in result  %}
+          <div value="{{ userid }}">{{ userid }}</div>
+        {% endfor %}
+        <div>test3</div>
+
+    </div>
+  </div>
+</body>
+</html>
