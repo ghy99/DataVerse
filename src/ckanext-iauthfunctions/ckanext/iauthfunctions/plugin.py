@@ -6,7 +6,7 @@ from ckan.types import AuthFunction, AuthResult, Context, ContextValidator, Data
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request, jsonify
 
 
 def getUserList():
@@ -31,49 +31,47 @@ def listOfUsers():
     # logging.warning(f"\n\n\nUSER LIST HERE: {userlist}\n\n\n")
     return render_template('userList.html', result=userlist)
 
+def process_request(data, context):
+    logging.warning("PRINTING CONTEXT:")
+    logging.warning(f"Context: {context}")
+    logging.warning("PRINTING DATA:")
+    for key, val in data.items():
+        logging.warning(f"{key} : {val}")
+    logging.warning("")
+    logging.warning("")
+    logging.warning("POSTING GROUP CREATION NOWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW")
+    # user_name = context['user']
+    try:
+        group_created = toolkit.get_action('group_create')(
+            {
 
-# def group_create(context:Context, data_dict: Optional[DataDict] = None) ->AuthResult:
-#     user_name: str = context['user']
-#     try:
-#         members = toolkit.get_action('user_list')(
-#             {}, 
-#             {}
-#         )
-#     except:
-#         return {'success': False, 'msg': "LALALALALALALALALALALALAThe unable to get user list."}
-#     # member_ids = [member_tuple[0] for member_tuple in members]
-#     user_ids = [u_id['id'] for u_id in members]
-#     logging.warning(f"USER LIST HERE AHHHHHHHHHHHHH: {user_ids}")
-#     for i in user_ids:
-#         print(f"ID: {i}")
-#     convert_user_name_or_id_to_id = cast(
-#         ContextValidator, 
-#         toolkit.get_converter('convert_user_name_or_id_to_id')
-#     )
-#     try:
-#         user_id = convert_user_name_or_id_to_id(user_name, context)
-#     except toolkit.Invalid:
-#         return {'success': False, 'msg': 'You must be logged in as a member of the curators group to create groups bruh'}
-    
+            }, 
+            {
+                'name': data['name'], 
+                'title': data['title'], 
+                'description': data['description']
+            })
+        return group_created
+    except Exception as e:
+        logging.warning("")
+        logging.warning("")
+        logging.warning(f"EXCEPTION ERROR: {e}")
+        logging.warning("")
+        logging.warning("")
 
-#     if user_id in user_ids:
-#         return {'success': True}
-#     else:
-#         return {'success': False, 'msg':'Only myGroup people are allowed to create groups'}
-    
+
 
 class IauthfunctionsPlugin(plugins.SingletonPlugin):
     # plugins.implements(plugins.IAuthFunctions)
-    plugins.implements(plugins.ITemplateHelpers)
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IBlueprint)
-
-    def get_helpers(self):
-        return {'getUserList': getUserList}
     
     # def get_auth_functions(self) -> dict[str, AuthFunction]:
-    #     return {'group_create' : group_create}
+    #     return {
+    #         'group_create' : group_create}
+
     # IConfigurer
+
 
     def update_config(self, config_):
         toolkit.add_template_directory(config_, "templates")
@@ -84,8 +82,17 @@ class IauthfunctionsPlugin(plugins.SingletonPlugin):
         blueprint = Blueprint(self.name, self.__module__)
         blueprint.template_folder = 'templates'
 
+        @blueprint.route('/listOfUsers/new', methods=['POST'])
+        def create_group(context: Context):
+            if request.method == 'POST':
+                data = request.form
+            result = process_request(data, context)
+
+            return jsonify(result)
+
         rules = [
             ('/listOfUsers', 'listOfUsers', listOfUsers),
+            ('/listOfUsers/new', 'listOfUsers/new', create_group),
         ]    
 
         for rule in rules:

@@ -1,43 +1,29 @@
-{%- block doctype %}
-<!DOCTYPE html>
-{% endblock -%}
+{% import "macros/form.html" as form %}
 
-{%- block htmltag -%}
-    {% set lang = h.lang() %}
-    <html lang="en">
-{%- endblock -%}
-<head {% block headtag %}{% endblock %}>
-    {%- block meta -%}
-    <meta charset="utf-8" />
-    <meta name="csrf_field_name" content="{{ g.csrf_field_name }}" />
-    <meta name="{{ g.csrf_field_name }}" content="{{ csrf_token() }}" />
+{% for user_id in result %}
+    <div>User ID: {{ user_id }}</div>
+{% endfor %}
+<h1>CREATING GROUP FORM</h1>
+{% block form %}
+    <form id="group-edit" class="dataset-form" action="listOfUsers/new" method="post" data-module="basic-form" enctype="multipart/form-data">
+        {{ h.csrf_input() }} 
+        {% block error_summary %}
+            {{ form.errors(error_summary) }}
+        {% endblock %}
+        
+        {% block basic_fields %}
+            {% set attrs = {'data-module': 'slug-preview-target', 'class': 'form-control'} %}
+            {{ form.input('title', label=_('Name'), id='field-name', placeholder= _('My Group'), classes=['control-full'], attrs=attrs) }}
+        
+            {{ form.prepend('name', label=_('URL'), prepend=prefix, id='field-url', placeholder=_('my-group'), attrs=attrs, is_required=true) }}
+        
+            {{ form.markdown('description', label=_('Description'), id='field-description', placeholder=_('A little information about my group...')) }}
+        {% endblock %}
 
-    {% block meta_generator %}
-    <meta name="generator" content="ckan {{ h.ckan_version() }}" />{% endblock %}
-    {% block meta_viewport %}
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">{% endblock %}
-    {%- endblock -%}
-    <title>
-        {%- block title -%}
-        {%- block subtitle %}{% endblock -%}
-        {%- if self.subtitle()|trim %} {{ g.template_title_delimiter }} {% endif -%}
-        {{ g.site_title }}
-        {%- endblock -%}
-    </title>
-</head>
-<body>
-    HIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-    <div class="control-group">
-    <label class="form-label" for="field-country_code">{{ _("user list") }}</label>
-    <div class="controls">
-        <div>test1</div>
-        <div>test2</div>
-        {% for userid in result  %}
-          <div value="{{ userid }}">{{ userid }}</div>
-        {% endfor %}
-        <div>test3</div>
+        {{ form.required_message() }}
 
-    </div>
-  </div>
-</body>
-</html>
+        <div class="form-actions">
+            <input class="btn btn-primary" name="save" type="submit">{% block save_text %}{{ _('Save Group') }}{% endblock %}</input>
+          </div>
+    </form>
+{% endblock %}
