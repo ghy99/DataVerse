@@ -13,8 +13,10 @@ nginx/*
 postgresql/*
 .env.example
 venv/
+
 templates/
 public/
 views/
 plugins/
 logic/
+__pycache__/

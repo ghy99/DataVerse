@@ -1,0 +1,69 @@
+{# Allows the DOCTYPE to be set on a page by page basis #}
+{%- block doctype %}
+<!DOCTYPE html>
+{% endblock -%}
+
+    {# Allows custom attributes to be added to the <html> tag #}
+    {%- block htmltag -%}
+        {% set lang = h.lang() %}
+        <!--[if IE 9]> <html lang="{{ lang }}" class="ie9"> <![endif]-->
+        <!--[if gt IE 8]><!-->
+        <html lang="{{ lang }}" {% if h.is_rtl_language()  %} dir="rtl" {% endif %}>
+        <!--<![endif]-->
+    {%- endblock -%}
+
+    <head{% block headtag %}{% endblock %}>
+        {%- block meta -%}
+        <meta charset="utf-8" />
+        <meta name="csrf_field_name" content="{{ g.csrf_field_name }}" />
+        <meta name="{{ g.csrf_field_name }}" content="{{ csrf_token() }}" />
+
+        {% block meta_generator %}
+        <meta name="generator" content="ckan {{ h.ckan_version() }}" />{% endblock %}
+        {% block meta_viewport %}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">{% endblock %}
+        {%- endblock -%}
+        <title>
+            {%- block title -%}
+            {%- block subtitle %}{% endblock -%}
+            {%- if self.subtitle()|trim %} {{ g.template_title_delimiter }} {% endif -%}
+            {{ g.site_title }}
+            {%- endblock -%}
+        </title>
+        <!-- format: asset 'extension name / css filename' i think extension name includes filepath -->
+        {% block styles %}
+            {% set theme = h.get_rtl_theme() if h.is_rtl_language() else g.theme %}
+            {% asset theme %}
+            {% asset 'iauthfunctions/grouptable' %}
+        {% endblock %}
+    </head>
+
+    <body>
+        {%- block header %}
+            {% include "header.html" %}
+        {% endblock -%}
+        <table>
+            <tr>
+                <th>Group Names</th>
+            </tr>
+            {% for group in grouplist %}
+                <tr>
+                    <td>{{ group }}</td>
+                    <td>
+                        <form action="" method="POST">
+                            <button name="edit" value="edit">
+                                Edit
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        {%- block footer %}
+            {% include "footer.html" %}
+        {% endblock -%}
+        
+        {{ h.render_assets('style') }}
+        {{ h.render_assets('script') }}
+    </body>
+</html>
