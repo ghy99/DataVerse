@@ -12,35 +12,22 @@ from flask import Blueprint, render_template, request, jsonify
 def getUserList():
     try:
         user_ids = toolkit.get_action('user_list')({}, {})
-    except:
-        logging.warning("Errorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
-        return 
-
-    logging.warning("Successful get action?")
-
+    except Exception as e:
+        logging.warning("getUserList() Errorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
+        logging.warning(f"The error is {e}")
+    logging.warning(f"Successfully requested user list")
     id_list = [u_id['id'] for u_id in user_ids]
     return id_list
 
-
-# def listOfUsers():
-#     """
-#     This function renders the initial page for /listOfUsers.
-#     It also calls the getUserList() function to retrieve the current list of user ids.
-#     it uses render template to render the HTML, 
-#     and result to pass in the data that i want to pass it
-
-#     Returns:
-#         render template....?: 
-#         This function returns the HTML that i want to display.
-#     """
-#     logging.warning("hello worlddddd")
-#     userlist = getUserList()
-#     logging.warning(f"List of user id:")
-#     for id in userlist:
-#         logging.warning(f"id: {id}")
-#     # logging.warning(f"\n\n\nUSER LIST HERE: {userlist}\n\n\n")
-#     return render_template('userList.html', userlist=userlist)
-
+def getGroups():
+    groups = None
+    try: 
+        groups = toolkit.get_action('group_list')({}, {})
+    except Exception as e:
+        logging.warning("getGroups() ERRRRRORRRRRRRRRRRRRRRRRRRRRRRRRRRRRR")
+        logging.warning(f"The error is {e}")
+    logging.warning(f"Successfully requested group list")
+    return groups
 
 def process_request(data):
     """
@@ -87,32 +74,44 @@ def process_request(data):
         logging.warning(f"EXCEPTION ERROR: {e}")
 
 def create_group():
-            """
-            This function renders the template of the group_create form.
-            If it is performing a POST request (when the form is submitted), 
-            it will display the new group that is just created. 
+    """
+    This function renders the template of the group_create form.
+    If it is performing a POST request (when the form is submitted), 
+    it will display the new group that is just created. 
 
-            Returns:
-                render_template: 
-                it will either return the form to create group, 
-                together with a current list of user id, 
-                or 
-                to render the same form to create group, 
-                together with the new group that was just created.
-            """
-            if request.method == 'POST':
-                data = request.form
-                result = process_request(data)
-                logging.warning(f"Printing results:")
-                logging.warning(f"{result}")
-                return render_template("userList.html", result=result)
-            
-            userlist = getUserList()
-            logging.warning(f"List of user id:")
-            for id in userlist:
-                logging.warning(f"id: {id}")
-            # logging.warning(f"\n\n\nUSER LIST HERE: {userlist}\n\n\n")
-            return render_template('userList.html', userlist=userlist, result=None)
+    Returns:
+        render_template: 
+        it will either return the form to create group, 
+        together with a current list of user id, 
+        or 
+        to render the same form to create group, 
+        together with the new group that was just created.
+    """
+    if request.method == 'POST':
+        data = request.form
+        result = process_request(data)
+        logging.warning(f"Printing results:")
+        logging.warning(f"{result}")
+        return render_template("userList.html", result=result)
+    elif request.method == 'GET':
+        userlist = getUserList()
+        logging.warning(f"List of user id:")
+        for id in userlist:
+            logging.warning(f"id: {id}")
+        # logging.warning(f"\n\n\nUSER LIST HERE: {userlist}\n\n\n")
+        return render_template('userList.html', userlist=userlist, result=None)
+    
+
+def display_groups():
+     if request.method == 'POST':
+         return "Not implemented yet. Idk what to POST request"
+     elif request.method == 'GET':
+        grouplist = getGroups()
+        logging.warning(f"Group List:")
+        for group in grouplist:
+            logging.warning(f"{group}")
+        return render_template('displayGroups.html', grouplist=grouplist)
+     
 
 class IauthfunctionsPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
@@ -145,7 +144,8 @@ class IauthfunctionsPlugin(plugins.SingletonPlugin):
         blueprint.template_folder = 'templates'
 
         rules = [
-            ('/listOfUsers', 'listOfUsers', create_group)
+            ('/listOfUsers', 'listOfUsers', create_group), 
+            ('/displayGroups', 'displayGroups', display_groups),
         ]    
 
         for rule in rules:

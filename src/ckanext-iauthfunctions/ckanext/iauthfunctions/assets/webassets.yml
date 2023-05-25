@@ -12,3 +12,8 @@
 #   output: ckanext-iauthfunctions/%(version)s-iauthfunctions.css
 #   contents:
 #     - css/iauthfunctions.css
+
+grouptable:
+    filters: cssrewrite
+    output: ckanext-haoyi/%(version)s_styles.css
+    contents: grouptable.css
