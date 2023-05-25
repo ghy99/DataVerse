@@ -86,31 +86,20 @@ def process_request(data):
     except Exception as e:
         logging.warning(f"EXCEPTION ERROR: {e}")
 
+def create_group():
+            """
+            This function renders the template of the group_create form.
+            If it is performing a POST request (when the form is submitted), 
+            it will display the new group that is just created. 
 
-
-class IauthfunctionsPlugin(plugins.SingletonPlugin):
-    # plugins.implements(plugins.IAuthFunctions)
-    plugins.implements(plugins.IConfigurer)
-    plugins.implements(plugins.IBlueprint)
-    
-    # def get_auth_functions(self) -> dict[str, AuthFunction]:
-    #     return {
-    #         'group_create' : group_create}
-
-    # IConfigurer
-
-
-    def update_config(self, config_):
-        toolkit.add_template_directory(config_, "templates")
-        toolkit.add_public_directory(config_, "public")
-        toolkit.add_resource("assets", "iauthfunctions")
-
-    def get_blueprint(self):
-        blueprint = Blueprint(self.name, self.__module__)
-        blueprint.template_folder = 'templates'
-
-        @blueprint.route('/listOfUsers', methods=['POST'])
-        def create_group():
+            Returns:
+                render_template: 
+                it will either return the form to create group, 
+                together with a current list of user id, 
+                or 
+                to render the same form to create group, 
+                together with the new group that was just created.
+            """
             if request.method == 'POST':
                 data = request.form
                 result = process_request(data)
@@ -125,12 +114,41 @@ class IauthfunctionsPlugin(plugins.SingletonPlugin):
             # logging.warning(f"\n\n\nUSER LIST HERE: {userlist}\n\n\n")
             return render_template('userList.html', userlist=userlist, result=None)
 
+class IauthfunctionsPlugin(plugins.SingletonPlugin):
+    plugins.implements(plugins.IConfigurer)
+    plugins.implements(plugins.IBlueprint)
+    
+    
+    # IConfigurer
+    def update_config(self, config_):
+        toolkit.add_template_directory(config_, "templates")
+        toolkit.add_public_directory(config_, "public")
+        toolkit.add_resource("assets", "iauthfunctions")
+
+    # IBlueprint
+    def get_blueprint(self):
+        """
+        This function registers the blueprints to display different html pages. 
+        it creates the blueprint object, 
+        then register the url that will be used to display the HTML page, 
+        along with the name to label it and the function that calls render_template.
+
+        This will be registered in a rule and 
+        we will use the blueprint object to add the rule as a url.
+
+        Returns:
+            Blueprint object: 
+            It returns the blueprint that does wtv flask uses it for. 
+            Don't really understand it ngl.
+        """
+        blueprint = Blueprint(self.name, self.__module__)
+        blueprint.template_folder = 'templates'
+
         rules = [
-            # ('/listOfUsers', 'listOfUsers', listOfUsers),
-            ('/listOfUsers', 'listOfUsers', create_group),
+            ('/listOfUsers', 'listOfUsers', create_group)
         ]    
 
         for rule in rules:
-            blueprint.add_url_rule(*rule)
+            blueprint.add_url_rule(*rule, methods=['POST', 'GET'])
 
         return blueprint
