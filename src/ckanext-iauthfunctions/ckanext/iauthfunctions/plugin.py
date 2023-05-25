@@ -22,42 +22,69 @@ def getUserList():
     return id_list
 
 
-def listOfUsers():
-    logging.warning("hello worlddddd")
-    userlist = getUserList()
-    logging.warning(f"List of user id:")
-    for id in userlist:
-        logging.warning(f"id: {id}")
-    # logging.warning(f"\n\n\nUSER LIST HERE: {userlist}\n\n\n")
-    return render_template('userList.html', result=userlist)
+# def listOfUsers():
+#     """
+#     This function renders the initial page for /listOfUsers.
+#     It also calls the getUserList() function to retrieve the current list of user ids.
+#     it uses render template to render the HTML, 
+#     and result to pass in the data that i want to pass it
 
-def process_request(data, context):
-    logging.warning("PRINTING CONTEXT:")
-    logging.warning(f"Context: {context}")
+#     Returns:
+#         render template....?: 
+#         This function returns the HTML that i want to display.
+#     """
+#     logging.warning("hello worlddddd")
+#     userlist = getUserList()
+#     logging.warning(f"List of user id:")
+#     for id in userlist:
+#         logging.warning(f"id: {id}")
+#     # logging.warning(f"\n\n\nUSER LIST HERE: {userlist}\n\n\n")
+#     return render_template('userList.html', userlist=userlist)
+
+
+def process_request(data):
+    """
+    This function handles post request to create a group. 
+    You must be logged in as a user first before you can create a group or
+    you will receive an authentication error. 
+
+    Args:
+        data (Dict):  
+            This dictionary is a parameter passed in from 
+            create_group() inside the Plugin Class.
+            The dictionary stores the form data that was filled in in the UI.
+            For example, creating a group requires a name, title, description.
+            The dictionary contains:
+            {
+                'name': data['name'], 
+                'title': data['title'],
+                'description': data['description']
+            }
+
+    Returns:
+        Group Object: 
+            This function returns the group object that was just created.
+            It stores all the information that is created
+            when the API function group_create() is called.
+    """
     logging.warning("PRINTING DATA:")
     for key, val in data.items():
         logging.warning(f"{key} : {val}")
-    logging.warning("")
-    logging.warning("")
     logging.warning("POSTING GROUP CREATION NOWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW")
-    # user_name = context['user']
     try:
         group_created = toolkit.get_action('group_create')(
-            {
-
-            }, 
+            {}, 
             {
                 'name': data['name'], 
                 'title': data['title'], 
                 'description': data['description']
             })
+        logging.warning(f"")
+        logging.warning(f"Group created variable: {type(group_created)}")
+        logging.warning(f"")
         return group_created
     except Exception as e:
-        logging.warning("")
-        logging.warning("")
         logging.warning(f"EXCEPTION ERROR: {e}")
-        logging.warning("")
-        logging.warning("")
 
 
 
@@ -82,17 +109,25 @@ class IauthfunctionsPlugin(plugins.SingletonPlugin):
         blueprint = Blueprint(self.name, self.__module__)
         blueprint.template_folder = 'templates'
 
-        @blueprint.route('/listOfUsers/new', methods=['POST'])
-        def create_group(context: Context):
+        @blueprint.route('/listOfUsers', methods=['POST'])
+        def create_group():
             if request.method == 'POST':
                 data = request.form
-            result = process_request(data, context)
-
-            return jsonify(result)
+                result = process_request(data)
+                logging.warning(f"Printing results:")
+                logging.warning(f"{result}")
+                return render_template("userList.html", result=result)
+            
+            userlist = getUserList()
+            logging.warning(f"List of user id:")
+            for id in userlist:
+                logging.warning(f"id: {id}")
+            # logging.warning(f"\n\n\nUSER LIST HERE: {userlist}\n\n\n")
+            return render_template('userList.html', userlist=userlist, result=None)
 
         rules = [
-            ('/listOfUsers', 'listOfUsers', listOfUsers),
-            ('/listOfUsers/new', 'listOfUsers/new', create_group),
+            # ('/listOfUsers', 'listOfUsers', listOfUsers),
+            ('/listOfUsers', 'listOfUsers', create_group),
         ]    
 
         for rule in rules:
