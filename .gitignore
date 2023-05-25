@@ -19,3 +19,4 @@ public/
 views/
 plugins/
 logic/
+__pycache__/
