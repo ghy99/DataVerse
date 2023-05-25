@@ -13,6 +13,7 @@ nginx/*
 postgresql/*
 .env.example
 venv/
+
 templates/
 public/
 views/
