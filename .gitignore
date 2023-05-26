@@ -1,7 +1,7 @@
 # generic
 .DS_Store
 .vagrant
-
+.vscode/
 # code & config
 _service-provider/*
 _solr/schema.xml
