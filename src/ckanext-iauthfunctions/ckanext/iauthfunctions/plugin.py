@@ -104,7 +104,7 @@ def create_group():
 
 def display_groups():
      if request.method == 'POST':
-         return "Not implemented yet. Idk what to POST request"
+         return toolkit.redirect_to('/')
      elif request.method == 'GET':
         grouplist = getGroups()
         logging.warning(f"Group List:")

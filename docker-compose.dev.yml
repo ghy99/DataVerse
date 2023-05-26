@@ -28,10 +28,11 @@ services:
     volumes:
       - ckan_storage:/var/lib/ckan
       - ./src:/srv/app/src_extensions
-      - ./templates:/srv/app/src/ckan/ckan/templates # this can create new volumes!
+      - ./lib:/srv/app/src/ckan/ckan/lib
       - ./logic:/srv/app/src/ckan/ckan/logic
       - ./plugins:/srv/app/src/ckan/ckan/plugins
       - ./public:/srv/app/src/ckan/ckan/public
+      - ./templates:/srv/app/src/ckan/ckan/templates # this can create new volumes!
       - ./view:/srv/app/src/ckan/ckan/view
     restart: unless-stopped
     healthcheck:
