@@ -104,7 +104,7 @@ def create_group():
 
 def display_groups():
      if request.method == 'POST':
-         return toolkit.redirect_to('/')
+         return toolkit.redirect_to('/listOfUsers')
      elif request.method == 'GET':
         grouplist = getGroups()
         logging.warning(f"Group List:")
