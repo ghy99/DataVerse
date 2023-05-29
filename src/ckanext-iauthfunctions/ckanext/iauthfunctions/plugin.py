@@ -1,6 +1,6 @@
 from __future__ import annotations
 import logging
-
+import ast
 from typing import Any, Optional, cast
 from ckan.types import AuthFunction, AuthResult, Context, ContextValidator, DataDict
 import ckan.plugins as plugins
@@ -10,14 +10,24 @@ from flask import Blueprint, render_template, request, jsonify
 
 
 def getUserList():
+    user_ids = None
     try:
-        user_ids = toolkit.get_action('user_list')({}, {})
+        user_ids = toolkit.get_action('user_list')({}, {'all_fields': True, 'include_site_user': True})
     except Exception as e:
         logging.warning("getUserList() Errorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
         logging.warning(f"The error is {e}")
     logging.warning(f"Successfully requested user list")
-    id_list = [u_id['id'] for u_id in user_ids]
-    return id_list
+    logging.warning(f"Printing full user list: {user_ids}")
+    all_users = []
+    
+    for user in user_ids:
+        user_details = {}
+        user_details['id'] = user['id']
+        user_details['name'] = user['name']
+        user_details['sysadmin'] = user['sysadmin']
+        all_users.append(user_details)
+    # id_list = [u_id['id'] for u_id in user_ids]
+    return all_users
 
 def getGroups():
     groups = None
@@ -70,7 +80,22 @@ def process_request(data):
             logging.warning(f"")
             logging.warning(f"Group created variable: {type(group_created)}")
             logging.warning(f"")
-            return group_created
+            new_membership = None
+            try:
+                new_membership = toolkit.get_action('group_member_create')({}, {
+                    'id': data['name'], 
+                    'username': data['username'], 
+                    'role': 'admin'
+                })
+                logging.warning(f"PRINTING NEW MEMBERSHIP DETAILS: {new_membership}")
+            except Exception as e:
+                logging.warning(f"Member Creation error: {e}")
+            data = {
+                'group_created': group_created, 
+                'site_user': data['username'], 
+                'new_membership': new_membership
+            }
+            return data
         except Exception as e:
             logging.warning(f"EXCEPTION ERROR: {e}")
     elif data['editType'] == 'edit':
@@ -85,6 +110,18 @@ def process_request(data):
             logging.warning(f"")
             logging.warning(f"Group created variable: {type(group_created)}")
             logging.warning(f"")
+            usernames = ast.literal_eval(data['username'])
+            for username in usernames:
+                try: 
+                    new_membership = toolkit.get_action('member_create')({}, {
+                        'id': data['name'], 
+                        'object': username, 
+                        'object_type': 'user',
+                        'capacity': 'admin'
+                    })
+                    logging.warning(f"PRINTING NEW MEMBERSHIP DETAILS: {new_membership}")
+                except Exception as e:
+                    logging.warning(f"ERROR HIT WHEN EDITING GROUP: TRYING TO CREATE NEW MEMBER: \n{e}")
             return group_created
         except Exception as e:
             logging.warning(f"EXCEPTION ERROR: {e}")
@@ -103,17 +140,22 @@ def create_group():
         to render the same form to create group, 
         together with the new group that was just created.
     """
+    
     if request.method == 'POST':
         data = request.form
         result = process_request(data)
         logging.warning(f"Printing resultsssss:")
-        logging.warning(f"{result}")
+        for key, val in data.items():
+            logging.warning(f"{key} : {val}")
         return render_template("userList.html", result=result, group_details=None)
     elif request.method == 'GET':
         userlist = getUserList()
         logging.warning(f"List of user id:")
-        for id in userlist:
-            logging.warning(f"id: {id}")
+        for user in userlist:
+            for key, val in user.items():
+                logging.warning(f"user id: {user['id']}")
+                logging.warning(f"user name: {user['name']}")
+                logging.warning(f"admin status: {user['sysadmin']}")
         # logging.warning(f"\n\n\nUSER LIST HERE: {userlist}\n\n\n")
         return render_template('userList.html', userlist=userlist, result=None, group_details=None)
     
@@ -142,8 +184,13 @@ def display_groups():
             logging.warning("")
         logging.warning(f"Group details: {group_details}")
         logging.warning(f"")
-        # return toolkit.redirect_to(toolkit.url_for('iauthfunctions.listOfUsers', group_details=jsonify(group_details), result=None))
-        return render_template('userList.html', group_details=group_details, result=None)
+        try: 
+            member_list = toolkit.get_action('member_list')({}, {'id': group_name, 'object_type': 'user'})
+        except Exception as e:
+            logging.warning(f"UNABLE TO GET MEMBER LIST - ERROR: {e}")
+        group_details[0]['member_list'] = [member_id[0] for member_id in member_list]
+        userlist = getUserList()
+        return render_template('userList.html', userlist=userlist, group_details=group_details, result=None)
     elif request.method == 'GET':
         grouplist = getGroups()
         logging.warning(f"Group List:")
@@ -189,7 +236,7 @@ def group_patch(context: Context, data_dict: Optional[dict[str, Any]] = None) ->
         return {'success': True}
     else:
         return {'success': False,
-                'msg': 'Only curators are allowed to create groups'}
+                'msg': 'Only admins and members of the group are allowed to create groups'}
 
 class IauthfunctionsPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)

@@ -10,3 +10,7 @@ table {
 body {
     background-color: cyan;
 }
+
+.displayNewGroup {
+    padding: 1%;
+}
