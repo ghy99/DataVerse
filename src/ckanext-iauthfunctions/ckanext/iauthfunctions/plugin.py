@@ -1,7 +1,7 @@
 from __future__ import annotations
 import logging
 
-from typing import Optional, cast
+from typing import Any, Optional, cast
 from ckan.types import AuthFunction, AuthResult, Context, ContextValidator, DataDict
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
@@ -58,20 +58,36 @@ def process_request(data):
     for key, val in data.items():
         logging.warning(f"{key} : {val}")
     logging.warning("POSTING GROUP CREATION NOWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW")
-    try:
-        group_created = toolkit.get_action('group_create')(
-            {}, 
-            {
-                'name': data['name'], 
-                'title': data['title'], 
-                'description': data['description']
-            })
-        logging.warning(f"")
-        logging.warning(f"Group created variable: {type(group_created)}")
-        logging.warning(f"")
-        return group_created
-    except Exception as e:
-        logging.warning(f"EXCEPTION ERROR: {e}")
+    if data['editType'] == 'create':
+        try:
+            group_created = toolkit.get_action('group_create')(
+                {}, 
+                {
+                    'name': data['name'], 
+                    'title': data['title'], 
+                    'description': data['description']
+                })
+            logging.warning(f"")
+            logging.warning(f"Group created variable: {type(group_created)}")
+            logging.warning(f"")
+            return group_created
+        except Exception as e:
+            logging.warning(f"EXCEPTION ERROR: {e}")
+    elif data['editType'] == 'edit':
+        try:
+            group_created = toolkit.get_action('group_patch')(
+                {}, 
+                {
+                    'id': data['name'], 
+                    'title': data['title'], 
+                    'description': data['description']
+                })
+            logging.warning(f"")
+            logging.warning(f"Group created variable: {type(group_created)}")
+            logging.warning(f"")
+            return group_created
+        except Exception as e:
+            logging.warning(f"EXCEPTION ERROR: {e}")
 
 def create_group():
     """
@@ -90,34 +106,98 @@ def create_group():
     if request.method == 'POST':
         data = request.form
         result = process_request(data)
-        logging.warning(f"Printing results:")
+        logging.warning(f"Printing resultsssss:")
         logging.warning(f"{result}")
-        return render_template("userList.html", result=result)
+        return render_template("userList.html", result=result, group_details=None)
     elif request.method == 'GET':
         userlist = getUserList()
         logging.warning(f"List of user id:")
         for id in userlist:
             logging.warning(f"id: {id}")
         # logging.warning(f"\n\n\nUSER LIST HERE: {userlist}\n\n\n")
-        return render_template('userList.html', userlist=userlist, result=None)
+        return render_template('userList.html', userlist=userlist, result=None, group_details=None)
     
 
 def display_groups():
-     if request.method == 'POST':
-         return toolkit.redirect_to('/listOfUsers')
-     elif request.method == 'GET':
+    if request.method == 'POST':
+        group_obj = request.form.to_dict()
+        logging.warning(f"")
+        logging.warning(f"")
+        group_name = group_obj['groupname']
+        logging.warning(f"Grouppp Object: {group_obj}")
+
+        group_details = None
+        try: 
+            
+            logging.warning(f"")
+            logging.warning(f"Group name: {group_name}")
+            logging.warning(f"")
+            group_details = toolkit.get_action('group_list')({}, {
+                'groups': [group_name], 
+                'all_fields': True,
+            })
+        except Exception as e:
+            logging.warning("FAILED API QUERY: ERROR IS ")
+            logging.warning(f"{e}")
+            logging.warning("")
+        logging.warning(f"Group details: {group_details}")
+        logging.warning(f"")
+        # return toolkit.redirect_to(toolkit.url_for('iauthfunctions.listOfUsers', group_details=jsonify(group_details), result=None))
+        return render_template('userList.html', group_details=group_details, result=None)
+    elif request.method == 'GET':
         grouplist = getGroups()
         logging.warning(f"Group List:")
         for group in grouplist:
             logging.warning(f"{group}")
         return render_template('displayGroups.html', grouplist=grouplist)
-     
+
+
+def group_patch(context: Context, data_dict: Optional[dict[str, Any]] = None) -> AuthResult:
+    logging.warning(f"This is going through authorizationnnnnnnnnnnnnnnnnnnnnnnnnn")
+    # Get the user name of the logged-in user.
+    user_name = context['user']
+
+    # Get a list of the members of the 'curators' group.
+    try:
+        members = toolkit.get_action('member_list')(
+            {},
+            {'id': data_dict['id'], 'object_type': 'user'})
+    except toolkit.ObjectNotFound:
+        # The curators group doesn't exist.
+        return {'success': False,
+                'msg': "The group does not exist, so only sysadmins "
+                       "are authorized to create groups."}
+
+    # 'members' is a list of (user_id, object_type, capacity) tuples, we're
+    # only interested in the user_ids.
+    member_ids = [member_tuple[0] for member_tuple in members]
+    logging.warning(f"Printing member list: \n{members}\n{member_ids}")
+    # We have the logged-in user's user name, get their user id.
+    convert_user_name_or_id_to_id = cast(
+        ContextValidator,
+        toolkit.get_converter('convert_user_name_or_id_to_id'))
+    try:
+        user_id = convert_user_name_or_id_to_id(user_name, context)
+    except toolkit.Invalid:
+        # The user doesn't exist (e.g. they're not logged-in).
+        return {'success': False,
+                'msg': 'You must be logged-in as a member of the '
+                       'group to create new groups.'}
+
+    # Finally, we can test whether the user is a member of the curators group.
+    if user_id in member_ids:
+        return {'success': True}
+    else:
+        return {'success': False,
+                'msg': 'Only curators are allowed to create groups'}
 
 class IauthfunctionsPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IBlueprint)
+    plugins.implements(plugins.IAuthFunctions)
     
-    
+    def get_auth_functions(self):
+        return {'group_patch': group_patch}
     # IConfigurer
     def update_config(self, config_):
         toolkit.add_template_directory(config_, "templates")
