@@ -10,6 +10,12 @@ from flask import Blueprint, render_template, request, jsonify
 
 
 def getUserList():
+    """
+    This function retrieves the current active users from the DB.
+
+    Returns:
+        List of Dictionary: Contains a list of dictionary that have the details of ID, name and sysadmin status.
+    """
     user_ids = None
     try:
         user_ids = toolkit.get_action('user_list')({}, {'all_fields': True, 'include_site_user': True})
@@ -30,6 +36,12 @@ def getUserList():
     return all_users
 
 def getGroups():
+    """
+    This function gets a list of groups that currently exist and are active.
+
+    Returns:
+        List i think: a list that contains the groups that currently exist and are active
+    """
     groups = None
     try: 
         groups = toolkit.get_action('group_list')({}, {})
@@ -161,6 +173,35 @@ def create_group():
     
 
 def display_groups():
+    """
+    This function is registered in the Blueprint.
+    It is used for 2 purposes, to handle the POST request and the GET request.
+    POST request: 
+        The POST request is used to redirect users from the /displayGroup page to the /listOfUsers page.
+        It will take the selected group, and auto-fill the create group form.
+        Users will only have to change what they want to change in the filled form to update the group.
+
+        It retrieves the group that the user selected, 
+        then retrieve all the information of the selected group from the DB using 
+            get_action('group_list')({}, {'groups': 'groupname'})
+        then retrieve all members in that group using 
+            get_action('member_list')({}, {'id': 'group_name'})
+        and returns the template for /listOfUsers with the group and member list information
+    GET request:
+        The GET request is used to render the /displayGroup page.
+        It will show the list of groups that currently exist and are active.
+        This function calls getGroups() function to retrieve the list of groups that currently exist and are active. 
+        It will then render the template for /displayGroup, with a list of group names to be displayed.
+    
+    Returns:
+        render_template: 
+        POST request: 
+            'userlist.html', with a list of users that exists, 
+            group detail that has group information and member list information.
+        GET request:
+            'displayGroups.html', with a list of group names.
+
+    """
     if request.method == 'POST':
         group_obj = request.form.to_dict()
         logging.warning(f"")
@@ -200,6 +241,18 @@ def display_groups():
 
 
 def group_patch(context: Context, data_dict: Optional[dict[str, Any]] = None) -> AuthResult:
+    """
+    This function checks authorization, but so far really does not affect anything. 
+    Only used to show error exception for now. 
+    Could not overwrite permissions.
+
+    Args:
+        context (Context): contains session.
+        data_dict (Optional[dict[str, Any]], optional): Contains form information
+
+    Returns:
+        AuthResult: Contains authorization results to edit group.
+    """
     logging.warning(f"This is going through authorizationnnnnnnnnnnnnnnnnnnnnnnnnn")
     # Get the user name of the logged-in user.
     user_name = context['user']
