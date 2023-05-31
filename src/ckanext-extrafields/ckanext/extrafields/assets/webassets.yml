@@ -1,0 +1,14 @@
+# extrafields-js:
+#   filter: rjsmin
+#   output: ckanext-extrafields/%(version)s-extrafields.js
+#   contents:
+#     - js/extrafields.js
+#   extra:
+#     preload:
+#       - base/main
+
+# extrafields-css:
+#   filter: cssrewrite
+#   output: ckanext-extrafields/%(version)s-extrafields.css
+#   contents:
+#     - css/extrafields.css
