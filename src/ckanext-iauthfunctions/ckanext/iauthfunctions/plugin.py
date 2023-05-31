@@ -44,7 +44,7 @@ def getGroups():
     """
     groups = None
     try: 
-        groups = toolkit.get_action('group_list')({}, {})
+        groups = toolkit.get_action('group_list')({}, {'all_fields': True})
     except Exception as e:
         logging.warning("getGroups() ERRRRRORRRRRRRRRRRRRRRRRRRRRRRRRRRRRR")
         logging.warning(f"The error is {e}")
@@ -171,7 +171,6 @@ def create_group():
         # logging.warning(f"\n\n\nUSER LIST HERE: {userlist}\n\n\n")
         return render_template('userList.html', userlist=userlist, result=None, group_details=None)
     
-
 def display_groups():
     """
     This function is registered in the Blueprint.
@@ -238,7 +237,6 @@ def display_groups():
         for group in grouplist:
             logging.warning(f"{group}")
         return render_template('displayGroups.html', grouplist=grouplist)
-
 
 def group_patch(context: Context, data_dict: Optional[dict[str, Any]] = None) -> AuthResult:
     """

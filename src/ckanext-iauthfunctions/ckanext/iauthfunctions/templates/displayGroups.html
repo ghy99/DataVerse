@@ -48,7 +48,8 @@
             </tr>
             {% for group in grouplist %}
                 <tr>
-                    <td>{{ group }}</td>
+                    {# <td>{{ group }}</td> #}
+                    <td>{% snippet "group/snippets/group_item.html", group=group, position=loop.index %}</td>
                     <td>
                         <form action="" method="POST">
                             <button name="groupname" value="{{ group }}">
