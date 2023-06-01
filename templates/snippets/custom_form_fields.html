@@ -25,7 +25,7 @@ Example:
 
   {# Add a max of 3 empty columns #}
   {% set total_extras = extras|count %}
-  {% set empty_extras = (limit or 3) - total_extras %}
+  {% set empty_extras = (limit or 1) - total_extras %}
   {% if empty_extras <= 0 %}{% set empty_extras = 3 %}{% endif %}
 
   {% for extra in range(total_extras, total_extras + empty_extras) %}

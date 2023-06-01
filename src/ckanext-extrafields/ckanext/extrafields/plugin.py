@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Any, cast
 from ckan.types import Schema
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
@@ -17,11 +18,29 @@ class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 
     def _modify_package_schema(self, schema: Schema) -> Schema:
         schema.update({
-            'custom_text_1': [toolkit.get_validator('ignore_missing'),
-                            toolkit.get_converter('convert_to_extras')],
-            'custom_text_2': [toolkit.get_validator('ignore_missing'),
-                            toolkit.get_converter('convert_to_extras')],
+            'metafield_1': [toolkit.get_validator('ignore_missing'),
+                            toolkit.get_converter('convert_to_extras')]
         })
+
+        schema.update({
+            'metafield_2': [toolkit.get_validator('ignore_missing'),
+                            toolkit.get_converter('convert_to_extras')]
+        })
+
+        schema.update({
+            'metafield_3': [toolkit.get_validator('ignore_missing'),
+                            toolkit.get_converter('convert_to_extras')]
+        })
+         # Add our custom_resource_text metadata field to the schema
+        cast(Schema, schema['resources']).update({
+                'metafield_resource_1' : [ toolkit.get_validator('ignore_missing') ]
+                })
+        cast(Schema, schema['resources']).update({
+                'metafield_resource_2' : [ toolkit.get_validator('ignore_missing') ]
+                })
+        cast(Schema, schema['resources']).update({
+                'metafield_resource_3' : [ toolkit.get_validator('ignore_missing') ]
+                })
         return schema
 
     def create_package_schema(self):
@@ -35,16 +54,38 @@ class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
             ExtrafieldsPlugin, self).update_package_schema()
         schema = self._modify_package_schema(schema)
         return schema
-
+    
     def show_package_schema(self) -> Schema:
         schema: Schema = super(
             ExtrafieldsPlugin, self).show_package_schema()
+        
+        # Add our custom_text field to the dataset schema.
         schema.update({
-            'custom_text_1': [toolkit.get_validator('ignore_missing'),
-                            toolkit.get_converter('convert_to_extras')],
-            'custom_text_2': [toolkit.get_validator('ignore_missing'),
-                            toolkit.get_converter('convert_to_extras')],
-        })
+            'metafield_1': [toolkit.get_converter('convert_from_extras'),
+                toolkit.get_validator('ignore_missing')]
+            })
+        
+        schema.update({
+            'metafield_2': [toolkit.get_converter('convert_from_extras'),
+                toolkit.get_validator('ignore_missing')]
+            })
+        
+        schema.update({
+            'metafield_3': [toolkit.get_converter('convert_from_extras'),
+                toolkit.get_validator('ignore_missing')]
+            })
+
+        cast(Schema, schema['resources']).update({
+                'metafield_resource_1' : [ toolkit.get_validator('ignore_missing') ]
+            })
+
+        cast(Schema, schema['resources']).update({
+                'metafield_resource_2' : [ toolkit.get_validator('ignore_missing') ]
+            })
+
+        cast(Schema, schema['resources']).update({
+                'metafield_resource_3' : [ toolkit.get_validator('ignore_missing') ]
+            })
         return schema
 
     def is_fallback(self):
