@@ -26,11 +26,16 @@ def renderVersionTree():
             dataset_version="1.4"
         )
         palkia_dependency_graph = palkia_dataset.get_dependency_graph()
-        for key, val in palkia_dependency_graph.items():
-            logging.warning(f"key: {key}\tval: {val}")
-            dataset_IDs.append(key)
+        logging.warning(palkia_dependency_graph)
     except Exception as e:
         logging.warning(f"FAILED TO GET DEPENDENCY GRAPH. ERROR: {e}")
+
+    try:
+        for key, val in palkia_dependency_graph.items():
+            print(f"{key} : {val}")
+            dataset_IDs.append(key)
+    except Exception as e:
+        logging.warning(f"WARNING CANT APPEND DATASET ID TO LIST. ERROR: {e}")
 
     try:
         for each_id in dataset_IDs:
@@ -40,7 +45,6 @@ def renderVersionTree():
             logging.warning(f"GETTING DATASET FOR ID {each_id} SUCCESS")
     except Exception as e:
         logging.warning(f"FAILED TO RETRIEVE DATASET OBJECTS FOR EACH DATASET. ERROR: {e}")
-
     
     return render_template('versionTree.html', palkia_dependency_graph=palkia_dependency_graph, dataset_IDs=dataset_IDs, dataset_details=dataset_details)
 
