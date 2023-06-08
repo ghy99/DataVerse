@@ -101,8 +101,12 @@ function renderTree(graphData, dataset_IDs, dataset_details) {
         const version = dataset_details[d.id]['version'];
         const project = dataset_details[d.id]['project'];
         const name = dataset_details[d.id]['name'];
+        const description = dataset_details[d.id]['description'];
         return `
-        <tspan x="0" dy="1.2em">${project}</tspan><tspan x="0" dy="1.2em">${name}</tspan><tspan x="0" dy="1.2em">${version}</tspan>
+        <tspan x="0" dy="1.2em">${project}</tspan>
+        <tspan x="0" dy="1.2em">${name}</tspan>
+        <tspan x="0" dy="1.2em">${version}</tspan>
+        <tspan x="0" dy="1.2em">${description}</tspan>
         `;
     });
 
