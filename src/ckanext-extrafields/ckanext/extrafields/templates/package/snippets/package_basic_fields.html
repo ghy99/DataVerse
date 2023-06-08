@@ -1,0 +1,8 @@
+{% ckan_extends %}
+
+{% block package_basic_fields_custom %}
+  {{ form.input('metafield_1', label=_('metafield 1'), id='field-metafield_1', placeholder=_('metafield 1'), value=data.metafield_1, error=errors.metafield_1, classes=['control-medium']) }}
+  {{ form.input('metafield_2', label=_('metafield 2'), id='field-metafield_2', placeholder=_('metafield 2'), value=data.metafield_2, error=errors.metafield_2, classes=['control-medium']) }}
+  {{ form.input('metafield_3', label=_('metafield 3'), id='field-metafield_3', placeholder=_('metafield 3'), value=data.metafield_3, error=errors.metafield_3, classes=['control-medium']) }}
+
+{% endblock %}

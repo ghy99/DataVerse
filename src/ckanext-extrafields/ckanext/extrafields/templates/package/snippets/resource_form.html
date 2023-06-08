@@ -1,0 +1,9 @@
+{% ckan_extends %}
+
+{% block basic_fields %}
+    {{ super() }}
+    {{ form.input('metafield_resource_1', label=_('Metafield Resource 1'), id='field-metafield_resource_1', placeholder=_('Metafield Resource 1'), value=data.metafield_resource_1, error=errors.metafield_resource_1, classes=['control-medium']) }}
+    {{ form.input('metafield_resource_2', label=_('Metafield Resource 2'), id='field-metafield_resource_2', placeholder=_('Metafield Resource 2'), value=data.metafield_resource_2, error=errors.metafield_resource_2, classes=['control-medium']) }}
+    {{ form.input('metafield_resource_3', label=_('Metafield Resource 3'), id='field-metafield_resource_3', placeholder=_('Metafield Resource 3'), value=data.metafield_resource_3, error=errors.metafield_resource_3, classes=['control-medium']) }}
+
+{% endblock %}

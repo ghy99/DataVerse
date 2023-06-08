@@ -14,7 +14,7 @@ postgresql/*
 .env.example
 venv/
 
-templates/
+/templates/
 public/
 views/
 plugins/
