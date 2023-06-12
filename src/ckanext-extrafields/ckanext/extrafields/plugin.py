@@ -10,9 +10,10 @@ from ckan.types import Context
 from clearml import Dataset
 from logging import warning
 from glob import glob
+import os
 
 def get_filename(file_id):
-        partial_id = file_id.split('-')[-1]
+        partial_id = file_id.split('-')
         warning(f"file ID: {file_id}")
         warning(f"PARTIAL FILE NAME: {partial_id}")
         return partial_id
@@ -20,7 +21,9 @@ def get_filename(file_id):
 def findFile(file_id):
     partial_name = get_filename(file_id)
     directory = "/var/lib/ckan"
-    matching_files = glob(directory + "/**/*{}*".format(partial_name), recursive=True)
+    filepath = os.path.join(directory, f"/{partial_name[0][0:3]}")
+    filepath = os.path.join(filepath, f"/{partial_name[0][3:6]}")
+    matching_files = glob(filepath + "/**/*{}*".format(partial_name[-1]), recursive=True)
     return matching_files
 
 class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
@@ -150,25 +153,21 @@ class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         warning(f"IRESOURCECONTROLLER: AFTER RESOURCE CREATE FUNCTION:")
         for key, val in resource.items():
             warning(f"----------{key} : {val}")
-        # try:
-        #     resource_show = toolkit.get_action('resource_show')({}, {
-        #         'id': resource['id']
-        #     })
-        #     warning(f"PRINTING RESOURCEEEEEEEEEEEEEE: ")
-        #     warning(f"{key} : {val}")
-        # except Exception as e:
-        #     warning(f"ERROR GETTING RESOURCE_SHOW: {e}")
-        
-        # file_url = resource_show['url']
         dataset_path = findFile(resource['id'])[0]
         warning(f"FILES: {dataset_path}")
         dataset = None
         try:
             warning(f"CREATING DATASET NOW!!!!!!!!!!!!!!")
-            dataset = Dataset.create(
+            # dataset = Dataset.create(
+                # dataset_project='Project HDB',
+                # dataset_name=resource['name'],
+                # description=resource['description'],
+            # )
+            dataset = Dataset.get(
                 dataset_project='Project HDB',
                 dataset_name=resource['name'],
                 description=resource['description'],
+                auto_create=True
             )
         except Exception as e:
             warning(f"UNABLE TO CREATE DATASET IN CLEARML: {e}")
