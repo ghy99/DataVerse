@@ -1,0 +1,14 @@
+# resourcecontroller-js:
+#   filter: rjsmin
+#   output: ckanext-resourcecontroller/%(version)s-resourcecontroller.js
+#   contents:
+#     - js/resourcecontroller.js
+#   extra:
+#     preload:
+#       - base/main
+
+# resourcecontroller-css:
+#   filter: cssrewrite
+#   output: ckanext-resourcecontroller/%(version)s-resourcecontroller.css
+#   contents:
+#     - css/resourcecontroller.css
