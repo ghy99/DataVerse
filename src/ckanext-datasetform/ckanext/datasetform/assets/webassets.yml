@@ -1,0 +1,14 @@
+# datasetform-js:
+#   filter: rjsmin
+#   output: ckanext-datasetform/%(version)s-datasetform.js
+#   contents:
+#     - js/datasetform.js
+#   extra:
+#     preload:
+#       - base/main
+
+# datasetform-css:
+#   filter: cssrewrite
+#   output: ckanext-datasetform/%(version)s-datasetform.css
+#   contents:
+#     - css/datasetform.css

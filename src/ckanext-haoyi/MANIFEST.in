@@ -1,5 +1,0 @@
-include README.rst
-include LICENSE
-include requirements.txt
-recursive-include ckanext/haoyi *.html *.json *.js *.less *.css *.mo *.yml
-recursive-include ckanext/haoyi/migration *.ini *.py *.mako

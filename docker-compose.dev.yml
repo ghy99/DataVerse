@@ -33,7 +33,7 @@ services:
       - ./plugins:/srv/app/src/ckan/ckan/plugins
       - ./public:/srv/app/src/ckan/ckan/public
       - ./templates:/srv/app/src/ckan/ckan/templates # this can create new volumes!
-      - ./view:/srv/app/src/ckan/ckan/view
+      - ./views:/srv/app/src/ckan/ckan/views
       - ./varlibckan:/var/lib/ckan
     restart: unless-stopped
     healthcheck:
