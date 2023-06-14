@@ -1,4 +1,19 @@
 {% ckan_extends %}
 
+{% block package_metadata_fields_version %}
+{% endblock %}
+
 {% block package_metadata_fields_custom %}
+    {{ form.select(
+        'privacy_marking_classification', label=_('Privacy Marking: Classification'), options=[
+            {'value': '0', 'text': _('[Choose Privacy Type]')},
+            {'value': 'Official (Open)', 'text': _('Official (Open)')},
+            {'value': 'Official (Closed)', 'text': _('Official (Closed)')},
+            {'value': 'Restricted', 'text': _('Restricted')},
+            {'value': 'Confidential', 'text': _('Confidential')},
+            {'value': 'GEMS Secret', 'text': _('GEMS Secret')},
+            {'value': 'Secret', 'text': _('Secret')}
+        ],
+        selected=data.privacy_marking_classification if data.privacy_marking_classification else '0', is_required=true
+    )}}
 {% endblock %}

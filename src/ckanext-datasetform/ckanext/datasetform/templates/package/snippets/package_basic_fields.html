@@ -2,8 +2,20 @@
 
 {% block package_basic_fields_title %}
     {{ form.input('project_title', label=_('Project Title'), id='field-project_title', placeholder=_('Project Title'), value=data.project_title, error=errors.project_title, classes=['control-medium']) }}
-    {{ form.input('dataset_title', label=_('Dataset Title'), id='field-dataset_title', placeholder=_('Dataset Title'), value=data.dataset_title, error=errors.dataset_title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target', 'class': 'form-control'}) }}{%
-endblock %}
+    {{ form.input('dataset_title', label=_('Dataset Title'), id='field-dataset_title', placeholder=_('Dataset Title'), value=data.dataset_title, error=errors.dataset_title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target', 'class': 'form-control'}) }}
+{% endblock %}
+
+{% block package_basic_fields_description %}
+    {{ form.markdown('dataset_uses', id='field-dataset_uses', label=_('Dataset Uses'), placeholder=_('eg. What are the uses for this dataset'), value=data.dataset_uses, error=errors.dataset_uses) }}
+    {{ form.markdown('dataset_users', id='field-dataset_users', label=_('Dataset Users'), placeholder=_('eg. Who are the users using this dataset'), value=data.dataset_users, error=errors.dataset_users) }}
+    {{ form.markdown('dataset_abstract', id='field-dataset_abstract', label=_('Dataset Abstract'), placeholder=_('eg. Insert an abstract on your dataset; Table of Contents / Graphical Representation / Free-Text Account of Dataset'), value=data.dataset_abstract, error=errors.dataset_abstract) }}
+    {{ form.markdown('dataset_limitations', id='field-dataset_limitations', label=_('Dataset Limitations'), placeholder=_('eg. What are the limitations / caveats on the data collection, preparation, testing, etc.'), value=data.dataset_limitations, error=errors.dataset_limitations) }}
+{% endblock %}
 
 {% block package_basic_fields_custom %}
+    {{ form.input('dataset_published_date', label=_('Dataset Published Date'), id='field-dataset_published_date', placeholder=_('dd/mm/yyyy'), value=data.dataset_published_date, error=errors.dataset_published_date, classes=['control-medium'], type="date") }}
+    {{ form.input('dataset_license', label=_('Dataset Rights & License'), id='field-dataset_license', placeholder=_('License'), value=data.dataset_license, error=errors.dataset_license, classes=['control-medium']) }}
+{% endblock %}
+
+{% block package_basic_fields_license %}
 {% endblock %}

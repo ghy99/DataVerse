@@ -1,16 +1,58 @@
 {% ckan_extends %}
 
 {% block extras %}
-  {% if pkg_dict.project_title %}
+    {% if pkg_dict.project_title %}
     <tr>
-          <th scope="row" class="dataset-label">{{ _("Project Title") }}</th>
-          <td class="dataset-details">{{ pkg_dict.project_title }}</td>
+        <th scope="row" class="dataset-label">{{ _("Project Title") }}</th>
+        <td class="dataset-details">{{ pkg_dict.project_title }}</td>
     </tr>
-  {% endif %}
-  {% if pkg_dict.dataset_title %}
+    {% endif %}
+    {% if pkg_dict.dataset_title %}
     <tr>
-          <th scope="row" class="dataset-label">{{ _("Dataset Title") }}</th>
-          <td class="dataset-details">{{ pkg_dict.dataset_title }}</td>
+        <th scope="row" class="dataset-label">{{ _("Dataset Title") }}</th>
+        <td class="dataset-details">{{ pkg_dict.dataset_title }}</td>
     </tr>
-  {% endif %}
+    {% endif %}
+    {% if pkg_dict.description_uses %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Dataset Uses") }}</th>
+        <td class="dataset-details">{{ pkg_dict.description_uses }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.dataset_users %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Dataset Users") }}</th>
+        <td class="dataset-details">{{ pkg_dict.dataset_users }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.dataset_abstract %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Dataset Abstract") }}</th>
+        <td class="dataset-details">{{ pkg_dict.dataset_abstract }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.dataset_limitations %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Dataset Limitations") }}</th>
+        <td class="dataset-details">{{ pkg_dict.dataset_limitations }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.dataset_published_date %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Dataset Published Date") }}</th>
+        <td class="dataset-details">{{ pkg_dict.dataset_published_date }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.dataset_license %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Dataset License") }}</th>
+        <td class="dataset-details">{{ pkg_dict.dataset_license }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.privacy_marking_classification %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Dataset Limitations") }}</th>
+        <td class="dataset-details">{{ pkg_dict.privacy_marking_classification }}</td>
+    </tr>
+    {% endif %}
 {% endblock %}
