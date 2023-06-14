@@ -9,7 +9,7 @@ import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 
 
-def findFile(file_id):
+def find_file(file_id):
     directory = "/var/lib/ckan/resources"
     outer_path = file_id[0:3]
     inner_path = file_id[3:6]
@@ -59,38 +59,26 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
             of linked.
         :type resource: dictionary
         '''
-        warning(f"IRESOURCECONTROLLER: AFTER RESOURCE CREATE FUNCTION:")
-        for key, val in resource.items():
-            warning(f"----------{key} : {val}")
-        dataset_path = findFile(resource['id'])
-        warning(f"FILES: {dataset_path}")
-        dataset = None
-        try:
-            warning(f"CREATING DATASET NOW!!!!!!!!!!!!!!")
-            dataset = Dataset.create(
-                dataset_project='Project HDB',
-                dataset_name=resource['name'],
-                description=resource['description'],
-            )
-            # dataset = Dataset.get(
-            #     dataset_project='Project HDB',
-            #     dataset_name=resource['name'],
-            #     description=resource['description'],
-            #     auto_create=True
-            # )
-        except Exception as e:
-            warning(f"UNABLE TO CREATE DATASET IN CLEARML: {e}")
+        # get the file path to the uploaded resource
+        resource_id = resource["id"]
+        resource_path = find_file(resource_id)
         
-        warning(f"ADDING FILES TO DATASET NOW!!!!!!!!!!!!")
-        dataset.add_files(path=r'{}'.format(dataset_path))
-
-        try:
-            warning(f"UPLOADING NOW!!!!!!!!!!!!!!!!!!!!")
-            dataset.upload(show_progress=True, verbose=True)
-            warning(f"FINALIZING NOW!!!!!!!!!!!!!!!!!!!!")
-            dataset.finalize(verbose=True, raise_on_error=True, auto_upload=True)
-        except Exception as e:
-            warning(f"UNABLE TO UPLOAD AND FINALIZE: {e}")
+        # get the dataset title and the project title
+        resource_show = toolkit.get_action("resource_show")({},{"id":resource_id})
+        package_id = resource_show["package_id"]
+        package_show = toolkit.get_action("package_show")({},{"id":package_id})
+        package_dataset_title = package_show["dataset_title"]
+        package_project_title = package_show["project_title"]
+        
+        # create the dataset and upload to clearml
+        dataset = Dataset.create(
+                dataset_project=package_project_title,
+                dataset_name=package_dataset_title
+        )
+        dataset.add_files(path=r'{}'.format(resource_path))
+        dataset.upload(show_progress=True, verbose=True)
+        dataset.finalize(verbose=True, raise_on_error=True, auto_upload=True)
+        
         return
 
     def before_resource_update(self, context: Context, current: dict[str, Any],
@@ -124,12 +112,12 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
             resource file is uploaded instead of linked.
         :type resource: dictionary
         '''
-        warning(f"IRESOURCECONTROLLER: AFTER RESOURCE UPDATE FUNCTION:")
-        warning(f"id: {resource['id']}")
-        warning(f"package_id: {resource['package_id']}")
-        warning(f"url: {resource['url']}")
-        warning(f"type: {resource['mimetype']}")
-        warning(f"package_id: {resource['package_id']}")
+        # warning(f"IRESOURCECONTROLLER: AFTER RESOURCE UPDATE FUNCTION:")
+        # warning(f"id: {resource['id']}")
+        # warning(f"package_id: {resource['package_id']}")
+        # warning(f"url: {resource['url']}")
+        # warning(f"type: {resource['mimetype']}")
+        # warning(f"package_id: {resource['package_id']}")
         # resource_show = None
         # try:
         #     resource_show = toolkit.get_action('resource_show')({}, {
@@ -141,9 +129,9 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
         # except Exception as e:
         #     warning(f"ERROR GETTING RESOURCE_SHOW: {e}")
         
-        files = findFile(resource['id'])
-        warning(f"FILES: {files}")
-        return
+        # files = find_file(resource['id'])
+        # warning(f"FILES: {files}")
+        # return
 
     def before_resource_delete(
             self, context: Context, resource: dict[str, Any],
