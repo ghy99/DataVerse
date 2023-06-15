@@ -70,13 +70,25 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
         package_dataset_title = package_show["dataset_title"]
         package_project_title = package_show["project_title"]
         
+        warning(f"----------PACKAGE SHOW ITEMS----------")
+        for key, val in package_show.items():
+            warning(f"{key} : {val}")
+
+        warning(f"----------RESOURCE SHOW ITEMS----------")
+        for key, val in resource_show.items():
+            warning(f"{key} : {val}")
+
+        warning(f"----------CREATING DATASET----------")
         # create the dataset and upload to clearml
         dataset = Dataset.create(
                 dataset_project=package_project_title,
                 dataset_name=package_dataset_title
         )
+        warning(f"----------ADDING FILES TO DATASET----------")
         dataset.add_files(path=r'{}'.format(resource_path))
+        warning(f"----------UPLOADING TO CLEARML----------")
         dataset.upload(show_progress=True, verbose=True)
+        warning(f"----------FINALIZING DATASET----------")
         dataset.finalize(verbose=True, raise_on_error=True, auto_upload=True)
         
         return
