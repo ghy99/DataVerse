@@ -11,7 +11,7 @@ def getDataset():
     This function retrieves the dataset object specified from ClearML.
 
     Returns:
-        Dataset object: 
+        Dataset object:
             Returns the specified Dataset object.
     """
     palkia_dataset = None
@@ -25,26 +25,28 @@ def getDataset():
         warning(f"COULD NOT GET DATASET: ERROR: {e}")
     return palkia_dataset
 
+
 def getDependencyGraph(dataset):
     """
-    This function gets the dependency graph of the 
+    This function gets the dependency graph of the
     dataset parameter that was passed in.
 
     Args:
-        dataset (Dataset): 
+        dataset (Dataset):
             This is the Dataset object that was retrieved in the getDataset() function.
 
     Returns:
         Dictionary: { key (str): val (list) }
-            The key refers to a Dataset ID, 
+            The key refers to a Dataset ID,
             The val refers to a list of Dataset IDs that are the parent of the key.
     """
     try:
         palkia_dependency_graph = dataset.get_dependency_graph()
-        warning(palkia_dependency_graph)
+        warning(f" Dependency graph: {palkia_dependency_graph}")
     except Exception as e:
         warning(f"FAILED TO GET DEPENDENCY GRAPH. ERROR: {e}")
     return palkia_dependency_graph
+
 
 def getAllDatasetID(dataset_id):
     try:
@@ -52,6 +54,7 @@ def getAllDatasetID(dataset_id):
     except Exception as e:
         warning(f"FAILED TO RETRIEVE DATASET {dataset_id}, ERROR: {e}")
     return dataset
+
 
 def sortDataset(dataset_IDs, dataset_details):
     """
@@ -70,10 +73,11 @@ def sortDataset(dataset_IDs, dataset_details):
 
     # warning(f"Version list: {versions}, Sorted Version List: {sorted(versions)}")
     pairs = list(zip(versions, dataset_IDs))
-    sorted_pairs = sorted(pairs, key=lambda x:x[0])
+    sorted_pairs = sorted(pairs, key=lambda x: x[0])
     sorted_version, sorted_dataset_ID = zip(*sorted_pairs)
 
     return list(sorted_dataset_ID)
+
 
 def retrieveDatasetDetails(dataset_details):
     """
@@ -87,26 +91,27 @@ def retrieveDatasetDetails(dataset_details):
     """
     dataset_details_dict = {}
     for key, val in dataset_details.items():
-        warning(f"")
-        warning(f"")
-        warning(f"values: {val.__dict__}")
-        warning(f"")
-        warning(f"")
+        # warning(f"")
+        # warning(f"")
+        # warning(f"values: {val.__dict__}")
+        # warning(f"")
+        # warning(f"")
         dataset_details_dict[key] = {
             "project": val.project,
             "name": val.name,
             "version": val._dataset_version,
-            "description": val._task.comment
+            "description": val._task.comment,
         }
     return dataset_details_dict
 
+
 def renderVersionTree():
     """
-    Retrieve specified dataset's objects from ClearML, 
+    Retrieve specified dataset's objects from ClearML,
     and return the values through render_template to display on the frontend.
 
     Returns:
-        render_template: 
+        render_template:
             Returns the dictionary that stores the dependency graph,
             the list of IDs available from the specified dataset,
             and the details of the dataset tagged to its own ID in a dictionary. I parsed through and retrieved only the dataset version
@@ -116,14 +121,14 @@ def renderVersionTree():
     dataset_details = {}
     retrieved_dataset = getDataset()
     palkia_dependency_graph = getDependencyGraph(retrieved_dataset)
-    
+
     for key, val in palkia_dependency_graph.items():
         dataset_details[key] = getAllDatasetID(key)
         dataset_IDs.append(key)
 
     dataset_IDs = sortDataset(dataset_IDs, dataset_details)
-    warning(f"CHECKING DATASET ID AND DETAILS:")
-    warning(f"{dataset_IDs}")
+    # warning(f"CHECKING DATASET ID AND DETAILS:")
+    # warning(f"{dataset_IDs}")
 
     dataset_details = retrieveDatasetDetails(dataset_details)
     # try:
@@ -135,12 +140,11 @@ def renderVersionTree():
     # except Exception as e:
     #     warning(f"FAILED TO RETRIEVE DATASET OBJECTS FOR EACH DATASET. ERROR: {e}")
     return render_template(
-        'versionTree.html', 
-        palkia_dependency_graph=palkia_dependency_graph, 
-        dataset_IDs=dataset_IDs, 
-        dataset_details=dataset_details
+        "versionTree.html",
+        palkia_dependency_graph=palkia_dependency_graph,
+        dataset_IDs=dataset_IDs,
+        dataset_details=dataset_details,
     )
-
 
 
 class VersiontreePlugin(plugins.SingletonPlugin):
@@ -156,13 +160,13 @@ class VersiontreePlugin(plugins.SingletonPlugin):
     # IBlueprint
     def get_blueprint(self):
         blueprint = Blueprint(self.name, self.__module__)
-        blueprint.template_folder = 'templates'
+        blueprint.template_folder = "templates"
 
         rules = [
-            ('/versiontree', 'versiontree', renderVersionTree),
+            ("/versiontree", "versiontree", renderVersionTree),
         ]
 
         for rule in rules:
             blueprint.add_url_rule(*rule)
-        
+
         return blueprint
