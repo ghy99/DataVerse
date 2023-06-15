@@ -94,18 +94,30 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
             }
         )
 
-        schema.update({
-            'privacy_marking_classification': [toolkit.get_validator('ignore_missing'),
-                                               toolkit.get_converter('convert_to_extras')]
-        })
-        schema.update({
-            'new_or_existing': [toolkit.get_validator('ignore_missing'),
-                                toolkit.get_converter('convert_to_extras')]
-        })
-        schema.update({
-            'clearml_id': [toolkit.get_validator('ignore_missing'),
-                                toolkit.get_converter('convert_to_extras')]
-        })
+        schema.update(
+            {
+                "privacy_marking_classification": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
+        schema.update(
+            {
+                "new_or_existing": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
+        schema.update(
+            {
+                "clearml_id": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
         # Add our custom_resource_text metadata field to the schema
         # cast(Schema, schema['resources']).update({
         #         'metafield_resource_1' : [ toolkit.get_validator('ignore_missing') ]
@@ -132,11 +144,15 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         schema: Schema = super(DatasetformPlugin, self).show_package_schema()
 
         # Add our custom_text field to the dataset schema.
-        
-        schema.update({
-            'project_title': [toolkit.get_converter('convert_from_extras'),
-                              toolkit.get_validator('ignore_missing')]
-        })
+
+        schema.update(
+            {
+                "project_title": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
 
         schema.update(
             {
@@ -192,23 +208,30 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
             }
         )
 
-        schema.update({
-            'dataset_license': [toolkit.get_converter('convert_from_extras'),
-                                toolkit.get_validator('ignore_missing')]
-        })
-
-        schema.update({
-            'privacy_marking_classification': [toolkit.get_converter('convert_from_extras'),
-                                               toolkit.get_validator('ignore_missing')]
-        })
-        schema.update({
-            'new_or_existing': [toolkit.get_converter('convert_from_extras'),
-                                toolkit.get_validator('ignore_missing')]
-        })
-        schema.update({
-            'clearml_id': [toolkit.get_converter('convert_from_extras'),
-                                toolkit.get_validator('ignore_missing')]
-        })
+        schema.update(
+            {
+                "privacy_marking_classification": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
+        schema.update(
+            {
+                "new_or_existing": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
+        schema.update(
+            {
+                "clearml_id": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
         schema.update(
             {
                 "privacy_marking_classification": [
