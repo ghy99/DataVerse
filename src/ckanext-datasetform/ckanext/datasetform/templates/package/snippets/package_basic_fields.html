@@ -1,8 +1,39 @@
 {% ckan_extends %}
 
 {% block package_basic_fields_title %}
+{{ form.select(
+    'new_or_existing', id ='new_or_existing', label=_("Add New Dataset or Reference Existing Dataset from Clearml"), options=[
+        {'value':'0', 'text': _('Choose to Add Or Reference')},
+        {'value':'Add New Dataset', 'text': _('Add New Dataset')},
+        {'value':'Reference Existing Dataset', 'text': _("Reference Exisiting Dataset")}
+    ],
+    selected=data.new_or_existing if data.new_or_existing else '0', is_required=true
+)}}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#new_or_existing').change(function() {
+        var selectedOption = $(this).val();
+        
+        // Hide all input fields initially
+        $('.add, .existing').hide();
+        
+        // Show input fields based on selected option
+        if (selectedOption === 'Add New Dataset') {
+            $('.add').show();
+        } else if (selectedOption === 'Reference Existing Dataset') {
+            $('.existing').show();
+        }
+    }).change();
+});
+</script>
+<div class="add" style="display: none;">
     {{ form.input('project_title', label=_('Project Title'), id='field-project_title', placeholder=_('Project Title'), value=data.project_title, error=errors.project_title, classes=['control-medium']) }}
     {{ form.input('dataset_title', label=_('Dataset Title'), id='field-dataset_title', placeholder=_('Dataset Title'), value=data.dataset_title, error=errors.dataset_title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target', 'class': 'form-control'}) }}
+</div>
+<div class="existing" style="display: none;">
+    {{ form.input('clearml_id', label=_('Clearml ID'), id='field-clearml_id', placeholder=_('Clearml_ID'), value=data.clearml_id, error=errors.clearml_id, classes=['control-medium']) }}
+</div>
 {% endblock %}
 
 {% block package_basic_fields_description %}
