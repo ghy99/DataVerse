@@ -1,6 +1,12 @@
 {% ckan_extends %}
 
 {% block extras %}
+    {% if pkg_dict.clearml_id%}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Clearml ID") }}</th>
+        <td class="dataset-details">{{ pkg_dict.clearml_id }}</td>
+    </tr>
+    {% endif %}
 {% if pkg_dict.project_title %}
 <tr>
     <th scope="row" class="dataset-label">{{ _("Project Title") }}</th>
