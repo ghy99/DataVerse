@@ -22,58 +22,102 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     # IDatasetForm
 
     def _modify_package_schema(self, schema: Schema) -> Schema:
-        schema.update({
-            'project_title': [toolkit.get_validator('ignore_missing'),
-                              toolkit.get_converter('convert_to_extras')]
-        })
+        schema.update(
+            {
+                "project_title": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
 
-        schema.update({
-            'dataset_title': [toolkit.get_validator('ignore_missing'),
-                              toolkit.get_converter('convert_to_extras')]
-        })
+        schema.update(
+            {
+                "dataset_title": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
 
-        schema.update({
-            'dataset_uses': [toolkit.get_validator('ignore_missing'),
-                             toolkit.get_converter('convert_to_extras')]
-        })
+        schema.update(
+            {
+                "dataset_uses": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
 
-        schema.update({
-            'dataset_users': [toolkit.get_validator('ignore_missing'),
-                              toolkit.get_converter('convert_to_extras')]
-        })
+        schema.update(
+            {
+                "dataset_users": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
 
-        schema.update({
-            'dataset_abstract': [toolkit.get_validator('ignore_missing'),
-                                 toolkit.get_converter('convert_to_extras')]
-        })
+        schema.update(
+            {
+                "dataset_abstract": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
 
-        schema.update({
-            'dataset_limitations': [toolkit.get_validator('ignore_missing'),
-                                    toolkit.get_converter('convert_to_extras')]
-        })
+        schema.update(
+            {
+                "dataset_limitations": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
 
-        schema.update({
-            'dataset_published_date': [toolkit.get_validator('ignore_missing'),
-                                       toolkit.get_converter('convert_to_extras')]
-        })
+        schema.update(
+            {
+                "dataset_published_date": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
 
-        schema.update({
-            'dataset_license': [toolkit.get_validator('ignore_missing'),
-                                toolkit.get_converter('convert_to_extras')]
-        })
+        schema.update(
+            {
+                "dataset_license": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
 
-        schema.update({
-            'privacy_marking_classification': [toolkit.get_validator('ignore_missing'),
-                                               toolkit.get_converter('convert_to_extras')]
-        })
-        schema.update({
-            'new_or_existing': [toolkit.get_validator('ignore_missing'),
-                                toolkit.get_converter('convert_to_extras')]
-        })
-        schema.update({
-            'clearml_id': [toolkit.get_validator('ignore_missing'),
-                                toolkit.get_converter('convert_to_extras')]
-        })
+        schema.update(
+            {
+                "privacy_marking_classification": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
+        schema.update(
+            {
+                "new_or_existing": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
+        schema.update(
+            {
+                "clearml_id": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
         # Add our custom_resource_text metadata field to the schema
         # cast(Schema, schema['resources']).update({
         #         'metafield_resource_1' : [ toolkit.get_validator('ignore_missing') ]
@@ -87,74 +131,116 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         return schema
 
     def create_package_schema(self):
-        schema: Schema = super(
-            DatasetformPlugin, self).create_package_schema()
+        schema: Schema = super(DatasetformPlugin, self).create_package_schema()
         schema = self._modify_package_schema(schema)
         return schema
 
     def update_package_schema(self):
-        schema: Schema = super(
-            DatasetformPlugin, self).update_package_schema()
+        schema: Schema = super(DatasetformPlugin, self).update_package_schema()
         schema = self._modify_package_schema(schema)
         return schema
 
     def show_package_schema(self) -> Schema:
-        schema: Schema = super(
-            DatasetformPlugin, self).show_package_schema()
+        schema: Schema = super(DatasetformPlugin, self).show_package_schema()
 
         # Add our custom_text field to the dataset schema.
-        schema.update({
-            'project_title': [toolkit.get_converter('convert_from_extras'),
-                              toolkit.get_validator('ignore_missing')]
-        })
 
-        schema.update({
-            'dataset_title': [toolkit.get_converter('convert_from_extras'),
-                              toolkit.get_validator('ignore_missing')]
-        })
+        schema.update(
+            {
+                "project_title": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
 
-        schema.update({
-            'dataset_uses': [toolkit.get_converter('convert_from_extras'),
-                             toolkit.get_validator('ignore_missing')]
-        })
+        schema.update(
+            {
+                "dataset_uses": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
 
-        schema.update({
-            'dataset_users': [toolkit.get_converter('convert_from_extras'),
-                              toolkit.get_validator('ignore_missing')]
-        })
+        schema.update(
+            {
+                "dataset_users": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
 
-        schema.update({
-            'dataset_abstract': [toolkit.get_converter('convert_from_extras'),
-                                 toolkit.get_validator('ignore_missing')]
-        })
+        schema.update(
+            {
+                "dataset_abstract": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
 
-        schema.update({
-            'dataset_limitations': [toolkit.get_converter('convert_from_extras'),
-                                    toolkit.get_validator('ignore_missing')]
-        })
+        schema.update(
+            {
+                "dataset_limitations": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
 
-        schema.update({
-            'dataset_published_date': [toolkit.get_converter('convert_from_extras'),
-                                       toolkit.get_validator('ignore_missing')]
-        })
+        schema.update(
+            {
+                "dataset_published_date": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
 
-        schema.update({
-            'dataset_license': [toolkit.get_converter('convert_from_extras'),
-                                toolkit.get_validator('ignore_missing')]
-        })
+        schema.update(
+            {
+                "dataset_license": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
 
-        schema.update({
-            'privacy_marking_classification': [toolkit.get_converter('convert_from_extras'),
-                                               toolkit.get_validator('ignore_missing')]
-        })
-        schema.update({
-            'new_or_existing': [toolkit.get_converter('convert_from_extras'),
-                                toolkit.get_validator('ignore_missing')]
-        })
-        schema.update({
-            'clearml_id': [toolkit.get_converter('convert_from_extras'),
-                                toolkit.get_validator('ignore_missing')]
-        })
+        schema.update(
+            {
+                "privacy_marking_classification": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
+        schema.update(
+            {
+                "new_or_existing": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
+        schema.update(
+            {
+                "clearml_id": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
+        schema.update(
+            {
+                "privacy_marking_classification": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
+
         # cast(Schema, schema['resources']).update({
         #         'metafield_resource_1' : [ toolkit.get_validator('ignore_missing') ]
         #     })
