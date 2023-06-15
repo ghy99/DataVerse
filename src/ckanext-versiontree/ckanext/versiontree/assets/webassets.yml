@@ -1,0 +1,25 @@
+# versiontree-js:
+#   filter: rjsmin
+#   output: ckanext-versiontree/%(version)s-versiontree.js
+#   contents:
+#     - js/versiontree.js
+#   extra:
+#     preload:
+#       - base/main
+
+# versiontree-css:
+#   filter: cssrewrite
+#   output: ckanext-versiontree/%(version)s-versiontree.css
+#   contents:
+#     - css/versiontree.css
+
+style:
+    filters: cssrewrite
+    output: ckanext-versiontree/%(version)s_styles.css
+    contents: style.css
+
+script:
+    filters: rjsmin
+    output: ckanext-versiontree/%(version)s_main.js
+    contents:
+        - script.js
