@@ -1,0 +1,29 @@
+{% ckan_extends %}
+
+{% set dataset_uses = h.markdown_extract(package.dataset_uses) %}
+{% set dataset_users = h.markdown_extract(package.dataset_users) %}
+{% set dataset_abstract = h.markdown_extract(package.dataset_abstract) %}
+{% set dataset_limitations = h.markdown_extract(package.dataset_limitations) %}
+
+{% block notes %}
+    {% if dataset_uses %}
+        <div>{{ dataset_uses }}</div>
+    {% else %}
+        <p class="empty">{{ h.humanize_entity_type('package', package.type, 'no description') or _("There are no uses for this dataset.") }}</p>
+    {% endif %}
+    {% if dataset_users %}
+        <div>{{ dataset_users }}</div>
+    {% else %}
+        <p class="empty">{{ h.humanize_entity_type('package', package.type, 'no description') or _("There is no users for this dataset.") }}</p>
+    {% endif %}
+    {% if dataset_abstract %}
+        <div>{{ dataset_abstract }}</div>
+    {% else %}
+        <p class="empty">{{ h.humanize_entity_type('package', package.type, 'no description') or _("There is no abstract for this dataset.") }}</p>
+    {% endif %}
+    {% if dataset_limitations %}
+        <div>{{ dataset_limitations }}</div>
+    {% else %}
+        <p class="empty">{{ h.humanize_entity_type('package', package.type, 'no description') or _("There is no limitations for this dataset.") }}</p>
+    {% endif %}
+{% endblock %}

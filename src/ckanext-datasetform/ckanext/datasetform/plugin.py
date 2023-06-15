@@ -96,6 +96,7 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
             DatasetformPlugin, self).show_package_schema()
 
         # Add our custom_text field to the dataset schema.
+        
         schema.update({
             'project_title': [toolkit.get_converter('convert_from_extras'),
                               toolkit.get_validator('ignore_missing')]
