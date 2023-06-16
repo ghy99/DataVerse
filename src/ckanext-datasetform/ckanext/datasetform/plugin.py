@@ -139,6 +139,78 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 
         schema.update(
             {
+                "dataset_type": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "data_collection": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "update_frequency": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "geospatial_coverage": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "temporal_coverage": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "online_coverage": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "data_preparation": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "data_dict_and_schema": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
                 "new_or_existing": [
                     toolkit.get_validator("ignore_missing"),
                     toolkit.get_converter("convert_to_extras"),
@@ -291,6 +363,78 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         schema.update(
             {
                 "dataset_related_resources": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "dataset_type": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "data_collection": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "update_frequency": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "geospatial_coverage": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "temporal_coverage": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "online_coverage": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "data_preparation": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "data_dict_and_schema": [
                     toolkit.get_converter("convert_from_extras"),
                     toolkit.get_validator("ignore_missing"),
                 ]

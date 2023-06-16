@@ -7,71 +7,138 @@
         <td class="dataset-details">{{ pkg_dict.clearml_id }}</td>
     </tr>
     {% endif %}
-{% if pkg_dict.project_title %}
-<tr>
-    <th scope="row" class="dataset-label">{{ _("Project Title") }}</th>
-    <td class="dataset-details">{{ pkg_dict.project_title }}</td>
-</tr>
-{% endif %}
-{% if pkg_dict.dataset_title %}
-<tr>
-    <th scope="row" class="dataset-label">{{ _("Dataset Title") }}</th>
-    <td class="dataset-details">{{ pkg_dict.dataset_title }}</td>
-</tr>
-{% endif %}
-{% if pkg_dict.description_uses %}
-<tr>
-    <th scope="row" class="dataset-label">{{ _("Dataset Uses") }}</th>
-    <td class="dataset-details">{{ pkg_dict.description_uses }}</td>
-</tr>
-{% endif %}
-{% if pkg_dict.dataset_users %}
-<tr>
-    <th scope="row" class="dataset-label">{{ _("Dataset Users") }}</th>
-    <td class="dataset-details">{{ pkg_dict.dataset_users }}</td>
-</tr>
-{% endif %}
-{% if pkg_dict.dataset_abstract %}
-<tr>
-    <th scope="row" class="dataset-label">{{ _("Dataset Abstract") }}</th>
-    <td class="dataset-details">{{ pkg_dict.dataset_abstract }}</td>
-</tr>
-{% endif %}
-{% if pkg_dict.dataset_limitations %}
-<tr>
-    <th scope="row" class="dataset-label">{{ _("Dataset Limitations") }}</th>
-    <td class="dataset-details">{{ pkg_dict.dataset_limitations }}</td>
-</tr>
-{% endif %}
-{% if pkg_dict.dataset_published_date %}
-<tr>
-    <th scope="row" class="dataset-label">{{ _("Dataset Published Date") }}</th>
-    <td class="dataset-details">{{ pkg_dict.dataset_published_date }}</td>
-</tr>
-{% endif %}
-{% if pkg_dict.dataset_license %}
-<tr>
-    <th scope="row" class="dataset-label">{{ _("Dataset License") }}</th>
-    <td class="dataset-details">{{ pkg_dict.dataset_license }}</td>
-</tr>
-{% endif %}
-{% if pkg_dict.privacy_marking_classification %}
-<tr>
-    <th scope="row" class="dataset-label">{{ _("Dataset Privacy Classification") }}</th>
-    <td class="dataset-details">{{ pkg_dict.privacy_marking_classification }}</td>
-</tr>
-{% endif %}
-{% if pkg_dict.privacy_marking_sensitivity %}
-<tr>
-    <th scope="row" class="dataset-label">{{ _("Dataset Privacy Sensitivity") }}</th>
-    <td class="dataset-details">{{ pkg_dict.privacy_marking_sensitivity }}</td>
-</tr>
-{% endif %}
+    {% if pkg_dict.project_title %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Project Title") }}</th>
+        <td class="dataset-details">{{ pkg_dict.project_title }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.dataset_title %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Dataset Title") }}</th>
+        <td class="dataset-details">{{ pkg_dict.dataset_title }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.description_uses %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Dataset Uses") }}</th>
+        <td class="dataset-details">{{ pkg_dict.description_uses }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.dataset_users %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Dataset Users") }}</th>
+        <td class="dataset-details">{{ pkg_dict.dataset_users }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.dataset_abstract %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Dataset Abstract") }}</th>
+        <td class="dataset-details">{{ pkg_dict.dataset_abstract }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.dataset_limitations %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Dataset Limitations") }}</th>
+        <td class="dataset-details">{{ pkg_dict.dataset_limitations }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.dataset_published_date %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Dataset Published Date") }}</th>
+        <td class="dataset-details">{{ pkg_dict.dataset_published_date }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.dataset_license %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Dataset License") }}</th>
+        <td class="dataset-details">{{ pkg_dict.dataset_license }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.privacy_marking_classification %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Dataset Privacy Classification") }}</th>
+        <td class="dataset-details">{{ pkg_dict.privacy_marking_classification }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.privacy_marking_sensitivity %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Dataset Privacy Sensitivity") }}</th>
+        <td class="dataset-details">{{ pkg_dict.privacy_marking_sensitivity }}</td>
+    </tr>
+    {% endif %}
 
-<button class="btn btn-primary">
-    <a href="{{ h.url_for('versiontree.versiontree') }}" title={{ _('View Version Tree') }}>
-        <i class="fa fa-tachometer" aria-hidden="true" style="color: white;"></i>
-        <span class="text" style="color: white;">{{ _('Version Tree') }}</span>
-    </a>
-</button>
+    {% if pkg_dict.additional_remarks %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Additional Remarks") }}</th>
+        <td class="dataset-details">{{ pkg_dict.additional_remarks }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.dataset_source %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Dataset Source") }}</th>
+        <td class="dataset-details">{{ pkg_dict.dataset_source }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.dataset_related_resources %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Dataset Related Resources") }}</th>
+        <td class="dataset-details">{{ pkg_dict.dataset_related_resources }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.dataset_type %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Dataset Type") }}</th>
+        <td class="dataset-details">{{ pkg_dict.dataset_type }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.data_collection %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Data Collection") }}</th>
+        <td class="dataset-details">{{ pkg_dict.data_collection }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.update_frequency %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Update Frequency") }}</th>
+        <td class="dataset-details">{{ pkg_dict.update_frequency }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.geospatial_coverage %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Geospatial Coverage") }}</th>
+        <td class="dataset-details">{{ pkg_dict.geospatial_coverage }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.temporal_coverage %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Temporal Coverage") }}</th>
+        <td class="dataset-details">{{ pkg_dict.temporal_coverage }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.online_coverage %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Online Coverage") }}</th>
+        <td class="dataset-details">{{ pkg_dict.online_coverage }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.data_preparation %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Data Preparation") }}</th>
+        <td class="dataset-details">{{ pkg_dict.data_preparation }}</td>
+    </tr>
+    {% endif %}
+    {% if pkg_dict.data_dict_and_schema %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Data Dictionary and Schema Format") }}</th>
+        <td class="dataset-details">{{ pkg_dict.data_dict_and_schema }}</td>
+    </tr>
+    {% endif %}
+
+    <button class="btn btn-primary">
+        <a href="{{ h.url_for('versiontree.versiontree') }}" title={{ _('View Version Tree') }}>
+            <i class="fa fa-tachometer" aria-hidden="true" style="color: white;"></i>
+            <span class="text" style="color: white;">{{ _('Version Tree') }}</span>
+        </a>
+    </button>
 {% endblock %}
