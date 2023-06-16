@@ -42,7 +42,12 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
             to the dataset (the one that is about to be created).
         :type resource: dictionary
         '''
-        pass
+        resource['name'] = resource['upload'].filename
+
+        warning(f"----------BEFORE RESOURCE CREATE ITEMS----------")
+        for key, val in resource.items():
+            warning(f"{key} : {val}")
+        return
 
     def after_resource_create(
             self, context: Context, resource: dict[str, Any]) -> None:

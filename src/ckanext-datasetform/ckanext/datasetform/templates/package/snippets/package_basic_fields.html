@@ -48,8 +48,8 @@ $(document).ready(function() {
     {{ form.input('dataset_license', label=_('Dataset Rights & License'), id='field-dataset_license', placeholder=_('License'), value=data.dataset_license, error=errors.dataset_license, classes=['control-medium']) }}
 
     {{ form.select(
-        'privacy_marking_classification', label=_('Privacy Marking: Classification'), options=[
-            {'value': '0', 'text': _('[Choose Privacy Type]')},
+        'privacy_marking_classification', label=_('Privacy Marking - Classification'), options=[
+            {'value': '0', 'text': _('[Choose Privacy Classification]')},
             {'value': 'Official (Open)', 'text': _('Official (Open)')},
             {'value': 'Official (Closed)', 'text': _('Official (Closed)')},
             {'value': 'Restricted', 'text': _('Restricted')},
@@ -59,6 +59,18 @@ $(document).ready(function() {
         ],
         selected=data.privacy_marking_classification if data.privacy_marking_classification else '0', is_required=true
     )}}
+
+    {{ form.select(
+        'privacy_marking_sensitivity', label=_('Privacy Marking - Sensitivity'), options=[
+            {'value': '0', 'text': _('[Choose Privacy Sensitivity]')},
+            {'value': 'Non-Sensitive', 'text': _('Non-Sensitive')},
+            {'value': 'Sensitive Normal', 'text': _('Sensitive Normal')},
+            {'value': 'Sensitive High', 'text': _('Sensitive High')}
+        ],
+        selected=data.privacy_marking_sensitivity if data.privacy_marking_sensitivity else '0', is_required=true
+    )}}
+
+    
 {% endblock %}
 
 {% block package_basic_fields_license %}
