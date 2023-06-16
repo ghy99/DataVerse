@@ -10,7 +10,23 @@
 
 {% block package_metadata_fields_custom %}
     {{ form.markdown('additional_remarks', id='field-additional_remarks', label=_('Additional Remarks'), placeholder=_('eg. Additional Remarks'), value=data.additional_remarks, error=errors.additional_remarks) }}
-
-    
+    {{ form.input('dataset_type', label=_('Dataset Type'), id='field-dataset_type', placeholder=_('Structured / Semi-Structured / Unstructured Dataset'), value=data.dataset_type, error=errors.dataset_type, classes=['control-medium']) }}
+    {{ form.markdown('data_collection', id='field-data_collection', label=_('Dataset Collection Description'), placeholder=_('Account of the collection process applied to the dataset. Description may include: (a) Directly observable data, (b) reported by subjects, (c) Indrirectly inferred / derived from other data. If data is (b) or (c), please state whether the date is validated / verified.'), value=data.data_collection, error=errors.data_collection) }}
+    {{ form.select(
+        'update_frequency', label=_('Dataset Update Frequency'), options=[
+            {'value': '0', 'text': _('[Select Update Frequency]')},
+            {'value': 'Daily', 'text': _('Daily')},
+            {'value': 'Weekly', 'text': _('Weekly')},
+            {'value': 'Monthly', 'text': _('Monthly')},
+            {'value': 'Quarterly', 'text': _('Quarterly')},
+            {'value': 'Yearly', 'text': _('Yearly')},
+        ],
+        selected=data.update_frequency if data.update_frequency else '0'
+    )}}
+    {{ form.input('geospatial_coverage', label=_('Geospatial Coverage'), id='field-geospatial_coverage', placeholder=_('Geographic coordinates or place names that relate to the dataset, e.g. latlong coordinates, region, place, postal code'), value=data.geospatial_coverage, error=errors.geospatial_coverage, classes=['control-medium']) }}
+    {{ form.input('temporal_coverage', label=_('Temporal Coverage'), id='field-temporal_coverage', placeholder=_('Subject matter coverage expressed in terms of one or more periods of time, e.g. Start - End date of a period of time, YYYY-MM-DD'), value=data.temporal_coverage, error=errors.temporal_coverage, classes=['control-medium']) }}
+    {{ form.input('online_coverage', label=_('Online Coverage'), id='field-online_coverage', placeholder=_('Subject-matter coverage of a publication in terms of one or more virtual addresses, e.g. URL / IP Address'), value=data.online_coverage, error=errors.online_coverage, classes=['control-medium']) }}
+    {{ form.markdown('data_preparation', id='field-data_preparation', label=_('Data Preparation'), placeholder=_('Account of scientific / engineering techniques applied to the dataset. Description may include: (a) Sampling Size; (b) Pre-processing, Cleaning, Labelling of dataset (e.g. discretisation or bucketing, tokenisation, part-of-speech tagging, ...); (c) dataset distribution including medium and standard deviation'), value=data.data_preparation, error=errors.data_preparation) }}
+    {{ form.markdown('data_dict_and_schema', id='field-data_dict_and_schema', label=_('Data Dictionary & Schema'), placeholder=_('Account of the data schema / data dictionary of the dataset. Description may include: (a) Data element name; (b) Data element definition / meaning; (c) Applicable business rules when using this data element; (d) Valid list of values in which this data element can hold the following convention: [Yes / No] : [Code Table Name].'), value=data.data_dict_and_schema, error=errors.data_dict_and_schema) }}
 {% endblock %}
 
