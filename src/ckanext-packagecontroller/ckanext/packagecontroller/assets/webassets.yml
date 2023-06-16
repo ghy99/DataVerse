@@ -1,0 +1,14 @@
+# packagecontroller-js:
+#   filter: rjsmin
+#   output: ckanext-packagecontroller/%(version)s-packagecontroller.js
+#   contents:
+#     - js/packagecontroller.js
+#   extra:
+#     preload:
+#       - base/main
+
+# packagecontroller-css:
+#   filter: cssrewrite
+#   output: ckanext-packagecontroller/%(version)s-packagecontroller.css
+#   contents:
+#     - css/packagecontroller.css
