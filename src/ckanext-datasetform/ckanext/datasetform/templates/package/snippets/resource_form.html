@@ -1,5 +1,17 @@
 {% ckan_extends %}
 
 {% block basic_fields %}
+    {% block basic_fields_url %}
+      {{ super() }}
+    {% endblock %}
+
+    {% block basic_fields_name %}
+    {% endblock %}
+
+    {% block basic_fields_description %}
+    {% endblock %}
+
+    {% block basic_fields_format %}
     {{ super() }}
+    {% endblock %}
 {% endblock %}

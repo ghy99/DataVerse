@@ -97,7 +97,6 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         schema.update(
             {
                 "privacy_marking_classification": [
-                    toolkit.get_validator("ignore_missing"),
                     toolkit.get_converter("convert_to_extras"),
                 ]
             }
@@ -148,6 +147,15 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         schema.update(
             {
                 "project_title": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "dataset_title": [
                     toolkit.get_converter("convert_from_extras"),
                     toolkit.get_validator("ignore_missing"),
                 ]
@@ -212,7 +220,6 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
             {
                 "privacy_marking_classification": [
                     toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
                 ]
             }
         )
@@ -227,14 +234,6 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         schema.update(
             {
                 "clearml_id": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
-            }
-        )
-        schema.update(
-            {
-                "privacy_marking_classification": [
                     toolkit.get_converter("convert_from_extras"),
                     toolkit.get_validator("ignore_missing"),
                 ]
