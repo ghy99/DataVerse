@@ -101,6 +101,42 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                 ]
             }
         )
+
+        schema.update(
+            {
+                "privacy_marking_sensitivity": [
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "additional_remarks": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "dataset_source": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "dataset_related_resources": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ]
+            }
+        )
+
         schema.update(
             {
                 "new_or_existing": [
@@ -109,6 +145,7 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                 ]
             }
         )
+
         schema.update(
             {
                 "clearml_id": [
@@ -220,9 +257,46 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
             {
                 "privacy_marking_classification": [
                     toolkit.get_converter("convert_from_extras"),
+
                 ]
             }
         )
+
+        schema.update(
+            {
+                "privacy_marking_sensitivity": [
+                    toolkit.get_converter("convert_from_extras"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "additional_remarks": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "dataset_source": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
+
+        schema.update(
+            {
+                "dataset_related_resources": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ]
+            }
+        )
+
         schema.update(
             {
                 "new_or_existing": [
@@ -231,6 +305,7 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                 ]
             }
         )
+
         schema.update(
             {
                 "clearml_id": [

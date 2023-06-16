@@ -3,7 +3,14 @@
 {% block package_metadata_fields_version %}
 {% endblock %}
 
-{% block package_metadata_fields_custom %}
-    
-
+{% block package_metadata_fields_url %}
+    {{ form.input('dataset_source', label=_('Dataset Source'), id='field-dataset_source', placeholder=_('Reference to entities, systems, assets or resources from which the dataset is derived. Please state if it is an authoritative source.'), value=data.dataset_source, error=errors.dataset_source, classes=['control-medium']) }}
+    {{ form.input('dataset_related_resources', label=_('Related Resources'), id='field-dataset_related_resources', placeholder=_('Related Data / Digital Resource'), value=data.dataset_related_resources, error=errors.dataset_related_resources, classes=['control-medium']) }}
 {% endblock %}
+
+{% block package_metadata_fields_custom %}
+    {{ form.markdown('additional_remarks', id='field-additional_remarks', label=_('Additional Remarks'), placeholder=_('eg. Additional Remarks'), value=data.additional_remarks, error=errors.additional_remarks) }}
+
+    
+{% endblock %}
+
