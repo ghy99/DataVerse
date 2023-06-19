@@ -95,7 +95,13 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
         dataset.upload(show_progress=True, verbose=True)
         warning(f"----------FINALIZING DATASET----------")
         dataset.finalize(verbose=True, raise_on_error=True, auto_upload=True)
-        
+        # warning(f"THIS IS THE CLEARML ID: {dataset.id}")
+        package_show['clearml_id'] = dataset.id
+        new_package = toolkit.get_action("package_update")({}, package_show)
+
+        warning(f"---------- NEW PACKAGE ITEMS: ----------")
+        for key, val in new_package.items():
+            warning(f"{key} : {val}")
         return
 
     def before_resource_update(self, context: Context, current: dict[str, Any],
