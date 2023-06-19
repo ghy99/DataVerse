@@ -2,7 +2,7 @@ import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 
 from logging import warning
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request
 from clearml import Dataset
 
 
@@ -79,7 +79,7 @@ def sortDataset(dataset_IDs, dataset_details):
     return list(sorted_dataset_ID)
 
 
-def retrieveDatasetDetails(dataset_details):
+def retrieveDatasetDetails(dataset_details, desc):
     """
     Take out the dataset version only
 
@@ -116,21 +116,44 @@ def renderVersionTree():
             the list of IDs available from the specified dataset,
             and the details of the dataset tagged to its own ID in a dictionary. I parsed through and retrieved only the dataset version
     """
-    palkia_dependency_graph = None
+    clearml_id = None
+    dataset_id = None
+    if request.method == "POST":
+        warning(f"---------- POST METHOD IN VERSION TREE HTML ----------")
+        data = request.form
+        warning(f"DATA: {data}")
+        warning(f"DATA TYPE: {type(data)}")
+    if request.method == "GET":
+        warning(f"---------- GET METHOD IN VERSION TREE HTML ----------")
+        clearml_id = request.args.get('clearml_id')
+        warning(f"CLEARML ID: {clearml_id}")
+        dataset_id = request.args.get('id')
+
+    metadata = toolkit.get_action("package_show")({}, {"id" : dataset_id})
+    warning(f"META DATA OF PACKAGE: {metadata}")
+    warning(f"META DATA DESCRIPTION: {metadata['dataset_abstract']}")
+
+    dataset = getAllDatasetID(clearml_id)
+    dependency_graph = None
     dataset_IDs = []
     dataset_details = {}
-    retrieved_dataset = getDataset()
-    palkia_dependency_graph = getDependencyGraph(retrieved_dataset)
 
-    for key, val in palkia_dependency_graph.items():
+    for key, val in dataset.__dict__.items():
+        warning(f"{key} : {val}")
+
+    dependency_graph = dataset._dependency_graph
+    # retrieved_dataset = getDataset()
+    # palkia_dependency_graph = getDependencyGraph(retrieved_dataset)
+
+    for key, val in dependency_graph.items():
         dataset_details[key] = getAllDatasetID(key)
         dataset_IDs.append(key)
 
     dataset_IDs = sortDataset(dataset_IDs, dataset_details)
-    # warning(f"CHECKING DATASET ID AND DETAILS:")
-    # warning(f"{dataset_IDs}")
+    warning(f"CHECKING DATASET ID AND DETAILS:")
+    warning(f"{dataset_IDs}")
 
-    dataset_details = retrieveDatasetDetails(dataset_details)
+    dataset_details = retrieveDatasetDetails(dataset_details, metadata['dataset_abstract'])
     # try:
     #     for each_id in dataset_IDs:
     #         dataset_details[each_id] = Dataset.get(
@@ -141,7 +164,7 @@ def renderVersionTree():
     #     warning(f"FAILED TO RETRIEVE DATASET OBJECTS FOR EACH DATASET. ERROR: {e}")
     return render_template(
         "versionTree.html",
-        palkia_dependency_graph=palkia_dependency_graph,
+        dependency_graph=dependency_graph,
         dataset_IDs=dataset_IDs,
         dataset_details=dataset_details,
     )

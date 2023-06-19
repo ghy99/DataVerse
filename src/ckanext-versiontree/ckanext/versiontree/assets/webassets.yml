@@ -13,13 +13,13 @@
 #   contents:
 #     - css/versiontree.css
 
-style:
+versionTree_style:
     filters: cssrewrite
     output: ckanext-versiontree/%(version)s_styles.css
-    contents: style.css
+    contents: versionTree_style.css
 
-script:
+versionTree_script:
     filters: rjsmin
     output: ckanext-versiontree/%(version)s_main.js
     contents:
-        - script.js
+        - versionTree_script.js
