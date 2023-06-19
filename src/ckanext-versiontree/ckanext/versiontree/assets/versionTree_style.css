@@ -13,3 +13,35 @@
 .versiontree tr {
     width: 30%;
 }
+
+.node-box {
+    fill: #000000;
+    stroke: #000000;
+    stroke-width: 2px;
+    opacity: 0;
+    pointer-events: none;
+    /* Ignore mouse events on the rectangle box */
+}
+
+.node-text {
+    fill: #FFFFFF;
+    font-size: 12px;
+    text-anchor: middle;
+    opacity: 0;
+    pointer-events: none;
+    /* Ignore mouse events on the tooltip text */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+.node circle {
+    fill: #000000;
+    stroke: #FFFFFF;
+    stroke-width: 2px;
+}
+
+.node:hover .node-box,
+.node:hover .node-text {
+    opacity: 1;
+}
