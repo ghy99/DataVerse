@@ -5,6 +5,12 @@ from logging import warning
 from ckan.types import Schema
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
+from flask.blueprints import Blueprint
+
+import views
+
+
+
 
 
 class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
@@ -123,3 +129,24 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         # This plugin doesn't handle any special package types, it just
         # registers itself as the default (above).
         return []
+    
+    def prepare_dataset_blueprint(self, package_type: str,
+                                  blueprint: Blueprint) -> Blueprint:
+        
+        
+        u'''Update or replace dataset blueprint for given package type.
+
+        Internally CKAN registers blueprint for every custom dataset
+        type. Before default routes added to this blueprint and it
+        registered inside application this method is called. It can be
+        used either for registration of the view function under new
+        path or under existing path(like `/new`), in which case this
+        new function will be used instead of default one.
+
+        Note, this blueprint has prefix `/{package_type}`.
+
+        :rtype: flask.Blueprint
+
+        '''
+        blueprint.add_url_rule(u'/new', view_func=views.OverwritePackageView.as_view(str(u'new')))
+        return blueprint
