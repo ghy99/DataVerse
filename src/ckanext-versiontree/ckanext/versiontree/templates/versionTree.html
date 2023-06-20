@@ -50,7 +50,6 @@
                         <th>Project Name:</th>
                         <th>Dataset ID:</th>
                         <th>Dataset Name:</th>
-                        <th>Dataset Description:</th>
                         <th>Dataset Dependency Graph:</th>
                     </tr>
                     {% for each_ID in dataset_IDs %}
@@ -58,7 +57,7 @@
                         <td>{{ dataset_details[each_ID]["project"] }}</td>
                         <td>{{ each_ID }}</td>
                         <td>{{ dataset_details[each_ID]["name"] }}</td>
-                        <td>{{ dataset_details[each_ID]["description"] }}</td>
+                        {# <td>{{ dataset_details[each_ID]["description"] }}</td> #}
                         <td>{{ dependency_graph[each_ID] }}</td>
                     </tr>
                     {% endfor %}

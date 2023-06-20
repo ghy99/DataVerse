@@ -1,14 +1,3 @@
-ckan.module("versiontree-module", function ($, _) {
-    "use strict";
-    return {
-        options: {
-            debug: false,
-        },
-
-        initialize: function () { },
-    };
-});
-
 function renderTree(graphData, dataset_IDs, dataset_details) {
 
     // Assume your graph data is stored in a variable called 'graphData'
@@ -27,10 +16,16 @@ function renderTree(graphData, dataset_IDs, dataset_details) {
     const width = container.node().getBoundingClientRect().width;
     const height = container.node().getBoundingClientRect().height;
 
-    // Create a new SVG element within the container
+
     const svg = container.append("svg")
         .attr("width", width)
-        .attr("height", height);
+        .attr("height", height)
+        .style("overflow", "hidden"); // Prevent content from overflowing the SVG
+
+    // Create a new SVG element within the container
+    // const svg = container.append("svg")
+    //     .attr("width", width)
+    //     .attr("height", height);
 
     // Extract the unique nodes from the graphData
     // const nodesSet = new Set(Object.keys(graphData));
@@ -57,8 +52,9 @@ function renderTree(graphData, dataset_IDs, dataset_details) {
     const nodes = Array.from(nodesSet).map((node, index) => ({
         id: node,
         x: height / 2, // Place the nodes vertically at the cente
-        y: (index / (nodesSet.size - 1)) * width, // rPosition the nodes along the x-axis
+        y: ((index + 1) / (nodesSet.size - 1)) * (width - 100) + 200, // rPosition the nodes along the x-axis
     }));
+
 
     // Create an array of link objects
     const links = [];
@@ -72,10 +68,10 @@ function renderTree(graphData, dataset_IDs, dataset_details) {
 
     // Create D3.js force simulation to position the nodes
     const simulation = d3.forceSimulation(nodes)
-        .force("link", d3.forceLink(links).id(d => d.id).distance(200))
-        .force("charge", d3.forceManyBody().strength(-100))
+        .force("link", d3.forceLink(links).id(d => d.id).distance(150))
+        .force("charge", d3.forceManyBody().strength(-50))
         .force("center", d3.forceCenter(width / 2, height / 2))
-        .force("collide", d3.forceCollide(100));
+        .force("collide", d3.forceCollide(50));
 
     // Create SVG elements for the links
     const link = svg.selectAll(".link")
@@ -112,11 +108,45 @@ function renderTree(graphData, dataset_IDs, dataset_details) {
     const nodeContainer = node.append("g");
 
     // Append the rectangle box for each node
+    // nodeContainer
+    //     .append("rect")
+    //     .attr("class", "node-box")
+    //     .attr("x", -90)
+    //     .attr("y", -90)
+    //     .attr("rx", 5)
+    //     .attr("ry", 5)
+    //     .attr("width", 180)
+    //     .attr("height", 80);
+
+    // // Append the text inside the rectangle box
+    // nodeContainer
+    //     .append("text")
+    //     .attr("class", "node-text")
+    //     .attr("x", 0)
+    //     .attr("y", -90)
+    //     .attr("text-anchor", "middle")
+    //     .selectAll("tspan")
+    //     .data(d => {
+    //         const id = d.id;
+    //         const version = "Version: " + dataset_details[d.id]["version"];
+    //         const project = "Project Title: " + dataset_details[d.id]["project"];
+    //         const name = "Dataset Name: " + dataset_details[d.id]["name"];
+    //         // const description = dataset_details[d.id]["description"];
+    //         return [project, name, version];
+    //     })
+    //     .enter()
+    //     .append("tspan")
+    //     .attr("x", 0)
+    //     .attr("dy", "1.2em")
+    //     .text(d => d)
+    //     .call(wrapText, 150, 1);
+
+    // Append the rectangle box for each node
     nodeContainer
         .append("rect")
         .attr("class", "node-box")
-        .attr("x", -100)
-        .attr("y", -90)
+        .attr("x", 10)  // Adjust the x position of the rectangle
+        .attr("y", -40) // Adjust the y position of the rectangle
         .attr("rx", 5)
         .attr("ry", 5)
         .attr("width", 200)
@@ -126,24 +156,24 @@ function renderTree(graphData, dataset_IDs, dataset_details) {
     nodeContainer
         .append("text")
         .attr("class", "node-text")
-        .attr("x", 0)
-        .attr("y", -80)
-        .attr("text-anchor", "middle")
+        .attr("x", 110)  // Adjust the x position of the text
+        .attr("y", -30)   // Adjust the y position of the text
+        .attr("text-anchor", "start") // Align the text to the start of the box
         .selectAll("tspan")
         .data(d => {
             const id = d.id;
-            const version = dataset_details[d.id]["version"];
-            const project = dataset_details[d.id]["project"];
-            const name = dataset_details[d.id]["name"];
-            const description = dataset_details[d.id]["description"];
-            return [project, name, version, description];
+            const version = "Version: " + dataset_details[d.id]["version"];
+            const project = "Project Title: " + dataset_details[d.id]["project"];
+            const name = "Dataset Name: " + dataset_details[d.id]["name"];
+            // const description = dataset_details[d.id]["description"];
+            return [project, name, version];
         })
         .enter()
         .append("tspan")
-        .attr("x", 0)
+        .attr("x", 110)  // Adjust the x position of the tspan
         .attr("dy", "1.2em")
         .text(d => d)
-        .call(wrapText, 180, 1);
+        .call(wrapText, 200, 1);
 
     function wrapText(text, width, lineHeight) {
         text.each(function () {
@@ -157,7 +187,7 @@ function renderTree(graphData, dataset_IDs, dataset_details) {
                 dy = parseFloat(text.attr("dy")),
                 tspan = text.text(null)
                     .append("tspan")
-                    .attr("x", 0)
+                    .attr("x", 110)
                     .attr("y", y)
                     .attr("dy", dy + "em");
 
@@ -170,12 +200,12 @@ function renderTree(graphData, dataset_IDs, dataset_details) {
                     tspan.text(line.join(" "));
                     line = [word];
                     tspan = text.append("tspan")
-                        .attr("x", 0)
+                        .attr("x", 110)
                         .attr("y", y)
-                        .attr("dy",dy + "em")
+                        .attr("dy", dy + "em")
                         .text(word);
                 }
-                console.log("increment: ", dy )
+                console.log("increment: ", dy)
             }
         });
     }
@@ -199,11 +229,24 @@ function renderTree(graphData, dataset_IDs, dataset_details) {
     //     });
 
     // Update the node positions in the simulation
+    // simulation.on("tick", () => {
+    //     node.attr("transform", d => `translate(${d.x},${d.y})`);
+    //     link.attr("x1", d => d.source.x)
+    //         .attr("y1", d => d.source.y)
+    //         .attr("x2", d => d.target.x)
+    //         .attr("y2", d => d.target.y);
+    // });
+
     simulation.on("tick", () => {
-        node.attr("transform", d => `translate(${d.x},${d.y})`);
-        link.attr("x1", d => d.source.x)
-            .attr("y1", d => d.source.y)
-            .attr("x2", d => d.target.x)
-            .attr("y2", d => d.target.y);
+        node.attr("transform", d => `translate(${clamp(d.x, 0, width)},${clamp(d.y, 0, height)})`);
+        link.attr("x1", d => clamp(d.source.x, 0, width))
+            .attr("y1", d => clamp(d.source.y, 0, height))
+            .attr("x2", d => clamp(d.target.x, 0, width))
+            .attr("y2", d => clamp(d.target.y, 0, height));
     });
+
+    // Clamp function to restrict the position within the container bounds
+    function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+    }
 }
