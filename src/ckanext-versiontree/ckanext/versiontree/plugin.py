@@ -49,6 +49,7 @@ def getDependencyGraph(dataset):
 
 
 def getAllDatasetID(dataset_id):
+    dataset = None
     try:
         dataset = Dataset.get(dataset_id=dataset_id)
     except Exception as e:
@@ -79,7 +80,7 @@ def sortDataset(dataset_IDs, dataset_details):
     return list(sorted_dataset_ID)
 
 
-def retrieveDatasetDetails(dataset_details, desc):
+def retrieveDatasetDetails(dataset_details):
     """
     Take out the dataset version only
 
@@ -100,7 +101,7 @@ def retrieveDatasetDetails(dataset_details, desc):
             "project": val.project,
             "name": val.name,
             "version": val._dataset_version,
-            "description": val._task.comment,
+            # "description": val._task.comment,
         }
     return dataset_details_dict
 
@@ -127,13 +128,14 @@ def renderVersionTree():
         warning(f"---------- GET METHOD IN VERSION TREE HTML ----------")
         clearml_id = request.args.get('clearml_id')
         warning(f"CLEARML ID: {clearml_id}")
-        dataset_id = request.args.get('id')
+    #     dataset_id = request.args.get('id')
 
-    metadata = toolkit.get_action("package_show")({}, {"id" : dataset_id})
-    warning(f"META DATA OF PACKAGE: {metadata}")
-    warning(f"META DATA DESCRIPTION: {metadata['dataset_abstract']}")
+    # metadata = toolkit.get_action("package_show")({}, {"id" : dataset_id})
+    # warning(f"META DATA OF PACKAGE: {metadata}")
+    # warning(f"META DATA DESCRIPTION: {metadata['dataset_abstract']}")
 
-    dataset = getAllDatasetID(clearml_id)
+    # dataset = getAllDatasetID(clearml_id)
+    dataset = getAllDatasetID("059bb2f1476f47f6b15fcb1081d190c9")
     dependency_graph = None
     dataset_IDs = []
     dataset_details = {}
@@ -153,7 +155,7 @@ def renderVersionTree():
     warning(f"CHECKING DATASET ID AND DETAILS:")
     warning(f"{dataset_IDs}")
 
-    dataset_details = retrieveDatasetDetails(dataset_details, metadata['dataset_abstract'])
+    dataset_details = retrieveDatasetDetails(dataset_details)
     # try:
     #     for each_id in dataset_IDs:
     #         dataset_details[each_id] = Dataset.get(
