@@ -5,12 +5,8 @@ from logging import warning
 from ckan.types import Schema
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
-from flask.blueprints import Blueprint
-
-import views
-
-
-
+from flask import Blueprint
+from .views import OverwritePackageView
 
 
 class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
@@ -18,219 +14,41 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     plugins.implements(plugins.IDatasetForm)
 
     # IConfigurer
-
     def update_config(self, config_):
         toolkit.add_template_directory(config_, "templates")
         toolkit.add_public_directory(config_, "public")
         toolkit.add_resource("assets", "datasetform")
 
     # IDatasetForm
-
     def _modify_package_schema(self, schema: Schema) -> Schema:
         schema.update(
             {
-                "project_title": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ]
+                "project_title": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
+                "dataset_title": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
+                "dataset_uses": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
+                "dataset_users": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
+                "dataset_abstract": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
+                "dataset_limitations": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
+                "dataset_published_date": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
+                "dataset_license": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
+                "privacy_marking_classification": [toolkit.get_converter("convert_to_extras")],
+                "privacy_marking_sensitivity": [toolkit.get_converter("convert_to_extras")],
+                "additional_remarks": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
+                "dataset_source": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
+                "dataset_related_resources": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
+                "dataset_type": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
+                "data_collection": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
+                "update_frequency": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
+                "geospatial_coverage": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
+                "temporal_coverage": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
+                "online_coverage": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
+                "data_preparation": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
+                "data_dict_and_schema": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
+                "new_or_existing": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
+                "clearml_id": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
             }
         )
 
-        schema.update(
-            {
-                "dataset_title": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "dataset_uses": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "dataset_users": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "dataset_abstract": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "dataset_limitations": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "dataset_published_date": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "dataset_license": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "privacy_marking_classification": [
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "privacy_marking_sensitivity": [
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "additional_remarks": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "dataset_source": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "dataset_related_resources": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "dataset_type": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "data_collection": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "update_frequency": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "geospatial_coverage": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "temporal_coverage": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "online_coverage": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "data_preparation": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "data_dict_and_schema": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "new_or_existing": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "clearml_id": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ]
-            }
-        )
         # Add our custom_resource_text metadata field to the schema
         # cast(Schema, schema['resources']).update({
         #         'metafield_resource_1' : [ toolkit.get_validator('ignore_missing') ]
@@ -257,210 +75,31 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         schema: Schema = super(DatasetformPlugin, self).show_package_schema()
 
         # Add our custom_text field to the dataset schema.
-
         schema.update(
             {
-                "project_title": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "dataset_title": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "dataset_uses": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "dataset_users": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "dataset_abstract": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "dataset_limitations": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "dataset_published_date": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "dataset_license": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "privacy_marking_classification": [
-                    toolkit.get_converter("convert_from_extras"),
-
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "privacy_marking_sensitivity": [
-                    toolkit.get_converter("convert_from_extras"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "additional_remarks": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "dataset_source": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "dataset_related_resources": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "dataset_type": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "data_collection": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "update_frequency": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "geospatial_coverage": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "temporal_coverage": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "online_coverage": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "data_preparation": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "data_dict_and_schema": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "new_or_existing": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
-            }
-        )
-
-        schema.update(
-            {
-                "clearml_id": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ]
+                "project_title": [toolkit.get_converter("convert_from_extras"), toolkit.get_validator("ignore_missing")],
+                "dataset_title": [toolkit.get_converter("convert_from_extras"), toolkit.get_validator("ignore_missing")],
+                "dataset_uses": [toolkit.get_converter("convert_from_extras"),  toolkit.get_validator("ignore_missing")],
+                "dataset_users": [toolkit.get_converter("convert_from_extras"),  toolkit.get_validator("ignore_missing")],
+                "dataset_abstract": [toolkit.get_converter("convert_from_extras"),   toolkit.get_validator("ignore_missing")],
+                "dataset_limitations": [toolkit.get_converter("convert_from_extras"),  toolkit.get_validator("ignore_missing")],
+                "dataset_published_date": [toolkit.get_converter("convert_from_extras"), toolkit.get_validator("ignore_missing")],
+                "dataset_license": [toolkit.get_converter("convert_from_extras"), toolkit.get_validator("ignore_missing")],
+                "privacy_marking_classification": [toolkit.get_converter("convert_from_extras")],
+                "privacy_marking_sensitivity": [toolkit.get_converter("convert_from_extras")],
+                "additional_remarks": [toolkit.get_converter("convert_from_extras"), toolkit.get_validator("ignore_missing")],
+                "dataset_source": [toolkit.get_converter("convert_from_extras"),  toolkit.get_validator("ignore_missing")],
+                "dataset_related_resources": [toolkit.get_converter("convert_from_extras"),  toolkit.get_validator("ignore_missing")],
+                "dataset_type": [toolkit.get_converter("convert_from_extras"), toolkit.get_validator("ignore_missing")],
+                "data_collection": [toolkit.get_converter("convert_from_extras"), toolkit.get_validator("ignore_missing")],
+                "update_frequency": [toolkit.get_converter("convert_from_extras"),  toolkit.get_validator("ignore_missing")],
+                "geospatial_coverage": [toolkit.get_converter("convert_from_extras"), toolkit.get_validator("ignore_missing")],
+                "temporal_coverage": [toolkit.get_converter("convert_from_extras"), toolkit.get_validator("ignore_missing")],
+                "online_coverage": [toolkit.get_converter("convert_from_extras"), toolkit.get_validator("ignore_missing")],
+                "data_preparation": [toolkit.get_converter("convert_from_extras"), toolkit.get_validator("ignore_missing")],
+                "data_dict_and_schema": [toolkit.get_converter("convert_from_extras"), toolkit.get_validator("ignore_missing")],
+                "new_or_existing": [toolkit.get_converter("convert_from_extras"), toolkit.get_validator("ignore_missing")],
+                "clearml_id": [toolkit.get_converter("convert_from_extras"), toolkit.get_validator("ignore_missing")],
             }
         )
 
@@ -488,7 +127,7 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         return []
     
     def prepare_dataset_blueprint(self, package_type: str,
-                                  blueprint: Blueprint) -> Blueprint:
+                                  bp: Blueprint) -> Blueprint:
         
         
         u'''Update or replace dataset blueprint for given package type.
@@ -505,5 +144,5 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         :rtype: flask.Blueprint
 
         '''
-        blueprint.add_url_rule(u'/new', view_func=views.OverwritePackageView.as_view(str(u'new')))
-        return blueprint
+        bp.add_url_rule(u'/new', 'newPackageCreate', view_func=OverwritePackageView.as_view(str(u'new')))
+        return bp
