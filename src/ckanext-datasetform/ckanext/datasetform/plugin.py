@@ -5,12 +5,8 @@ from logging import warning
 from ckan.types import Schema
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
-from flask.blueprints import Blueprint
-
-import views
-
-
-
+from flask import Blueprint
+from .views import OverwritePackageView
 
 
 class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
@@ -131,7 +127,7 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         return []
     
     def prepare_dataset_blueprint(self, package_type: str,
-                                  blueprint: Blueprint) -> Blueprint:
+                                  bp: Blueprint) -> Blueprint:
         
         
         u'''Update or replace dataset blueprint for given package type.
@@ -148,5 +144,5 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         :rtype: flask.Blueprint
 
         '''
-        blueprint.add_url_rule(u'/new', view_func=views.OverwritePackageView.as_view(str(u'new')))
-        return blueprint
+        bp.add_url_rule(u'/new', 'newPackageCreate', view_func=OverwritePackageView.as_view(str(u'new')))
+        return bp
