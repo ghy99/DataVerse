@@ -64,8 +64,12 @@ class PackagecontrollerPlugin(plugins.SingletonPlugin):
 
         warning(f"---------- RETRIEVING PROJECT TITLE: {dataset.project}")
         warning(f"---------- RETRIEVING DATASET TITLE: {dataset.name}")
+        warning(f"---------- RETRIEVING DATASET VERSION: {dataset._dataset_version}")
         package_show['project_title'] = dataset.project
         package_show['dataset_title'] = dataset.name
+        string = dataset.name + "_" + dataset._dataset_version
+        warning(f"---------- STRINGGGGGGGGGGGGGG: {string}")
+        package_show['name'] = dataset.name + "_" + dataset._dataset_version
         new_pkg_dict = toolkit.get_action("package_update")({}, package_show)
         for key, val in new_pkg_dict.items():
             warning(f"----- {key} : {val} -----")
