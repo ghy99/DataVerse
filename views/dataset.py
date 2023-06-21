@@ -536,6 +536,7 @@ class CreateView(MethodView):
         # The staged add dataset used the new functionality when the dataset is
         # partially created so we need to know if we actually are updating or
         # this is a real new.
+        logging.warning(f"-------------------------------------------------------------------------------- {package_type} : WHY IS THIS EVEN LOADING IT SHOULD BE OVERRIDEN ---------------------------------------------------------------------")
         context = self._prepare()
         is_an_update = False
         ckan_phase = request.form.get(u'_ckan_phase')

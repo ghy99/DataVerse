@@ -4,16 +4,11 @@ import ckan.model as model
 from ckan.types import Context
 from typing import Any
 from logging import warning
+from clearml import Dataset
 
 class PackagecontrollerPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IPackageController)
-    # plugins.implements(plugins.IAuthFunctions)
-    # plugins.implements(plugins.IActions)
-    # plugins.implements(plugins.IBlueprint)
-    # plugins.implements(plugins.IClick)
-    # plugins.implements(plugins.ITemplateHelpers)
-    # plugins.implements(plugins.IValidators)
     
 
     # IConfigurer
@@ -55,8 +50,26 @@ class PackagecontrollerPlugin(plugins.SingletonPlugin):
         domain object, which may not include all fields). Also the newly
         created dataset id will be added to the dict.
         '''
-        warning(f"THIS IS THE PKG DICT {pkg_dict}")
-        pass
+
+        package_show = toolkit.get_action('package_show')({}, {"id": pkg_dict['id']})
+
+        warning(f"---------- THIS IS THE PKG DICT ----------")
+        for key, val in pkg_dict.items():
+            warning(f"package controller ---------- {key} : {val}")
+        
+        warning(f"---------- clearml_id: {pkg_dict['clearml_id']}")
+        dataset = Dataset.get(
+            dataset_id=pkg_dict['clearml_id']
+        )
+
+        warning(f"---------- RETRIEVING PROJECT TITLE: {dataset.project}")
+        warning(f"---------- RETRIEVING DATASET TITLE: {dataset.name}")
+        package_show['project_title'] = dataset.project
+        package_show['dataset_title'] = dataset.name
+        new_pkg_dict = toolkit.get_action("package_update")({}, package_show)
+        for key, val in new_pkg_dict.items():
+            warning(f"----- {key} : {val} -----")
+        return
 
     def after_dataset_update(
             self, context: Context, pkg_dict: dict[str, Any]) -> None:
