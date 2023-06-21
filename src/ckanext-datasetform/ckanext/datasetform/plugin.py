@@ -6,8 +6,8 @@ from ckan.types import Schema
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 from flask import Blueprint
-from .views import OverwritePackageView
 
+from ckanext.datasetform.views import CreatePackageView
 
 class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     plugins.implements(plugins.IConfigurer)
@@ -20,7 +20,28 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         toolkit.add_resource("assets", "datasetform")
 
     # IDatasetForm
+    def prepare_dataset_blueprint(self, package_type: str, bp: Blueprint):
+        '''Update or replace dataset blueprint for given package type.
+
+        Internally CKAN registers blueprint for every custom dataset
+        type. Before default routes added to this blueprint and it
+        registered inside application this method is called. It can be
+        used either for registration of the view function under new
+        path or under existing path(like `/new`), in which case this
+        new function will be used instead of default one.
+
+        Note, this blueprint has prefix `/{package_type}`.
+
+        :rtype: flask.Blueprint
+
+        '''
+        warning(f"---------- ADDING BLUEPRINT FOR NEW PACKAGE CREATE ----------")
+        # if self._dataset_form_pages[package_type]:
+        bp.add_url_rule(u'/new', 'overridePackageCreation', view_func=CreatePackageView.as_view(str(u'new')))
+        return bp
+
     def _modify_package_schema(self, schema: Schema) -> Schema:
+        warning(f"---------- MODIFYING PACKAGE SCHEMA HERE ----------")
         schema.update(
             {
                 "project_title": [toolkit.get_validator("ignore_missing"), toolkit.get_converter("convert_to_extras")],
@@ -124,25 +145,6 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     def package_types(self) -> list[str]:
         # This plugin doesn't handle any special package types, it just
         # registers itself as the default (above).
-        return []
+        return ['dataset']
     
-    def prepare_dataset_blueprint(self, package_type: str,
-                                  bp: Blueprint) -> Blueprint:
-        
-        
-        u'''Update or replace dataset blueprint for given package type.
-
-        Internally CKAN registers blueprint for every custom dataset
-        type. Before default routes added to this blueprint and it
-        registered inside application this method is called. It can be
-        used either for registration of the view function under new
-        path or under existing path(like `/new`), in which case this
-        new function will be used instead of default one.
-
-        Note, this blueprint has prefix `/{package_type}`.
-
-        :rtype: flask.Blueprint
-
-        '''
-        bp.add_url_rule(u'/new', 'newPackageCreate', view_func=OverwritePackageView.as_view(str(u'new')))
-        return bp
+    
