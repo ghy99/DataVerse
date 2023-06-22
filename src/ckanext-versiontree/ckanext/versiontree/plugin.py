@@ -72,7 +72,6 @@ def sortDataset(dataset_IDs, dataset_details):
     for each_ID in dataset_IDs:
         versions.append(dataset_details[each_ID]._dataset_version)
 
-    # warning(f"Version list: {versions}, Sorted Version List: {sorted(versions)}")
     pairs = list(zip(versions, dataset_IDs))
     sorted_pairs = sorted(pairs, key=lambda x: x[0])
     sorted_version, sorted_dataset_ID = zip(*sorted_pairs)
@@ -92,16 +91,10 @@ def retrieveDatasetDetails(dataset_details):
     """
     dataset_details_dict = {}
     for key, val in dataset_details.items():
-        # warning(f"")
-        # warning(f"")
-        # warning(f"values: {val.__dict__}")
-        # warning(f"")
-        # warning(f"")
         dataset_details_dict[key] = {
             "project": val.project,
             "name": val.name,
             "version": val._dataset_version,
-            # "description": val._task.comment,
         }
     return dataset_details_dict
 
@@ -127,43 +120,31 @@ def renderVersionTree():
     if request.method == "GET":
         warning(f"---------- GET METHOD IN VERSION TREE HTML ----------")
         clearml_id = request.args.get('clearml_id')
-        warning(f"CLEARML ID: {clearml_id}")
-    #     dataset_id = request.args.get('id')
-
-    # metadata = toolkit.get_action("package_show")({}, {"id" : dataset_id})
-    # warning(f"META DATA OF PACKAGE: {metadata}")
-    # warning(f"META DATA DESCRIPTION: {metadata['dataset_abstract']}")
+        # clearml_id = "059bb2f1476f47f6b15fcb1081d190c9"
+        warning(f"---------- CLEARML ID: {clearml_id}")
 
     dataset = getAllDatasetID(clearml_id)
-    # dataset = getAllDatasetID("059bb2f1476f47f6b15fcb1081d190c9")
     dependency_graph = None
     dataset_IDs = []
     dataset_details = {}
-
+    warning(f"--- DATASET __DICT__ ITEMS: ---")
     for key, val in dataset.__dict__.items():
         warning(f"{key} : {val}")
 
     dependency_graph = dataset._dependency_graph
-    # retrieved_dataset = getDataset()
-    # palkia_dependency_graph = getDependencyGraph(retrieved_dataset)
 
+    warning(f"--- DEPENDENCY GRAPH ITEMS: ---")
     for key, val in dependency_graph.items():
         dataset_details[key] = getAllDatasetID(key)
         dataset_IDs.append(key)
 
     dataset_IDs = sortDataset(dataset_IDs, dataset_details)
+
     warning(f"CHECKING DATASET ID AND DETAILS:")
     warning(f"{dataset_IDs}")
 
     dataset_details = retrieveDatasetDetails(dataset_details)
-    # try:
-    #     for each_id in dataset_IDs:
-    #         dataset_details[each_id] = Dataset.get(
-    #             dataset_id=each_id,
-    #         )
-    #         warning(f"GETTING DATASET FOR ID {each_id} SUCCESS")
-    # except Exception as e:
-    #     warning(f"FAILED TO RETRIEVE DATASET OBJECTS FOR EACH DATASET. ERROR: {e}")
+    warning(f"RENDERING TREE NOW")
     return render_template(
         "versionTree.html",
         dependency_graph=dependency_graph,

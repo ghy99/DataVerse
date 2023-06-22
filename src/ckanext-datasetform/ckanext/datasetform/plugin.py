@@ -5,7 +5,6 @@ from logging import warning
 from ckan.types import Schema
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
-from flask import Blueprint
 
 from ckanext.datasetform.views import CreatePackageView
 

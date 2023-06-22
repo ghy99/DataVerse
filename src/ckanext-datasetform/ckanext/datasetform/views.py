@@ -3,29 +3,20 @@ from __future__ import annotations
 
 import logging
 import inspect
-from collections import OrderedDict
-from functools import partial
-from typing_extensions import TypeAlias
-from urllib.parse import urlencode
-from typing import Any, Iterable, Optional, Union, cast
+from typing import Any, Optional, Union, cast
 
-from flask import Blueprint
 from flask.views import MethodView
-from jinja2.exceptions import TemplateNotFound
-from werkzeug.datastructures import MultiDict
-from ckan.common import asbool, current_user
+from ckan.common import current_user
 
 import ckan.lib.base as base
 import ckan.lib.helpers as h
 import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.logic as logic
 import ckan.model as model
-import ckan.plugins as plugins
-import ckan.authz as authz
 from ckan.common import _, config, g, request
 from ckan.views.home import CACHE_PARAMETERS
 from ckan.lib.plugins import lookup_package_plugin
-from ckan.lib.search import SearchError, SearchQueryError, SearchIndexError
+from ckan.lib.search import SearchIndexError
 from ckan.types import Context, Response
 
 
@@ -127,7 +118,6 @@ class CreatePackageView(MethodView):
         # The staged add dataset used the new functionality when the dataset is
         # partially created so we need to know if we actually are updating or
         # this is a real new.
-        logging.warning(f"-------------------------------------------------------------------------------- print something la pls cmon ---------------------------------------------------------------------")
         context = self._prepare()
         is_an_update = False
         ckan_phase = request.form.get(u'_ckan_phase')
