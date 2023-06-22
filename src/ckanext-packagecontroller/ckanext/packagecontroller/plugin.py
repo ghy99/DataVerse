@@ -50,30 +50,34 @@ class PackagecontrollerPlugin(plugins.SingletonPlugin):
         domain object, which may not include all fields). Also the newly
         created dataset id will be added to the dict.
         '''
+        if pkg_dict['new_or_existing'] == "Add New Dataset":
+            return
+        else:
+            package_show = toolkit.get_action('package_show')({}, {"id": pkg_dict['id']})
 
-        package_show = toolkit.get_action('package_show')({}, {"id": pkg_dict['id']})
+            warning(f"---------- THIS IS THE PKG DICT ----------")
+            for key, val in pkg_dict.items():
+                warning(f"package controller ---------- {key} : {val}")
+            
+            warning(f"---------- clearml_id: {pkg_dict['clearml_id']}")
+            dataset = Dataset.get(
+                dataset_id=pkg_dict['clearml_id']
+            )
 
-        warning(f"---------- THIS IS THE PKG DICT ----------")
-        for key, val in pkg_dict.items():
-            warning(f"package controller ---------- {key} : {val}")
-        
-        warning(f"---------- clearml_id: {pkg_dict['clearml_id']}")
-        dataset = Dataset.get(
-            dataset_id=pkg_dict['clearml_id']
-        )
-
-        warning(f"---------- RETRIEVING PROJECT TITLE: {dataset.project}")
-        warning(f"---------- RETRIEVING DATASET TITLE: {dataset.name}")
-        warning(f"---------- RETRIEVING DATASET VERSION: {dataset._dataset_version}")
-        package_show['project_title'] = dataset.project
-        package_show['dataset_title'] = dataset.name
-        string = dataset.name + "_" + dataset._dataset_version
-        warning(f"---------- STRINGGGGGGGGGGGGGG: {string}")
-        package_show['name'] = dataset.name + "_" + dataset._dataset_version
-        new_pkg_dict = toolkit.get_action("package_update")({}, package_show)
-        for key, val in new_pkg_dict.items():
-            warning(f"----- {key} : {val} -----")
-        return
+            package_show['project_title'] = dataset.project
+            package_show['dataset_title'] = dataset.name
+            new_title = dataset.name + "-v" + dataset._dataset_version
+            new_title = new_title.replace(" ", "-")
+            new_title = new_title.replace(".", "-")
+            new_title = new_title.lower()
+            warning(f"---------- NEW TITLE: {new_title}")
+            # package_show['name'] = new_name
+            package_show['title'] = new_title
+            new_pkg_dict = toolkit.get_action("package_update")({}, package_show)
+            warning(f"---------- THIS IS THE UPDATED PKG DICT ----------")
+            for key, val in new_pkg_dict.items():
+                warning(f"----- {key} : {val} -----")
+            return
 
     def after_dataset_update(
             self, context: Context, pkg_dict: dict[str, Any]) -> None:
