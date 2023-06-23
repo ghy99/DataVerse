@@ -60,10 +60,13 @@ class PackagecontrollerPlugin(plugins.SingletonPlugin):
                 warning(f"package controller ---------- {key} : {val}")
             
             warning(f"---------- clearml_id: {pkg_dict['clearml_id']}")
+
+            # retrieved the dataset from ClearML. Should we allow auto create dataset if it doesnt exist?
             dataset = Dataset.get(
                 dataset_id=pkg_dict['clearml_id']
             )
 
+            # Changing metadata fields for the things below
             package_show['project_title'] = dataset.project
             package_show['dataset_title'] = dataset.name
             new_title = dataset.name + "-v" + dataset._dataset_version
@@ -73,6 +76,7 @@ class PackagecontrollerPlugin(plugins.SingletonPlugin):
             warning(f"---------- NEW TITLE: {new_title}")
             # package_show['name'] = new_name
             package_show['title'] = new_title
+
             new_pkg_dict = toolkit.get_action("package_update")({}, package_show)
             warning(f"---------- THIS IS THE UPDATED PKG DICT ----------")
             for key, val in new_pkg_dict.items():
