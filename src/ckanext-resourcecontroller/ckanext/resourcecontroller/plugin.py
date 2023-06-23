@@ -85,10 +85,22 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
 
         warning(f"----------CREATING DATASET----------")
         # create the dataset and upload to clearml
-        dataset = Dataset.create(
+        
+        dataset = None
+        if "extras" in package_show:
+            parent_list = []
+            for extra in package_show["extras"]:
+                parent_list.append(extra["key"])
+            dataset = Dataset.create(
                 dataset_project=package_project_title,
-                dataset_name=package_dataset_title
-        )
+                dataset_name=package_dataset_title,
+                parent_datasets=parent_list
+            )
+        else:
+            dataset = Dataset.create(
+                    dataset_project=package_project_title,
+                    dataset_name=package_dataset_title
+            )
         warning(f"----------ADDING FILES TO DATASET----------")
         dataset.add_files(path=r'{}'.format(resource_path))
         warning(f"----------UPLOADING TO CLEARML----------")
