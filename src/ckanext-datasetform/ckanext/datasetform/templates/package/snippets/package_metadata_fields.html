@@ -10,7 +10,15 @@
 
 {% block package_metadata_fields_custom %}
     {{ form.markdown('additional_remarks', id='field-additional_remarks', label=_('Additional Remarks'), placeholder=_('eg. Additional Remarks'), value=data.additional_remarks, error=errors.additional_remarks) }}
-    {{ form.input('dataset_type', label=_('Dataset Type'), id='field-dataset_type', placeholder=_('Structured / Semi-Structured / Unstructured Dataset'), value=data.dataset_type, error=errors.dataset_type, classes=['control-medium']) }}
+    {{ form.select(
+        'dataset_type', label=_('Dataset Type'), options=[
+            {'value': '0', 'text': _('[Select Dataset Type]')},
+            {'value': 'Structured', 'text': _('Structured')},
+            {'value': 'Semi-Structured', 'text': _('Semi-Structured')},
+            {'value': 'Unstructured', 'text': _('Unstructured')},
+        ],
+        selected=data.dataset_type if data.dataset_type else '0'
+    )}}
     {{ form.markdown('data_collection', id='field-data_collection', label=_('Dataset Collection Description'), placeholder=_('Account of the collection process applied to the dataset. Description may include: (a) Directly observable data, (b) reported by subjects, (c) Indrirectly inferred / derived from other data. If data is (b) or (c), please state whether the date is validated / verified.'), value=data.data_collection, error=errors.data_collection) }}
     {{ form.select(
         'update_frequency', label=_('Dataset Update Frequency'), options=[

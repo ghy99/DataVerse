@@ -66,11 +66,13 @@
                     {{ dataset_IDs }}, 
                     {{ dataset_details }}
                 )">RENDER TREE</button>#}
-        <button onclick="debug(
-            {{ dependency_graph }}, 
-            {{ dataset_IDs }}, 
-            {{ dataset_details }}
-        )">DEBUG</button>
+        <div class="renderButton">
+            <button class="buttonClass" onclick="debug(
+                {{ dependency_graph }}, 
+                {{ dataset_IDs }}, 
+                {{ dataset_details }}
+            )">Render Version Tree</button>
+        </div>
         <div id="graph-container"></div>
         {%- block footer %}
         {% include "footer.html" %}
