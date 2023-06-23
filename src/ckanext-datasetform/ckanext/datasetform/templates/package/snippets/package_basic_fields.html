@@ -32,6 +32,12 @@
 <div class="add" style="display: none;">
     {{ form.input('project_title', label=_('Project Title'), id='field-project_title', placeholder=_('Project Title'), value=data.project_title, error=errors.project_title, classes=['control-medium']) }}
     {{ form.input('dataset_title', label=_('Dataset Title'), id='field-dataset_title', placeholder=_('Dataset Title'), value=data.dataset_title, error=errors.dataset_title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target', 'class': 'form-control'}) }}
+    {% block package_metadata_fields_custom %}
+    {% block custom_fields %}
+      {% snippet 'snippets/custom_form_fields.html', extras=data.extras, errors=errors, limit=1 %}
+    {% endblock %}
+    {% endblock %}
+
 </div>
 <div class="existing" style="display: none;">
     {{ form.input('clearml_id', label=_('Clearml ID'), id='field-clearml_id', placeholder=_('Clearml_ID'), value=data.clearml_id, error=errors.clearml_id, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target', 'class': 'form-control'}) }}
