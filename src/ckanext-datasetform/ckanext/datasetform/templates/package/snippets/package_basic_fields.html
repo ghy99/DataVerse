@@ -78,7 +78,7 @@
         selected=data.privacy_marking_sensitivity if data.privacy_marking_sensitivity else '0', is_required=true
     )}}
 
-    
+    {{ form.image_upload(data, errors, field_url='url', field_upload='upload', field_clear='clear_upload', field_name='upload', is_upload_enabled=true) }}
 {% endblock %}
 
 {% block package_basic_fields_license %}

@@ -134,6 +134,12 @@
         <td class="dataset-details">{{ pkg_dict.data_dict_and_schema }}</td>
     </tr>
     {% endif %}
+    {% if pkg_dict.upload %}
+    <tr>
+        <th scope="row" class="dataset-label">{{ _("Display Dataset Preview") }}</th>
+        <td class="dataset-details">{{ pkg_dict.upload }}</td>
+    </tr>
+    {% endif %}
 
     <button class="btn btn-primary">
         <a href="{{ h.url_for('versiontree.versiontree', clearml_id=pkg_dict.clearml_id, id=pkg_dict.id) }}" title={{ _('View Version Tree') }}>

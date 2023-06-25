@@ -5,6 +5,7 @@ import logging
 import inspect
 from typing import Any, Optional, Union, cast
 
+import cgi
 from flask.views import MethodView
 from ckan.common import current_user
 
@@ -33,16 +34,15 @@ flatten_to_string_key = logic.flatten_to_string_key
 log = logging.getLogger(__name__)
 
 
-def _setup_template_variables(context: Context,
-                              data_dict: dict[str, Any],
-                              package_type: Optional[str] = None) -> None:
+def _setup_template_variables(
+    context: Context, data_dict: dict[str, Any], package_type: Optional[str] = None
+) -> None:
     return lookup_package_plugin(package_type).setup_template_variables(
         context, data_dict
     )
 
 
-def _get_pkg_template(template_type: str,
-                      package_type: Optional[str] = None) -> str:
+def _get_pkg_template(template_type: str, package_type: Optional[str] = None) -> str:
     pkg_plugin = lookup_package_plugin(package_type)
     method = getattr(pkg_plugin, template_type)
     signature = inspect.signature(method)
@@ -53,35 +53,32 @@ def _get_pkg_template(template_type: str,
 
 
 def _tag_string_to_list(tag_string: str) -> list[dict[str, str]]:
-    """This is used to change tags from a sting to a list of dicts.
-    """
+    """This is used to change tags from a sting to a list of dicts."""
     out: list[dict[str, str]] = []
-    for tag in tag_string.split(u','):
+    for tag in tag_string.split(","):
         tag = tag.strip()
         if tag:
-            out.append({u'name': tag, u'state': u'active'})
+            out.append({"name": tag, "state": "active"})
     return out
 
 
-def _form_save_redirect(pkg_name: str,
-                        action: str,
-                        package_type: Optional[str] = None) -> Response:
+def _form_save_redirect(
+    pkg_name: str, action: str, package_type: Optional[str] = None
+) -> Response:
     """This redirects the user to the CKAN package/read page,
     unless there is request parameter giving an alternate location,
     perhaps an external website.
     @param pkg_name - Name of the package just edited
     @param action - What the action of the edit was
     """
-    assert action in (u'new', u'edit')
-    url = request.args.get(u'return_to') or config.get(
-        u'package_%s_return_url' % action
-    )
+    assert action in ("new", "edit")
+    url = request.args.get("return_to") or config.get("package_%s_return_url" % action)
     if url:
-        url = url.replace(u'<NAME>', pkg_name)
+        url = url.replace("<NAME>", pkg_name)
     else:
         if not package_type:
-            package_type = u'dataset'
-        url = h.url_for(u'{0}.read'.format(package_type), id=pkg_name)
+            package_type = "dataset"
+        url = h.url_for("{0}.read".format(package_type), id=pkg_name)
     return h.redirect_to(url)
 
 
@@ -92,26 +89,29 @@ def _get_package_type(id: str) -> str:
     """
     pkg = model.Package.get(id)
     if pkg:
-        return pkg.type or u'dataset'
-    return u'dataset'
+        return pkg.type or "dataset"
+    return "dataset"
 
 
 class CreatePackageView(MethodView):
     def _is_save(self) -> bool:
-        return u'save' in request.form
+        return "save" in request.form
 
     def _prepare(self) -> Context:  # noqa
-        context = cast(Context, {
-            u'model': model,
-            u'session': model.Session,
-            u'user': current_user.name,
-            u'auth_user_obj': current_user,
-            u'save': self._is_save()
-        })
+        context = cast(
+            Context,
+            {
+                "model": model,
+                "session": model.Session,
+                "user": current_user.name,
+                "auth_user_obj": current_user,
+                "save": self._is_save(),
+            },
+        )
         try:
-            check_access(u'package_create', context)
+            check_access("package_create", context)
         except NotAuthorized:
-            return base.abort(403, _(u'Unauthorized to create a package'))
+            return base.abort(403, _("Unauthorized to create a package"))
         return context
 
     def post(self, package_type: str) -> Union[Response, str]:
@@ -120,96 +120,131 @@ class CreatePackageView(MethodView):
         # this is a real new.
         context = self._prepare()
         is_an_update = False
-        ckan_phase = request.form.get(u'_ckan_phase')
+        ckan_phase = request.form.get("_ckan_phase")
         try:
             data_dict = clean_dict(
                 dict_fns.unflatten(tuplize_dict(parse_params(request.form)))
             )
+            logging.warning(
+                f"-- ---- ---- IM GONNA TRY SMTH HERE PLS WORK ---- ---- --"
+            )
+            files = clean_dict(dict_fns.unflatten(tuplize_dict(parse_params(request.files))))
+            logging.warning(
+                f"-- ---- ---- FILES: {files} --------------------------------------"
+            )
+            data_dict.update(
+                files
+            )
+
         except dict_fns.DataError:
-            return base.abort(400, _(u'Integrity Error'))
+            return base.abort(400, _("Integrity Error"))
         try:
             if ckan_phase:
                 # prevent clearing of groups etc
-                context[u'allow_partial_update'] = True
+                context["allow_partial_update"] = True
                 # sort the tags
-                if u'tag_string' in data_dict:
-                    data_dict[u'tags'] = _tag_string_to_list(
-                        data_dict[u'tag_string']
-                    )
-                if data_dict.get(u'pkg_name'):
+                if "tag_string" in data_dict:
+                    data_dict["tags"] = _tag_string_to_list(data_dict["tag_string"])
+                if data_dict.get("pkg_name"):
                     is_an_update = True
                     # This is actually an update not a save
-                    data_dict[u'id'] = data_dict[u'pkg_name']
-                    del data_dict[u'pkg_name']
+                    data_dict["id"] = data_dict["pkg_name"]
+                    del data_dict["pkg_name"]
                     # don't change the dataset state
-                    data_dict[u'state'] = u'draft'
+                    data_dict["state"] = "draft"
                     # this is actually an edit not a save
-                    pkg_dict = get_action(u'package_update')(
-                        context, data_dict
-                    )
+                    pkg_dict = get_action("package_update")(context, data_dict)
 
                     # redirect to add dataset resources
                     url = h.url_for(
-                        u'{}_resource.new'.format(package_type),
-                        id=pkg_dict[u'name']
+                        "{}_resource.new".format(package_type), id=pkg_dict["name"]
                     )
                     return h.redirect_to(url)
                 # Make sure we don't index this dataset
-                if request.form[u'save'] not in [
-                    u'go-resource', u'go-metadata'
-                ]:
-                    data_dict[u'state'] = u'draft'
+                if request.form["save"] not in ["go-resource", "go-metadata"]:
+                    data_dict["state"] = "draft"
                 # allow the state to be changed
-                context[u'allow_state_change'] = True
+                context["allow_state_change"] = True
 
-            data_dict[u'type'] = package_type
-            pkg_dict = get_action(u'package_create')(context, data_dict)
+            data_dict["type"] = package_type
+            logging.warning(f"---------- VIEWS.PY ----------")
+            for key, val in data_dict.items():
+                logging.warning(f" --- --- --- --- {key} : {val}")
+            pkg_dict = get_action("package_create")(context, data_dict)
+            try:
+                del data_dict["save"]
 
+                # see if we have any data that we are trying to save
+                data_provided = False
+                for key, value in data_dict.items():
+                    if (
+                        value or isinstance(value, cgi.FieldStorage)
+                    ) and key != "resource_type":
+                        data_provided = True
+                        break
+
+                data_dict["package_id"] = pkg_dict['id']
+                try:
+                    get_action("resource_create")({}, data_dict)
+                except ValidationError as e:
+                    errors = e.error_dict
+                    error_summary = e.error_summary
+                    if data_dict.get("url_type") == "upload" and data_dict.get("url"):
+                        data_dict["url"] = ""
+                        data_dict["url_type"] = ""
+                        data_dict["previous_upload"] = True
+                    return self.get(package_type, pkg_dict['id'], data_dict, errors, error_summary)
+                except NotAuthorized:
+                    return base.abort(403, _("Unauthorized to create a resource"))
+                except NotFound:
+                    return base.abort(
+                        404, _(u'The dataset {id} could not be found.').format(id=pkg_dict['id'])
+                    )
+            except dict_fns.DataError:
+                return base.abort(400, _("Integrity Error"))
             # create_on_ui_requires_resources = config.get(
             #     'ckan.dataset.create_on_ui_requires_resources'
             # )
             logging.warning(
-                f"-----------------PRINTING PKG DICT: NEW OR EXISTING: {pkg_dict['new_or_existing']}")
+                f"-----------------PRINTING PKG DICT: NEW OR EXISTING: {pkg_dict['new_or_existing']}"
+            )
             new_or_existing = pkg_dict["new_or_existing"]
             if ckan_phase:
                 if new_or_existing == "Add New Dataset":
                     # redirect to add dataset resources if
                     # create_on_ui_requires_resources is set to true
                     logging.warning(
-                        f"THIS IS ADDING A NEW DATASET!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                        f"THIS IS ADDING A NEW DATASET!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+                    )
                     url = h.url_for(
-                        u'{}_resource.new'.format(package_type),
-                        id=pkg_dict[u'name']
+                        "{}_resource.new".format(package_type), id=pkg_dict["name"]
                     )
                     return h.redirect_to(url)
                 logging.warning(
-                    f"THIS IS REFERENCING FROM CLEARMLLLLLLLLLLLLLLLLLLLLLLLLLL")
-                get_action(u'package_update')(
+                    f"THIS IS REFERENCING FROM CLEARMLLLLLLLLLLLLLLLLLLLLLLLLLL"
+                )
+                get_action("package_update")(
                     cast(Context, dict(context, allow_state_change=True)),
-                    dict(pkg_dict, state=u'active')
+                    dict(pkg_dict, state="active"),
                 )
                 logging.warning(f"TRYING TO REDIRECT NOW!!!!!!!!!!!!!!!!!!!")
-                return h.redirect_to(
-                    u'{}.read'.format(package_type),
-                    id=pkg_dict["id"]
-                )
+                return h.redirect_to("{}.read".format(package_type), id=pkg_dict["id"])
 
             return _form_save_redirect(
-                pkg_dict[u'name'], u'new', package_type=package_type
+                pkg_dict["name"], "new", package_type=package_type
             )
 
         except NotAuthorized:
-            return base.abort(403, _(u'Unauthorized to read package'))
+            return base.abort(403, _("Unauthorized to read package"))
         except NotFound:
-            return base.abort(404, _(u'Dataset not found'))
+            return base.abort(404, _("Dataset not found"))
         except SearchIndexError as e:
             try:
                 exc_str = str(repr(e.args))
             except Exception:  # We don't like bare excepts
                 exc_str = str(str(e))
             return base.abort(
-                500,
-                _(u'Unable to add package to search index.') + exc_str
+                500, _("Unable to add package to search index.") + exc_str
             )
         except ValidationError as e:
             errors = e.error_dict
@@ -217,66 +252,60 @@ class CreatePackageView(MethodView):
             if is_an_update:
                 # we need to get the state of the dataset to show the stage we
                 # are on.
-                pkg_dict = get_action(u'package_show')(context, data_dict)
-                data_dict[u'state'] = pkg_dict[u'state']
+                pkg_dict = get_action("package_show")(context, data_dict)
+                data_dict["state"] = pkg_dict["state"]
                 return EditPackageView().get(
-                    package_type,
-                    data_dict[u'id'],
-                    data_dict,
-                    errors,
-                    error_summary
+                    package_type, data_dict["id"], data_dict, errors, error_summary
                 )
-            data_dict[u'state'] = u'none'
+            data_dict["state"] = "none"
             return self.get(package_type, data_dict, errors, error_summary)
 
-    def get(self,
-            package_type: str,
-            data: Optional[dict[str, Any]] = None,
-            errors: Optional[dict[str, Any]] = None,
-            error_summary: Optional[dict[str, Any]] = None) -> str:
+    def get(
+        self,
+        package_type: str,
+        data: Optional[dict[str, Any]] = None,
+        errors: Optional[dict[str, Any]] = None,
+        error_summary: Optional[dict[str, Any]] = None,
+    ) -> str:
         context = self._prepare()
-        if data and u'type' in data:
-            package_type = data[u'type']
+        if data and "type" in data:
+            package_type = data["type"]
 
         data = data or clean_dict(
             dict_fns.unflatten(
-                tuplize_dict(
-                    parse_params(request.args, ignore_keys=CACHE_PARAMETERS)
-                )
+                tuplize_dict(parse_params(request.args, ignore_keys=CACHE_PARAMETERS))
             )
         )
-        resources_json = h.json.dumps(data.get(u'resources', []))
+        resources_json = h.json.dumps(data.get("resources", []))
         # convert tags if not supplied in data
-        if data and not data.get(u'tag_string'):
-            data[u'tag_string'] = u', '.join(
-                h.dict_list_reduce(data.get(u'tags', {}), u'name')
+        if data and not data.get("tag_string"):
+            data["tag_string"] = ", ".join(
+                h.dict_list_reduce(data.get("tags", {}), "name")
             )
 
         errors = errors or {}
         error_summary = error_summary or {}
         # in the phased add dataset we need to know that
         # we have already completed stage 1
-        stage = [u'active']
-        if data.get(u'state', u'').startswith(u'draft'):
-            stage = [u'active', u'complete']
+        stage = ["active"]
+        if data.get("state", "").startswith("draft"):
+            stage = ["active", "complete"]
 
         # if we are creating from a group then this allows the group to be
         # set automatically
-        data[
-            u'group_id'
-        ] = request.args.get(u'group') or request.args.get(u'groups__0__id')
-
-        form_snippet = _get_pkg_template(
-            u'package_form', package_type=package_type
+        data["group_id"] = request.args.get("group") or request.args.get(
+            "groups__0__id"
         )
+
+        form_snippet = _get_pkg_template("package_form", package_type=package_type)
         form_vars: dict[str, Any] = {
-            u'data': data,
-            u'errors': errors,
-            u'error_summary': error_summary,
-            u'action': u'new',
-            u'stage': stage,
-            u'dataset_type': package_type,
-            u'form_style': u'new'
+            "data": data,
+            "errors": errors,
+            "error_summary": error_summary,
+            "action": "new",
+            "stage": stage,
+            "dataset_type": package_type,
+            "form_style": "new",
         }
         errors_json = h.json.dumps(errors)
 
@@ -286,144 +315,134 @@ class CreatePackageView(MethodView):
 
         _setup_template_variables(context, {}, package_type=package_type)
 
-        new_template = _get_pkg_template(u'new_template', package_type)
+        new_template = _get_pkg_template("new_template", package_type)
         return base.render(
             new_template,
             extra_vars={
-                u'form_vars': form_vars,
-                u'form_snippet': form_snippet,
-                u'dataset_type': package_type,
-                u'resources_json': resources_json,
-                u'form_snippet': form_snippet,
-                u'errors_json': errors_json
-            }
+                "form_vars": form_vars,
+                "form_snippet": form_snippet,
+                "dataset_type": package_type,
+                "resources_json": resources_json,
+                "form_snippet": form_snippet,
+                "errors_json": errors_json,
+            },
         )
 
 
 class EditPackageView(MethodView):
     def _is_save(self) -> bool:
-        return u'save' in request.form
+        return "save" in request.form
 
     def _prepare(self) -> Context:  # noqa
-        context = cast(Context, {
-            u'model': model,
-            u'session': model.Session,
-            u'user': current_user.name,
-            u'auth_user_obj': current_user,
-            u'save': self._is_save()
-        })
+        context = cast(
+            Context,
+            {
+                "model": model,
+                "session": model.Session,
+                "user": current_user.name,
+                "auth_user_obj": current_user,
+                "save": self._is_save(),
+            },
+        )
         try:
-            check_access(u'package_create', context)
+            check_access("package_create", context)
         except NotAuthorized:
-            return base.abort(403, _(u'Unauthorized to create a package'))
+            return base.abort(403, _("Unauthorized to create a package"))
         return context
 
     def post(self, package_type: str, id: str) -> Union[Response, str]:
         context = self._prepare()
         package_type = _get_package_type(id) or package_type
-        log.debug(u'Package save request name: %s POST: %r', id, request.form)
+        log.debug("Package save request name: %s POST: %r", id, request.form)
         try:
             data_dict = clean_dict(
                 dict_fns.unflatten(tuplize_dict(parse_params(request.form)))
             )
         except dict_fns.DataError:
-            return base.abort(400, _(u'Integrity Error'))
+            return base.abort(400, _("Integrity Error"))
         try:
-            if u'_ckan_phase' in data_dict:
+            if "_ckan_phase" in data_dict:
                 # we allow partial updates to not destroy existing resources
-                context[u'allow_partial_update'] = True
-                if u'tag_string' in data_dict:
-                    data_dict[u'tags'] = _tag_string_to_list(
-                        data_dict[u'tag_string']
-                    )
-                del data_dict[u'_ckan_phase']
-                del data_dict[u'save']
-            data_dict['id'] = id
-            pkg_dict = get_action(u'package_update')(context, data_dict)
+                context["allow_partial_update"] = True
+                if "tag_string" in data_dict:
+                    data_dict["tags"] = _tag_string_to_list(data_dict["tag_string"])
+                del data_dict["_ckan_phase"]
+                del data_dict["save"]
+            data_dict["id"] = id
+            pkg_dict = get_action("package_update")(context, data_dict)
 
             return _form_save_redirect(
-                pkg_dict[u'name'], u'edit', package_type=package_type
+                pkg_dict["name"], "edit", package_type=package_type
             )
         except NotAuthorized:
-            return base.abort(403, _(u'Unauthorized to read package %s') % id)
+            return base.abort(403, _("Unauthorized to read package %s") % id)
         except NotFound:
-            return base.abort(404, _(u'Dataset not found'))
+            return base.abort(404, _("Dataset not found"))
         except SearchIndexError as e:
             try:
                 exc_str = str(repr(e.args))
             except Exception:  # We don't like bare excepts
                 exc_str = str(str(e))
-            return base.abort(
-                500,
-                _(u'Unable to update search index.') + exc_str
-            )
+            return base.abort(500, _("Unable to update search index.") + exc_str)
         except ValidationError as e:
             errors = e.error_dict
             error_summary = e.error_summary
             return self.get(package_type, id, data_dict, errors, error_summary)
 
-    def get(self,
-            package_type: str,
-            id: str,
-            data: Optional[dict[str, Any]] = None,
-            errors: Optional[dict[str, Any]] = None,
-            error_summary: Optional[dict[str, Any]] = None
-            ) -> Union[Response, str]:
+    def get(
+        self,
+        package_type: str,
+        id: str,
+        data: Optional[dict[str, Any]] = None,
+        errors: Optional[dict[str, Any]] = None,
+        error_summary: Optional[dict[str, Any]] = None,
+    ) -> Union[Response, str]:
         context = self._prepare()
         package_type = _get_package_type(id) or package_type
         try:
             view_context = context.copy()
-            view_context['for_view'] = True
-            pkg_dict = get_action(u'package_show')(
-                view_context, {u'id': id})
-            context[u'for_edit'] = True
-            old_data = get_action(u'package_show')(context, {u'id': id})
+            view_context["for_view"] = True
+            pkg_dict = get_action("package_show")(view_context, {"id": id})
+            context["for_edit"] = True
+            old_data = get_action("package_show")(context, {"id": id})
             # old data is from the database and data is passed from the
             # user if there is a validation error. Use users data if there.
             if data:
                 old_data.update(data)
             data = old_data
         except (NotFound, NotAuthorized):
-            return base.abort(404, _(u'Dataset not found'))
+            return base.abort(404, _("Dataset not found"))
         assert data is not None
         # are we doing a multiphase add?
-        if data.get(u'state', u'').startswith(u'draft'):
-            g.form_action = h.url_for(u'{}.new'.format(package_type))
-            g.form_style = u'new'
+        if data.get("state", "").startswith("draft"):
+            g.form_action = h.url_for("{}.new".format(package_type))
+            g.form_style = "new"
 
             return CreateView().get(
-                package_type,
-                data=data,
-                errors=errors,
-                error_summary=error_summary
+                package_type, data=data, errors=errors, error_summary=error_summary
             )
 
-        pkg = context.get(u"package")
-        resources_json = h.json.dumps(data.get(u'resources', []))
+        pkg = context.get("package")
+        resources_json = h.json.dumps(data.get("resources", []))
         user = current_user.name
         try:
-            check_access(u'package_update', context)
+            check_access("package_update", context)
         except NotAuthorized:
-            return base.abort(
-                403,
-                _(u'User %r not authorized to edit %s') % (user, id)
-            )
+            return base.abort(403, _("User %r not authorized to edit %s") % (user, id))
         # convert tags if not supplied in data
-        if data and not data.get(u'tag_string'):
-            data[u'tag_string'] = u', '.join(
-                h.dict_list_reduce(pkg_dict.get(u'tags', {}), u'name')
+        if data and not data.get("tag_string"):
+            data["tag_string"] = ", ".join(
+                h.dict_list_reduce(pkg_dict.get("tags", {}), "name")
             )
         errors = errors or {}
-        form_snippet = _get_pkg_template(
-            u'package_form', package_type=package_type
-        )
+        form_snippet = _get_pkg_template("package_form", package_type=package_type)
         form_vars: dict[str, Any] = {
-            u'data': data,
-            u'errors': errors,
-            u'error_summary': error_summary,
-            u'action': u'edit',
-            u'dataset_type': package_type,
-            u'form_style': u'edit'
+            "data": data,
+            "errors": errors,
+            "error_summary": error_summary,
+            "action": "edit",
+            "dataset_type": package_type,
+            "form_style": "edit",
         }
         errors_json = h.json.dumps(errors)
 
@@ -432,26 +451,24 @@ class EditPackageView(MethodView):
         g.resources_json = resources_json
         g.errors_json = errors_json
 
-        _setup_template_variables(
-            context, {u'id': id}, package_type=package_type
-        )
+        _setup_template_variables(context, {"id": id}, package_type=package_type)
 
         # we have already completed stage 1
-        form_vars[u'stage'] = [u'active']
-        if data.get(u'state', u'').startswith(u'draft'):
-            form_vars[u'stage'] = [u'active', u'complete']
+        form_vars["stage"] = ["active"]
+        if data.get("state", "").startswith("draft"):
+            form_vars["stage"] = ["active", "complete"]
 
-        edit_template = _get_pkg_template(u'edit_template', package_type)
+        edit_template = _get_pkg_template("edit_template", package_type)
         return base.render(
             edit_template,
             extra_vars={
-                u'form_vars': form_vars,
-                u'form_snippet': form_snippet,
-                u'dataset_type': package_type,
-                u'pkg_dict': pkg_dict,
-                u'pkg': pkg,
-                u'resources_json': resources_json,
-                u'form_snippet': form_snippet,
-                u'errors_json': errors_json
-            }
+                "form_vars": form_vars,
+                "form_snippet": form_snippet,
+                "dataset_type": package_type,
+                "pkg_dict": pkg_dict,
+                "pkg": pkg,
+                "resources_json": resources_json,
+                "form_snippet": form_snippet,
+                "errors_json": errors_json,
+            },
         )

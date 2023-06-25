@@ -75,17 +75,14 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
         package_dataset_title = package_show["dataset_title"]
         package_project_title = package_show["project_title"]
         
-        warning(f"----------PACKAGE SHOW ITEMS----------")
-        for key, val in package_show.items():
-            warning(f"{key} : {val}")
+        # warning(f"----------PACKAGE SHOW ITEMS----------")
+        # for key, val in package_show.items():
+        #     warning(f"{key} : {val}")
 
-        warning(f"----------RESOURCE SHOW ITEMS----------")
-        for key, val in resource_show.items():
-            warning(f"{key} : {val}")
+        
 
         warning(f"----------CREATING DATASET----------")
         # create the dataset and upload to clearml
-        
         dataset = None
         if "extras" in package_show:
             parent_list = []
@@ -113,6 +110,10 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
 
         warning(f"---------- NEW PACKAGE ITEMS: ----------")
         for key, val in new_package.items():
+            warning(f"{key} : {val}")
+        
+        warning(f"----------RESOURCE SHOW ITEMS----------")
+        for key, val in resource_show.items():
             warning(f"{key} : {val}")
         return
 
