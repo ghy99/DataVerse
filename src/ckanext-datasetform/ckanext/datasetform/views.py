@@ -191,7 +191,10 @@ class CreatePackageView(MethodView):
 
             pkg_dict['resources'] = [{
                 "package_id" : pkg_dict['id'], 
-                "url" : resource['url']
+                "url" : resource['url'], 
+                "name" : resource['name'],
+                # "preview" : True,
+                "url_type" : resource['url_type']
             }]
             pkg_dict = get_action("package_update")({}, pkg_dict)
             # create_on_ui_requires_resources = config.get(
