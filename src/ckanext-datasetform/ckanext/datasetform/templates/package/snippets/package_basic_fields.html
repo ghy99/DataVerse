@@ -77,8 +77,10 @@
         ],
         selected=data.privacy_marking_sensitivity if data.privacy_marking_sensitivity else '0', is_required=true
     )}}
-
     
+    <label for="upload">Upload Dataset Preview</label>
+    <input name="upload" id='upload' type="file">
+    {# {{ form.image_upload(data, errors, is_upload=(data.url_type == 'upload'), field_url='url', field_upload='upload', field_clear='clear_upload', field_name='upload', url_label=_('URL'), upload_label=_('File'), is_upload_enabled=h.uploads_enabled()) }} #}
 {% endblock %}
 
 {% block package_basic_fields_license %}
