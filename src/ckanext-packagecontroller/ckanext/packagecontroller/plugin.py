@@ -72,9 +72,9 @@ class PackagecontrollerPlugin(plugins.SingletonPlugin):
             package_show['title'] = new_title
 
             new_pkg_dict = toolkit.get_action("package_update")({}, package_show)
-            warning(f"---------- THIS IS THE UPDATED PKG DICT ----------")
-            for key, val in new_pkg_dict.items():
-                warning(f"----- {key} : {val} -----")
+            # warning(f"---------- THIS IS THE UPDATED PKG DICT ----------")
+            # for key, val in new_pkg_dict.items():
+            #     warning(f"----- {key} : {val} -----")
             return
 
     def after_dataset_update(

@@ -58,7 +58,6 @@ class Upload(DefaultUpload):
         of name object_type. old_filename is the name of the file in the url
         field last time"""
 
-        warning(f" ------------------ IM FKING HERE BITCH")
         self.storage_path = None
         self.filename = None
         self.filepath = None
@@ -66,7 +65,7 @@ class Upload(DefaultUpload):
         if not path:
             return
 
-        warning(f"------ i am printing object type: {object_type}")
+        # warning(f"------ i am printing object type: {object_type}")
         self.storage_path = os.path.join(path, "storage", "uploads", object_type)
         # check if the storage directory is already created by
         # the user or third-party
@@ -98,11 +97,8 @@ class Upload(DefaultUpload):
         requests the upload to be deleted.  This needs to be called before
         it reaches any validators"""
 
-        warning(
-            f"---------------------------------------------------------------- fucking print something my god"
-        )
-        warning(f"---- ---- ---- WHAT THE FUCK IS URL_FIELD : {url_field}")
-        warning(f"---- ---- ---- FUCKING PRINT THE DATADICT : {data_dict}")
+        warning(f"---- ---- ---- WHAT IS URL_FIELD : {url_field}")
+        warning(f"---- ---- ---- PRINT THE DATADICT : {data_dict}")
         self.url = data_dict.get(url_field, "")
         self.clear = data_dict.pop(clear_field, None)
         self.file_field = file_field
@@ -139,7 +135,7 @@ class Upload(DefaultUpload):
         anything unless the request is actually good.
         max_size is size in MB maximum of the file"""
         warning(
-            f"---------- bruh what the FUCK APPEAR LA Package Uploader -- filename: {self.filename}"
+            f"---------- bruh Package Uploader -- filename: {self.filename}"
         )
         self.verify_type()
 
@@ -188,7 +184,7 @@ class ResourceUpload(DefaultResourceUpload):
             directory_id[3:6],
             directory_id[6:],
         )
-        warning(f"---------- Resource Uploader -- filepathhhh: {filepath}")
+        warning(f"---------- Resource Uploader -- filepath: {filepath}")
         return filepath
 
     def upload(self, directory_id, max_size: int = 200):
@@ -245,13 +241,13 @@ class FileuploaderPlugin(plugins.SingletonPlugin):
     # IUploader
     def get_uploader(self, upload_to: str,
                      old_filename: Optional[str]) -> Optional[PUploader]:
-        warning(f"WHAT TF IS UPLOAD TO: {upload_to}")
-        warning(f"PRINT THE FUCKING UPLOAD KNN: {old_filename}")
+        warning(f"WHAT IS UPLOAD TO: {upload_to}")
+        warning(f"PRINT THE UPLOAD: {old_filename}")
         # upload_to = 'preview'
         return Upload(upload_to, old_filename)
 
     def get_resource_uploader(self, data_dict: dict[str, Any]):
-        warning(f"---- ---- ---- PRINTING THE FKING DATADICT FROM IUploader: ")
+        warning(f"---- ---- ---- PRINTING THE DATADICT FROM IUploader: ")
         for key, val in data_dict.items():
             warning(f"---- ---- {key} : {val}")
         return ResourceUpload(data_dict)

@@ -139,10 +139,10 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                     toolkit.get_validator("ignore_missing"),
                     toolkit.get_converter("convert_to_extras"),
                 ],
-                "upload": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_to_extras"),
-                ],
+                # "upload": [
+                #     toolkit.get_validator("ignore_missing"),
+                #     toolkit.get_converter("convert_to_extras"),
+                # ],
             }
         )
 
@@ -268,10 +268,10 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                     toolkit.get_converter("convert_from_extras"),
                     toolkit.get_validator("ignore_missing"),
                 ],
-                "upload": [
-                    toolkit.get_converter("convert_from_extras"),
-                    toolkit.get_validator("ignore_missing"),
-                ],
+                # "upload": [
+                #     toolkit.get_converter("convert_from_extras"),
+                #     toolkit.get_validator("ignore_missing"),
+                # ],
             }
         )
 

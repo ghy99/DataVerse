@@ -72,7 +72,8 @@ def _form_save_redirect(
     @param action - What the action of the edit was
     """
     assert action in ("new", "edit")
-    url = request.args.get("return_to") or config.get("package_%s_return_url" % action)
+    url = request.args.get("return_to") or config.get(
+        "package_%s_return_url" % action)
     if url:
         url = url.replace("<NAME>", pkg_name)
     else:
@@ -128,7 +129,12 @@ class CreatePackageView(MethodView):
             logging.warning(
                 f"-- ---- ---- IM GONNA TRY SMTH HERE PLS WORK ---- ---- --"
             )
-            files = clean_dict(dict_fns.unflatten(tuplize_dict(parse_params(request.files))))
+            # files = clean_dict(dict_fns.unflatten(
+            #     tuplize_dict(parse_params(request.files['upload']))))
+            files = clean_dict(
+                dict_fns.unflatten(tuplize_dict(parse_params(request.files)))
+            )
+
             logging.warning(
                 f"-- ---- ---- FILES: {files} --------------------------------------"
             )
@@ -144,7 +150,8 @@ class CreatePackageView(MethodView):
                 context["allow_partial_update"] = True
                 # sort the tags
                 if "tag_string" in data_dict:
-                    data_dict["tags"] = _tag_string_to_list(data_dict["tag_string"])
+                    data_dict["tags"] = _tag_string_to_list(
+                        data_dict["tag_string"])
                 if data_dict.get("pkg_name"):
                     is_an_update = True
                     # This is actually an update not a save
@@ -170,38 +177,23 @@ class CreatePackageView(MethodView):
             logging.warning(f"---------- VIEWS.PY ----------")
             for key, val in data_dict.items():
                 logging.warning(f" --- --- --- --- {key} : {val}")
+
+
             pkg_dict = get_action("package_create")(context, data_dict)
-            try:
-                del data_dict["save"]
 
-                # see if we have any data that we are trying to save
-                data_provided = False
-                for key, value in data_dict.items():
-                    if (
-                        value or isinstance(value, cgi.FieldStorage)
-                    ) and key != "resource_type":
-                        data_provided = True
-                        break
 
-                data_dict["package_id"] = pkg_dict['id']
-                try:
-                    get_action("resource_create")({}, data_dict)
-                except ValidationError as e:
-                    errors = e.error_dict
-                    error_summary = e.error_summary
-                    if data_dict.get("url_type") == "upload" and data_dict.get("url"):
-                        data_dict["url"] = ""
-                        data_dict["url_type"] = ""
-                        data_dict["previous_upload"] = True
-                    return self.get(package_type, pkg_dict['id'], data_dict, errors, error_summary)
-                except NotAuthorized:
-                    return base.abort(403, _("Unauthorized to create a resource"))
-                except NotFound:
-                    return base.abort(
-                        404, _(u'The dataset {id} could not be found.').format(id=pkg_dict['id'])
-                    )
-            except dict_fns.DataError:
-                return base.abort(400, _("Integrity Error"))
+            logging.warning(f"--- -- ---- - IM GONNA TRY CREATING RESOURCE HERE")
+            resource = get_action(f"resource_create")({}, {
+                "package_id" : pkg_dict["id"],
+                "upload" : data_dict['upload'],
+                'preview' : True
+            })
+
+            pkg_dict['resources'] = [{
+                "package_id" : pkg_dict['id'], 
+                "url" : resource['url']
+            }]
+            pkg_dict = get_action("package_update")({}, pkg_dict)
             # create_on_ui_requires_resources = config.get(
             #     'ckan.dataset.create_on_ui_requires_resources'
             # )
@@ -273,7 +265,8 @@ class CreatePackageView(MethodView):
 
         data = data or clean_dict(
             dict_fns.unflatten(
-                tuplize_dict(parse_params(request.args, ignore_keys=CACHE_PARAMETERS))
+                tuplize_dict(parse_params(
+                    request.args, ignore_keys=CACHE_PARAMETERS))
             )
         )
         resources_json = h.json.dumps(data.get("resources", []))
@@ -297,7 +290,8 @@ class CreatePackageView(MethodView):
             "groups__0__id"
         )
 
-        form_snippet = _get_pkg_template("package_form", package_type=package_type)
+        form_snippet = _get_pkg_template(
+            "package_form", package_type=package_type)
         form_vars: dict[str, Any] = {
             "data": data,
             "errors": errors,
@@ -365,7 +359,8 @@ class EditPackageView(MethodView):
                 # we allow partial updates to not destroy existing resources
                 context["allow_partial_update"] = True
                 if "tag_string" in data_dict:
-                    data_dict["tags"] = _tag_string_to_list(data_dict["tag_string"])
+                    data_dict["tags"] = _tag_string_to_list(
+                        data_dict["tag_string"])
                 del data_dict["_ckan_phase"]
                 del data_dict["save"]
             data_dict["id"] = id
@@ -435,7 +430,8 @@ class EditPackageView(MethodView):
                 h.dict_list_reduce(pkg_dict.get("tags", {}), "name")
             )
         errors = errors or {}
-        form_snippet = _get_pkg_template("package_form", package_type=package_type)
+        form_snippet = _get_pkg_template(
+            "package_form", package_type=package_type)
         form_vars: dict[str, Any] = {
             "data": data,
             "errors": errors,
@@ -451,7 +447,8 @@ class EditPackageView(MethodView):
         g.resources_json = resources_json
         g.errors_json = errors_json
 
-        _setup_template_variables(context, {"id": id}, package_type=package_type)
+        _setup_template_variables(
+            context, {"id": id}, package_type=package_type)
 
         # we have already completed stage 1
         form_vars["stage"] = ["active"]
