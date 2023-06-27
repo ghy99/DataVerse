@@ -189,12 +189,23 @@ class CreatePackageView(MethodView):
                 'preview' : True
             })
 
+            logging.warning(f"- ---- -- --- - I AM AT VIEWS.PY LINE 192 -------------------------------------------")
+            logging.warning(f"- ---- -- --- - PRINTING RESOURCE FROM LINE 186 -------------------------------------")
+
+            for key, val in resource.items():
+                logging.warning(f"- --- ---- --- {key} : {val}")
+
             pkg_dict['resources'] = [{
-                "package_id" : pkg_dict['id'], 
-                "url" : resource['url'], 
+                "format" : resource['format'],
+                "url" : resource['url'],
+                "url_type" : resource['url_type'],
+                "package_id" : pkg_dict['name'] or pkg_dict['id'], 
                 "name" : resource['name'],
+                "last_modified" : resource['last_modified'],
+                "mimetype" : resource['mimetype'],
+                "size" : resource['size'],
                 # "preview" : True,
-                "url_type" : resource['url_type']
+                
             }]
             pkg_dict = get_action("package_update")({}, pkg_dict)
             # create_on_ui_requires_resources = config.get(

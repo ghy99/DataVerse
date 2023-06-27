@@ -21,6 +21,7 @@ MB = 1 << 20
 
 
 def _copy_file(input_file: IO[bytes], output_file: IO[bytes], max_size: int) -> None:
+    max_size = int(max_size)
     input_file.seek(0)
     current_size = 0
     while True:
@@ -32,6 +33,8 @@ def _copy_file(input_file: IO[bytes], output_file: IO[bytes], max_size: int) -> 
             break
         output_file.write(data)
         if current_size > max_size:
+            warning(f"- ---- -- --- - the current size uploaded: {current_size}")
+            warning(f"- ---- -- --- - the max size allowed: {max_size}")
             raise logic.ValidationError({"upload": ["File upload too large"]})
 
 
@@ -128,7 +131,7 @@ class Upload(DefaultUpload):
             if self.clear and self.url == self.old_filename:
                 data_dict[url_field] = ""
 
-    def upload(self, max_size: int = 200) -> None:
+    def upload(self, max_size: int = 20) -> None:
         """Actually upload the file.
         This should happen just before a commit but after the data has
         been validated and flushed to the db. This is so we do not store
@@ -137,6 +140,7 @@ class Upload(DefaultUpload):
         warning(
             f"---------- bruh Package Uploader -- filename: {self.filename}"
         )
+        warning(f"- ---- -- --- - show max size in Upload: {max_size}")
         self.verify_type()
 
         if self.filename:
@@ -187,21 +191,21 @@ class ResourceUpload(DefaultResourceUpload):
         warning(f"---------- Resource Uploader -- filepath: {filepath}")
         return filepath
 
-    def upload(self, directory_id, max_size: int = 200):
+    def upload(self, directory_id, max_size: int = 15):
         """
         Uploading the file
 
         Args:
             directory_id (_type_): honestly dk what this is
-            max_size (int, optional): file size defaults to 200.
+            max_size (int, optional): file size defaults to 15.
         """
-
         filepath = self.get_path(directory_id)
         directory = self.get_directory(directory_id)
         if self.filename:
             warning(
                 f"---------- Resource Uploader -- wtf is a self.filename: {self.filename}"
             )
+            warning(f"- ---- -- --- - show max size in ResourceUpload: {max_size}")
             try:
                 os.makedirs(directory)
             except OSError as e:
