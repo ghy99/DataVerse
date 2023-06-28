@@ -1,3 +1,4 @@
+
 {#
   Resource upload form field that allows switching between:
     URL  <->  Unset  <->  File upload (when enabled)
@@ -89,20 +90,44 @@
                 js="$('#field-resource-upload').replaceWith($('#field-resource-upload').val('').clone(true))") }}
 
                 {#todo (jinrui): change the logic so that it zips folders#}
+                
+                {#
               {{ form.input(
                 'upload',
                 label=upload_label or _('File'),
                 id='field-resource-upload',
                 type='file',
                 classes=['control-full']) }}
+                #}
 
 
-              <div class="form-group control-full">
-                  <label class="form-label" for="upload">Upload Dataset Preview</label>
+                <div class="upload-type">
+                  <label class="form-label" for="upload">Upload file or folder</label>
                   <div class="controls">
-                      <input name="upload" id='upload' type="file" class="form-control">
+                    <input name="upload" id="upload" type="file" class="form-control" multiple onchange="handleFileSelect(event)"> 
                   </div>
-              </div>
+                </div>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+                <script>
+                  function handleFileSelect(event) {
+                    var files = event.target.files;
+                    var zip = new JSZip();
+                    
+                    for (var i = 0; i < files.length; i++) {
+                      var file = files[i];
+                      
+                      // Add each file to the ZIP archive
+                      zip.file(file.name, file);
+                    }
+                    
+                    // Generate the ZIP file asynchronously
+                    zip.generateAsync({type: "blob"}).then(function(content) {
+                      // Save the ZIP file or handle it as needed
+                      saveAs(content, "folder.zip");
+                    });
+                  }
+                </script>
 
 
             </div>

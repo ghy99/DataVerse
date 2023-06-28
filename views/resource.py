@@ -185,13 +185,16 @@ def download(package_type: str,
 
 class CreateView(MethodView):
     def post(self, package_type: str, id: str) -> Union[str, Response]:
+        logging.warning("THIS IS THE FIRST LINE OF POST IN RESOURCE")
         save_action = request.form.get(u'save')
         data = clean_dict(
             dict_fns.unflatten(tuplize_dict(parse_params(request.form)))
         )
-        data.update(clean_dict(
-            dict_fns.unflatten(tuplize_dict(parse_params(request.files)))
-        ))
+        files = dict_fns.unflatten(tuplize_dict(parse_params(request.files)))
+        
+        logging.warning(f"FILLLLLLEEEEEEEEEEEEESSSSSSSSSSSSSSSSSSSSSSSS: ")
+        logging.warning(f"{files}")
+        data.update(clean_dict(files))
         logging.warning(f"- - - - - - - - - - RESOURCE.PY")
         logging.warning(f"- - - - - - - - - - what does resource form send?")
         for key, val in data.items():
