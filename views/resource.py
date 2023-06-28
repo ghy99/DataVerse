@@ -191,9 +191,16 @@ class CreateView(MethodView):
             dict_fns.unflatten(tuplize_dict(parse_params(request.form)))
         )
         files = dict_fns.unflatten(tuplize_dict(parse_params(request.files)))
+        temp = []
         
+        for eachFile in files['upload'] :
+            temp.append({
+                'key' : 'upload', 'value' : eachFile
+            })
+        files['upload'] = temp
+
         logging.warning(f"FILLLLLLEEEEEEEEEEEEESSSSSSSSSSSSSSSSSSSSSSSS: ")
-        logging.warning(f"{files}")
+        logging.warning(f" ---------- ---------- ----- {files}")
         data.update(clean_dict(files))
         logging.warning(f"- - - - - - - - - - RESOURCE.PY")
         logging.warning(f"- - - - - - - - - - what does resource form send?")
