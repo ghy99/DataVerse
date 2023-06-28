@@ -192,7 +192,10 @@ class CreateView(MethodView):
         data.update(clean_dict(
             dict_fns.unflatten(tuplize_dict(parse_params(request.files)))
         ))
-
+        logging.warning(f"- - - - - - - - - - RESOURCE.PY")
+        logging.warning(f"- - - - - - - - - - what does resource form send?")
+        for key, val in data.items():
+            logging.warning(f"- - - - - {key} : {val}")
         # we don't want to include save as it is part of the form
         del data[u'save']
         resource_id = data.pop(u'id')

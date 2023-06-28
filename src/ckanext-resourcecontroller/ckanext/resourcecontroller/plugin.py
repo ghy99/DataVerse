@@ -126,10 +126,10 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
         # for key, val in resource_show.items():
         #     warning(f"{key} : {val}")
 
-        warning(f"-- --- ---- ----- deletinggg")
-        toolkit.get_action('resource_delete')({}, {
-            "id": resource['id']
-        })
+        # warning(f"-- --- ---- ----- deletinggg")
+        # toolkit.get_action('resource_delete')({}, {
+        #     "id": resource['id']
+        # })
         return
 
     def before_resource_update(self, context: Context, current: dict[str, Any],
