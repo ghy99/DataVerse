@@ -15,6 +15,9 @@ import cgi
 from typing import Any, IO, Union, Optional
 from logging import warning
 from werkzeug.datastructures import FileStorage as FlaskFileStorage
+from urllib.parse import urlparse
+import mimetypes
+import magic
 
 ALLOWED_UPLOAD_TYPES = (cgi.FieldStorage, FlaskFileStorage)
 MB = 1 << 20
@@ -171,24 +174,76 @@ class Upload(DefaultUpload):
 
 class ResourceUpload(DefaultResourceUpload):
     path_prefix = "resources"
+    mimetype: Optional[str]
 
-    def get_directory(self, directory_id: str):
+    def __init__(self, resource: dict[str, Any]) -> None:
         path = get_storage_path()
-        directory = os.path.join(
-            path, self.path_prefix, directory_id[0:3], directory_id[3:6]
-        )
+        config_mimetype_guess = config.get('ckan.mimetype_guess')
+
+        if not path:
+            self.storage_path = None
+            return
+        self.storage_path = os.path.join(path, 'resources')
+        try:
+            os.makedirs(self.storage_path)
+        except OSError as e:
+            # errno 17 is file already exists
+            if e.errno != 17:
+                raise
+        self.filename = None
+        self.mimetype = None
+
+        url = resource.get('url')
+
+        upload_field_storage = resource.pop('upload', None)
+        self.clear = resource.pop('clear_upload', None)
+
+        if url and config_mimetype_guess == 'file_ext' and urlparse(url).path:
+            self.mimetype = mimetypes.guess_type(url)[0]
+
+        if bool(upload_field_storage) and \
+                isinstance(upload_field_storage, ALLOWED_UPLOAD_TYPES):
+            self.filesize = 0  # bytes
+
+            self.filename = upload_field_storage.filename
+            assert self.filename is not None
+            self.filename = munge.munge_filename(self.filename)
+            resource['url'] = self.filename
+            resource['url_type'] = 'upload'
+            resource['last_modified'] = datetime.datetime.utcnow()
+            self.upload_file = _get_underlying_file(upload_field_storage)
+            assert self.upload_file is not None
+            self.upload_file.seek(0, os.SEEK_END)
+            self.filesize = self.upload_file.tell()
+            # go back to the beginning of the file buffer
+            self.upload_file.seek(0, os.SEEK_SET)
+
+            # check if the mimetype failed from guessing with the url
+            if not self.mimetype and config_mimetype_guess == 'file_ext':
+                self.mimetype = mimetypes.guess_type(self.filename)[0]
+
+            if not self.mimetype and config_mimetype_guess == 'file_contents':
+                try:
+                    self.mimetype = magic.from_buffer(self.upload_file.read(),
+                                                      mime=True)
+                    self.upload_file.seek(0, os.SEEK_SET)
+                except IOError:
+                    # Not that important if call above fails
+                    self.mimetype = None
+
+        elif self.clear:
+            resource['url_type'] = ''
+
+    def get_directory(self, id: str) -> str:
+        assert self.storage_path
+        directory = os.path.join(self.storage_path, id[0:3], id[3:6])
+        warning(f"-- -- ---- ---- THE DIRECTORY: {directory}")
         return directory
 
-    def get_path(self, directory_id: str):
-        path = get_storage_path()
-        filepath = os.path.join(
-            path,
-            self.path_prefix,
-            directory_id[0:3],
-            directory_id[3:6],
-            directory_id[6:],
-        )
-        warning(f"---------- Resource Uploader -- filepath: {filepath}")
+    def get_path(self, id: str) -> str:
+        directory = self.get_directory(id)
+        filepath = os.path.join(directory, id[6:])
+        warning(f"-- -- ---- ---- FILE PATH: {filepath}")
         return filepath
 
     def upload(self, directory_id, max_size: int = 15):
@@ -201,7 +256,7 @@ class ResourceUpload(DefaultResourceUpload):
         """
         filepath = self.get_path(directory_id)
         directory = self.get_directory(directory_id)
-        if self.filename:
+        if self.filename: # WHY DIDNT IT ENTER HERE SHOULD IT ENTER????
             warning(
                 f"---------- Resource Uploader -- wtf is a self.filename: {self.filename}"
             )
