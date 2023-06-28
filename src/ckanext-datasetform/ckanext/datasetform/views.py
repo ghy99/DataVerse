@@ -123,27 +123,23 @@ class CreatePackageView(MethodView):
         is_an_update = False
         ckan_phase = request.form.get("_ckan_phase")
         try:
-            data_dict = clean_dict(
-                dict_fns.unflatten(tuplize_dict(parse_params(request.form)))
-            )
+            data_dict = clean_dict(dict_fns.unflatten(
+                tuplize_dict(parse_params(request.form))))
             logging.warning(
-                f"-- ---- ---- IM GONNA TRY SMTH HERE PLS WORK ---- ---- --"
-            )
-            # files = clean_dict(dict_fns.unflatten(
-            #     tuplize_dict(parse_params(request.files['upload']))))
-            files = clean_dict(
-                dict_fns.unflatten(tuplize_dict(parse_params(request.files)))
-            )
+                f"-- ---- ---- IM GONNA TRY SMTH HERE PLS WORK ---- ---- --")
+            files = clean_dict(dict_fns.unflatten(
+                tuplize_dict(parse_params(request.files))))
 
-            logging.warning(
-                f"-- ---- ---- FILES: {files} --------------------------------------"
-            )
-            data_dict.update(
-                files
-            )
+            # logging.warning(f"-- ---- ---- FILES: {files} --------------------------------------")
+            data_dict.update(files)
 
         except dict_fns.DataError:
             return base.abort(400, _("Integrity Error"))
+        
+        logging.warning(f" - - - -  -- -- -- PRINTING DATA DICT IN VIEWS.PY")
+        for key, val in data_dict.items():
+            logging.warning(f"-- -- -- - -- -- {key} : {val}")
+
         try:
             if ckan_phase:
                 # prevent clearing of groups etc
@@ -174,29 +170,52 @@ class CreatePackageView(MethodView):
                 context["allow_state_change"] = True
 
             data_dict["type"] = package_type
+
             logging.warning(f"---------- VIEWS.PY ----------")
             for key, val in data_dict.items():
                 logging.warning(f" --- --- --- --- {key} : {val}")
 
-
             pkg_dict = get_action("package_create")(context, data_dict)
 
-
-            logging.warning(f"--- -- ---- - IM GONNA TRY CREATING RESOURCE HERE")
+            logging.warning(
+                f"--- -- ---- - IM GONNA TRY CREATING RESOURCE HERE")
             resource = get_action(f"resource_create")({}, {
-                "package_id" : pkg_dict["id"],
-                "upload" : data_dict['upload'],
-                'preview' : True
+                "package_id": pkg_dict["id"],
+                "upload": data_dict['upload'],
+                'preview': True, 
+                "format" : "",
+
             })
 
-            pkg_dict['resources'] = [{
-                "package_id" : pkg_dict['id'], 
-                "url" : resource['url'], 
-                "name" : resource['name'],
-                # "preview" : True,
-                "url_type" : resource['url_type']
-            }]
+            logging.warning(
+                f"- ---- -- --- - I AM AT VIEWS.PY LINE 192 -------------------------------------------")
+            logging.warning(
+                f"- ---- -- --- - PRINTING RESOURCE FROM LINE 186 -------------------------------------")
+
+            for key, val in resource.items():
+                logging.warning(f"- --- ---- --- {key} : {val}")
+
+            pkg_dict['resources'].append(resource)
+            # pkg_dict['resources'] = [{
+            #     "format": resource['format'],
+            #     "url": resource['url'],
+            #     "url_type": resource['url_type'],
+            #     "package_id": pkg_dict['name'] or pkg_dict['id'],
+            #     "name": resource['name'],
+            #     "last_modified": resource['last_modified'],
+            #     "mimetype": resource['mimetype'],
+            #     "size": resource['size'],
+            #     "id" : resource['id']
+            #     # "preview" : True,
+            # }]
             pkg_dict = get_action("package_update")({}, pkg_dict)
+
+            logging.warning(
+                f"- ---- -- --- - PRINTING RESOURCE FROM LINE 213 -------------------------------------")
+
+            for key, val in pkg_dict.items():
+                logging.warning(f"- --- ---- --- {key} : {val}")
+
             # create_on_ui_requires_resources = config.get(
             #     'ckan.dataset.create_on_ui_requires_resources'
             # )
