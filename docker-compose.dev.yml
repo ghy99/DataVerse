@@ -45,6 +45,8 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:8800"]
+    env_file:
+      - .env
 
   db:
     container_name: ${POSTGRESQL_CONTAINER_NAME}
