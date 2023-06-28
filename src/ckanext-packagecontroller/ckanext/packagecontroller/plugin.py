@@ -55,12 +55,6 @@ class PackagecontrollerPlugin(plugins.SingletonPlugin):
         else:
             package_show = toolkit.get_action('package_show')({}, {"id": pkg_dict['id']})
 
-            warning(f"---------- THIS IS THE PKG DICT ----------")
-            for key, val in pkg_dict.items():
-                warning(f"package controller ---------- {key} : {val}")
-            
-            warning(f"---------- clearml_id: {pkg_dict['clearml_id']}")
-
             # retrieved the dataset from ClearML. Should we allow auto create dataset if it doesnt exist?
             dataset = Dataset.get(
                 dataset_id=pkg_dict['clearml_id']
@@ -73,14 +67,14 @@ class PackagecontrollerPlugin(plugins.SingletonPlugin):
             new_title = new_title.replace(" ", "-")
             new_title = new_title.replace(".", "-")
             new_title = new_title.lower()
-            warning(f"---------- NEW TITLE: {new_title}")
+            # warning(f"---------- NEW TITLE: {new_title}")
             # package_show['name'] = new_name
             package_show['title'] = new_title
 
             new_pkg_dict = toolkit.get_action("package_update")({}, package_show)
-            warning(f"---------- THIS IS THE UPDATED PKG DICT ----------")
-            for key, val in new_pkg_dict.items():
-                warning(f"----- {key} : {val} -----")
+            # warning(f"---------- THIS IS THE UPDATED PKG DICT ----------")
+            # for key, val in new_pkg_dict.items():
+            #     warning(f"----- {key} : {val} -----")
             return
 
     def after_dataset_update(

@@ -22,13 +22,13 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IResourceController)
 
-
     # IConfigurer
+
     def update_config(self, config_):
         toolkit.add_template_directory(config_, "templates")
         toolkit.add_public_directory(config_, "public")
         toolkit.add_resource("assets", "resourcecontroller")
-    
+
     # IResourceController
     def before_resource_create(
             self, context: Context, resource: dict[str, Any]) -> None:
@@ -43,10 +43,6 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
         :type resource: dictionary
         '''
         resource['name'] = resource['upload'].filename
-
-        warning(f"----------BEFORE RESOURCE CREATE ITEMS----------")
-        for key, val in resource.items():
-            warning(f"{key} : {val}")
         return
 
     def after_resource_create(
@@ -64,42 +60,52 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
             of linked.
         :type resource: dictionary
         '''
+        
+        if 'preview' in resource:
+            if resource['preview']:
+                return
+        
         # get the file path to the uploaded resource
         resource_id = resource["id"]
         resource_path = find_file(resource_id)
-        
+
         # get the dataset title and the project title
-        resource_show = toolkit.get_action("resource_show")({},{"id":resource_id})
+        resource_show = toolkit.get_action(
+            "resource_show")({}, {"id": resource_id})
+        warning(f" -- --- - ---- DEBUGGING RESOURCE CONTROLLER: ")
+        for key, val in resource_show.items():
+            warning(f" -- --- - ---- {key} : {val}")
+        # resource_show['name'] = resource_show['upload'].filename
+        # resource_show = toolkit.get_action("resource_update")({}, resource_show)
+
         package_id = resource_show["package_id"]
-        package_show = toolkit.get_action("package_show")({},{"id":package_id})
+        package_show = toolkit.get_action(
+            "package_show")({}, {"id": package_id})
         package_dataset_title = package_show["dataset_title"]
         package_project_title = package_show["project_title"]
-        
-        warning(f"----------PACKAGE SHOW ITEMS----------")
-        for key, val in package_show.items():
-            warning(f"{key} : {val}")
 
-        warning(f"----------RESOURCE SHOW ITEMS----------")
-        for key, val in resource_show.items():
-            warning(f"{key} : {val}")
+        # warning(f"----------PACKAGE SHOW ITEMS----------")
+        # for key, val in package_show.items():
+        #     warning(f"{key} : {val}")
 
         warning(f"----------CREATING DATASET----------")
         # create the dataset and upload to clearml
-        
         dataset = None
         if "extras" in package_show:
             parent_list = []
             for extra in package_show["extras"]:
                 parent_list.append(extra["key"])
-            dataset = Dataset.create(
+            dataset = Dataset.get(
                 dataset_project=package_project_title,
                 dataset_name=package_dataset_title,
-                parent_datasets=parent_list
+                parent_datasets=parent_list,
+                auto_create=True
             )
         else:
-            dataset = Dataset.create(
-                    dataset_project=package_project_title,
-                    dataset_name=package_dataset_title
+            dataset = Dataset.get(
+                dataset_project=package_project_title,
+                dataset_name=package_dataset_title,
+                auto_create=True
             )
         warning(f"----------ADDING FILES TO DATASET----------")
         dataset.add_files(path=r'{}'.format(resource_path))
@@ -110,10 +116,20 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
         # warning(f"THIS IS THE CLEARML ID: {dataset.id}")
         package_show['clearml_id'] = dataset.id
         new_package = toolkit.get_action("package_update")({}, package_show)
+        
 
-        warning(f"---------- NEW PACKAGE ITEMS: ----------")
-        for key, val in new_package.items():
-            warning(f"{key} : {val}")
+        # warning(f"---------- NEW PACKAGE ITEMS: ----------")
+        # for key, val in new_package.items():
+        #     warning(f"{key} : {val}")
+
+        # warning(f"----------RESOURCE SHOW ITEMS----------")
+        # for key, val in resource_show.items():
+        #     warning(f"{key} : {val}")
+
+        warning(f"-- --- ---- ----- deletinggg")
+        toolkit.get_action('resource_delete')({}, {
+            "id": resource['id']
+        })
         return
 
     def before_resource_update(self, context: Context, current: dict[str, Any],
@@ -163,7 +179,7 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
         #         warning(f"{key} : {val}")
         # except Exception as e:
         #     warning(f"ERROR GETTING RESOURCE_SHOW: {e}")
-        
+
         # files = find_file(resource['id'])
         # warning(f"FILES: {files}")
         # return
@@ -213,7 +229,5 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
         in other methods, like when a resource is deleted, because package_show
         is used to get access to the resources in a dataset.
         '''
-        
+
         return resource_dict
-    
-    
