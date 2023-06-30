@@ -7,7 +7,7 @@ from ckan.types import Schema
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 
-from ckanext.datasetform.views import CreatePackageView
+from ckanext.datasetform.views import CreatePackageView, CreateResourceView
 
 
 class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
@@ -36,7 +36,7 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         :rtype: flask.Blueprint
 
         """
-        # warning(f"---------- ADDING BLUEPRINT FOR NEW PACKAGE CREATE ----------")
+        warning(f"---------- ADDING BLUEPRINT FOR PACKAGE FORM  : {bp.name} ----------")
         # if self._dataset_form_pages[package_type]:
         bp.add_url_rule(
             "/new",
@@ -44,6 +44,31 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
             view_func=CreatePackageView.as_view(str("new")),
         )
         return bp
+
+    def prepare_resource_blueprint(self, package_type: str,
+                                   blueprint: Blueprint) -> Blueprint:
+        u'''Update or replace resource blueprint for given package type.
+
+        Internally CKAN registers separate resource blueprint for
+        every custom dataset type. Before default routes added to this
+        blueprint and it registered inside application this method is
+        called. It can be used either for registration of the view
+        function under new path or under existing path(like `/new`),
+        in which case this new function will be used instead of
+        default one.
+
+        Note, this blueprint has prefix `/{package_type}/<id>/resource`.
+
+        :rtype: flask.Blueprint
+
+        '''
+        warning(f"---------- ADDING BLUEPRINT FOR RESOURCE FORM : {blueprint.name} ----------")
+        blueprint.add_url_rule(
+            "/new", 
+            "OverrideResourceCreation", 
+            view_func=CreateResourceView.as_view(str(u"new")),
+        )
+        return blueprint
 
     def _modify_package_schema(self, schema: Schema) -> Schema:
         warning(f"---------- MODIFYING PACKAGE SCHEMA HERE ----------")
