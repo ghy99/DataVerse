@@ -184,24 +184,57 @@ def download(package_type: str,
 
 
 class CreateView(MethodView):
-    def post(self, package_type: str, id: str) -> Union[str, Response]:
-        logging.warning("THIS IS THE FIRST LINE OF POST IN RESOURCE")
-        save_action = request.form.get(u'save')
+    
+        
+    def post(self, package_type: str, id: str):
+        logging.warning("-----------------THIS IS MY OWN POST-----------------")
+        save_action=request.form.get(u'save')
         data = clean_dict(
             dict_fns.unflatten(tuplize_dict(parse_params(request.form)))
         )
+        data[u'save'] = save_action
+        resource_id = data.pop(u'id')
+        logging.warning(f"THIS IS MY RESOURCE ID: {resource_id}")
         files = dict_fns.unflatten(tuplize_dict(parse_params(request.files)))
+        logging.warning(f"THIS IS THE FILES VARIABLE: {files}")
+        if type(files['upload']) != list:
+            return self.innerpost(package_type, id, data, save_action, files["upload"], resource_id)
+        else:
+            for i in range(len(files['upload'])):
+                temp_data = data
+                if save_action != len(files['upload'])-1:
+                    save_action="again"
+                    data[u'save'] = save_action
+                    self.innerpost(package_type, id, temp_data, save_action, files['upload'][i], resource_id)
+                else:
+                    save_action="go-metadata"
+                    data[u'save'] = save_action
+                    logging.warning(f"THIS IS THE FILE VARIABLE: {files['upload'][i]}")
+                    return self.innerpost(package_type, id, temp_data, save_action, files['upload'][i], resource_id)
+
+
+    
+    
+    def innerpost(self, package_type: str, id: str, data, save_action, file, resource_id):
+        # logging.warning("THIS IS THE FIRST LINE OF POST IN RESOURCE")
+        # save_action = request.form.get(u'save')
+        # data = clean_dict(
+        #     dict_fns.unflatten(tuplize_dict(parse_params(request.form)))
+        # )
+        # files = dict_fns.unflatten(tuplize_dict(parse_params(request.files)))
         
-        logging.warning(f"FILLLLLLEEEEEEEEEEEEESSSSSSSSSSSSSSSSSSSSSSSS: ")
-        logging.warning(f"{files}")
-        data.update(clean_dict(files))
+        # logging.warning(f"FILLLLLLEEEEEEEEEEEEESSSSSSSSSSSSSSSSSSSSSSSS: ")
+        # logging.warning(f"{data}")
+        data["upload"] = file
+        logging.warning(f"THIS IS WHAT IS INSIDE DATA: {data}")
         logging.warning(f"- - - - - - - - - - RESOURCE.PY")
         logging.warning(f"- - - - - - - - - - what does resource form send?")
         for key, val in data.items():
             logging.warning(f"- - - - - {key} : {val}")
         # we don't want to include save as it is part of the form
-        del data[u'save']
-        resource_id = data.pop(u'id')
+
+        # del data[u'save']
+        # resource_id = data.pop(u'id')
 
         context = cast(Context, {
             u'model': model,
@@ -287,10 +320,125 @@ class CreateView(MethodView):
             return h.redirect_to(u'{}.read'.format(package_type), id=id)
         else:
             # add more resources
-            return h.redirect_to(
-                u'{}_resource.new'.format(package_type),
-                id=id
-            )
+            # return h.redirect_to(
+            #     u'{}_resource.new'.format(package_type),
+            #     id=id
+            # )
+            return 1
+
+
+
+    # def post(self, package_type: str, id: str) -> Union[str, Response]:
+    #     logging.warning("THIS IS THE FIRST LINE OF POST IN RESOURCE")
+    #     save_action = request.form.get(u'save')
+    #     logging.warning(f"THIS IS THE SAVE ACTION {save_action}")
+    #     data = clean_dict(
+    #         dict_fns.unflatten(tuplize_dict(parse_params(request.form)))
+    #     )
+    #     files = dict_fns.unflatten(tuplize_dict(parse_params(request.files)))
+    #     logging.warning(f"THIS IS WHAT IS INSIDE THE FILES: {files}")
+    #     logging.warning(f"FILLLLLLEEEEEEEEEEEEESSSSSSSSSSSSSSSSSSSSSSSS: ")
+    #     logging.warning(f"THIS IS DATA BEFORE THE CLEAN DICT FILE: {data}")
+    #     data.update(clean_dict(files))
+    #     logging.warning(f"THIS IS DATA AFTER THE CLEAN DICT FILE: {data}")
+    #     logging.warning(f"- - - - - - - - - - RESOURCE.PY")
+    #     logging.warning(f"- - - - - - - - - - what does resource form send?")
+    #     for key, val in data.items():
+    #         logging.warning(f"- - - - - {key} : {val}")
+    #     # we don't want to include save as it is part of the form
+    #     del data[u'save']
+    #     resource_id = data.pop(u'id')
+
+    #     context = cast(Context, {
+    #         u'model': model,
+    #         u'session': model.Session,
+    #         u'user': current_user.name,
+    #         u'auth_user_obj': current_user
+    #     })
+
+    #     # see if we have any data that we are trying to save
+    #     data_provided = False
+    #     for key, value in data.items():
+    #         if (
+    #                 (value or isinstance(value, cgi.FieldStorage))
+    #                 and key != u'resource_type'):
+    #             data_provided = True
+    #             break
+
+    #     if not data_provided and save_action != u"go-dataset-complete":
+    #         if save_action == u'go-dataset':
+    #             # go to final stage of adddataset
+    #             return h.redirect_to(u'{}.edit'.format(package_type), id=id)
+    #         # see if we have added any resources
+    #         try:
+    #             data_dict = get_action(u'package_show')(context, {u'id': id})
+    #         except NotAuthorized:
+    #             return base.abort(403, _(u'Unauthorized to update dataset'))
+    #         except NotFound:
+    #             return base.abort(
+    #                 404,
+    #                 _(u'The dataset {id} could not be found.').format(id=id)
+    #             )
+    #         if not len(data_dict[u'resources']):
+    #             # no data so keep on page
+    #             msg = _(u'You must add at least one data resource')
+    #             # On new templates do not use flash message
+
+    #             errors: dict[str, Any] = {}
+    #             error_summary = {_(u'Error'): msg}
+    #             return self.get(package_type, id, data, errors, error_summary)
+
+    #         # XXX race condition if another user edits/deletes
+    #         data_dict = get_action(u'package_show')(context, {u'id': id})
+    #         get_action(u'package_update')(
+    #             cast(Context, dict(context, allow_state_change=True)),
+    #             dict(data_dict, state=u'active')
+    #         )
+    #         return h.redirect_to(u'{}.read'.format(package_type), id=id)
+
+    #     data[u'package_id'] = id
+    #     try:
+    #         if resource_id:
+    #             data[u'id'] = resource_id
+    #             get_action(u'resource_update')(context, data)
+    #         else:
+    #             get_action(u'resource_create')(context, data)
+    #     except ValidationError as e:
+    #         errors = e.error_dict
+    #         error_summary = e.error_summary
+    #         if data.get(u'url_type') == u'upload' and data.get(u'url'):
+    #             data[u'url'] = u''
+    #             data[u'url_type'] = u''
+    #             data[u'previous_upload'] = True
+    #         return self.get(package_type, id, data, errors, error_summary)
+    #     except NotAuthorized:
+    #         return base.abort(403, _(u'Unauthorized to create a resource'))
+    #     except NotFound:
+    #         return base.abort(
+    #             404, _(u'The dataset {id} could not be found.').format(id=id)
+    #         )
+    #     if save_action == u'go-metadata':
+    #         # XXX race condition if another user edits/deletes
+    #         data_dict = get_action(u'package_show')(context, {u'id': id})
+    #         get_action(u'package_update')(
+    #             cast(Context, dict(context, allow_state_change=True)),
+    #             dict(data_dict, state=u'active')
+    #         )
+    #         return h.redirect_to(u'{}.read'.format(package_type), id=id)
+    #     elif save_action == u'go-dataset':
+    #         # go to first stage of add dataset
+    #         return h.redirect_to(u'{}.edit'.format(package_type), id=id)
+    #     elif save_action == u'go-dataset-complete':
+
+    #         return h.redirect_to(u'{}.read'.format(package_type), id=id)
+    #     else:
+    #         # add more resources
+    #         return h.redirect_to(
+    #             u'{}_resource.new'.format(package_type),
+    #             id=id
+    #         )
+
+
 
     def get(self,
             package_type: str,

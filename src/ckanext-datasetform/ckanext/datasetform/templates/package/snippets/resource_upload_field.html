@@ -100,36 +100,17 @@
                 classes=['control-full']) }}
                 #}
 
-
+                
                 <div class="upload-type">
                   <label class="form-label" for="upload">Upload file or folder</label>
                   <div class="controls">
-                    <input name="upload" id="upload" type="file" class="form-control" multiple onchange="handleFileSelect(event)"> 
+                    <input name="upload" id="field-resource-upload'" type="file" class="form-control" multiple webkitdirectory> 
                   </div>
                 </div>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-                <script>
-                  function handleFileSelect(event) {
-                    var files = event.target.files;
-                    var zip = new JSZip();
-                    
-                    for (var i = 0; i < files.length; i++) {
-                      var file = files[i];
-                      
-                      // Add each file to the ZIP archive
-                      zip.file(file.name, file);
-                    }
-                    console.log("this is the file:" + file)
-                    
-                    
-                    // Generate the ZIP file asynchronously
-                    zip.generateAsync({type: "blob"}).then(function(content) {
-                      // Save the ZIP file or handle it as needed
-                      saveAs(content, "folder.zip");
-                    });
-                  }
-                </script>
+                
+
+                
+
 
 
             </div>

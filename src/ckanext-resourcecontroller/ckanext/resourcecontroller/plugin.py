@@ -116,7 +116,8 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
         warning(f"----------UPLOADING TO CLEARML----------")
         dataset.upload(show_progress=True, verbose=True)
         warning(f"----------FINALIZING DATASET----------")
-        dataset.finalize(verbose=True, raise_on_error=True, auto_upload=True)
+        if resource_show['save'] =='go-metadata':
+            dataset.finalize(verbose=True, raise_on_error=True, auto_upload=True)
         # warning(f"THIS IS THE CLEARML ID: {dataset.id}")
         package_show['clearml_id'] = dataset.id
         new_package = toolkit.get_action("package_update")({}, package_show)
