@@ -130,11 +130,11 @@ class CreatePackageView(MethodView):
                 tuplize_dict(parse_params(request.form))))
             logging.warning(
                 f"-- ---- ---- IM GONNA TRY SMTH HERE PLS WORK ---- ---- --")
-            files = clean_dict(dict_fns.unflatten(
-                tuplize_dict(parse_params(request.files))))
+            files = dict_fns.unflatten(
+                tuplize_dict(parse_params(request.files)))
 
-            # logging.warning(f"-- ---- ---- FILES: {files} --------------------------------------")
-            data_dict.update(files)
+            logging.warning(f"-- ---- ---- VIEWS.py ---------- FILES: {files} ----------------------------")
+            data_dict.update(clean_dict(files))
 
         except dict_fns.DataError:
             return base.abort(400, _("Integrity Error"))
