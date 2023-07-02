@@ -64,63 +64,64 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
             of linked.
         :type resource: dictionary
         '''
-        
+        # check if it exist
         if 'preview' in resource:
+            # check if its true
             if resource['preview']:
                 return
         
         # get the file path to the uploaded resource
-        resource_id = resource["id"]
-        resource_path = find_file(resource_id)
+        # resource_id = resource["id"]
+        # resource_path = find_file(resource_id)
 
-        # get the dataset title and the project title
-        resource_show = toolkit.get_action(
-            "resource_show")({}, {"id": resource_id})
-        warning(f" -- --- - ---- DEBUGGING RESOURCE CONTROLLER: ")
-        for key, val in resource_show.items():
-            warning(f" -- --- - ---- {key} : {val}")
-        # resource_show['name'] = resource_show['upload'].filename
-        # resource_show = toolkit.get_action("resource_update")({}, resource_show)
+        # # get the dataset title and the project title
+        # resource_show = toolkit.get_action(
+        #     "resource_show")({}, {"id": resource_id})
+        # warning(f" -- --- - ---- DEBUGGING RESOURCE CONTROLLER: ")
+        # for key, val in resource_show.items():
+        #     warning(f" -- --- - ---- {key} : {val}ok")
+        # # resource_show['name'] = resource_show['upload'].filename
+        # # resource_show = toolkit.get_action("resource_update")({}, resource_show)
 
-        package_id = resource_show["package_id"]
-        package_show = toolkit.get_action(
-            "package_show")({}, {"id": package_id})
-        package_dataset_title = package_show["dataset_title"]
-        package_project_title = package_show["project_title"]
+        # package_id = resource_show["package_id"]
+        # package_show = toolkit.get_action(
+        #     "package_show")({}, {"id": package_id})
+        # package_dataset_title = package_show["dataset_title"]
+        # package_project_title = package_show["project_title"]
 
         # warning(f"----------PACKAGE SHOW ITEMS----------")
         # for key, val in package_show.items():
         #     warning(f"{key} : {val}")
 
-        warning(f"----------CREATING DATASET----------")
-        # create the dataset and upload to clearml
-        dataset = None
-        if "extras" in package_show:
-            parent_list = []
-            for extra in package_show["extras"]:
-                parent_list.append(extra["key"])
-            dataset = Dataset.get(
-                dataset_project=package_project_title,
-                dataset_name=package_dataset_title,
-                parent_datasets=parent_list,
-                auto_create=True
-            )
-        else:
-            dataset = Dataset.get(
-                dataset_project=package_project_title,
-                dataset_name=package_dataset_title,
-                auto_create=True
-            )
-        warning(f"----------ADDING FILES TO DATASET----------")
-        dataset.add_files(path=r'{}'.format(resource_path))
-        warning(f"----------UPLOADING TO CLEARML----------")
-        dataset.upload(show_progress=True, verbose=True)
-        warning(f"----------FINALIZING DATASET----------")
-        if resource_show['save'] =='go-metadata':
-            dataset.finalize(verbose=True, raise_on_error=True, auto_upload=True)
-        # warning(f"THIS IS THE CLEARML ID: {dataset.id}")
-        package_show['clearml_id'] = dataset.id
-        new_package = toolkit.get_action("package_update")({}, package_show)
+        # warning(f"----------CREATING DATASET----------")
+        # # create the dataset and upload to clearml
+        # dataset = None
+        # if "extras" in package_show:
+        #     parent_list = []
+        #     for extra in package_show["extras"]:
+        #         parent_list.append(extra["key"])
+        #     dataset = Dataset.get(
+        #         dataset_project=package_project_title,
+        #         dataset_name=package_dataset_title,
+        #         parent_datasets=parent_list,
+        #         auto_create=True
+        #     )
+        # else:
+        #     dataset = Dataset.get(
+        #         dataset_project=package_project_title,
+        #         dataset_name=package_dataset_title,
+        #         auto_create=True
+        #     )
+        # warning(f"----------ADDING FILES TO DATASET----------")
+        # dataset.add_files(path=r'{}'.format(resource_path))
+        # warning(f"----------UPLOADING TO CLEARML----------")
+        # dataset.upload(show_progress=True, verbose=True)
+        # warning(f"----------FINALIZING DATASET----------")
+        # # if resource_show['save'] =='go-metadata':
+        # dataset.finalize(verbose=True, raise_on_error=True, auto_upload=True)
+        # # warning(f"THIS IS THE CLEARML ID: {dataset.id}")
+        # package_show['clearml_id'] = dataset.id
+        # new_package = toolkit.get_action("package_update")({}, package_show)
         
 
         # warning(f"---------- NEW PACKAGE ITEMS: ----------")
