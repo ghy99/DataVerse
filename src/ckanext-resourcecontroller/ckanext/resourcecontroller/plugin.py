@@ -42,6 +42,10 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
             to the dataset (the one that is about to be created).
         :type resource: dictionary
         '''
+        warning("-----------------------------THIS IS BEFORE RESOURCE CREATE -----------------------------")
+        for key, val in resource.items():
+            warning(f"-------------------{key}: {val}")
+        
         resource['name'] = resource['upload'].filename
         return
 
@@ -112,7 +116,8 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
         warning(f"----------UPLOADING TO CLEARML----------")
         dataset.upload(show_progress=True, verbose=True)
         warning(f"----------FINALIZING DATASET----------")
-        dataset.finalize(verbose=True, raise_on_error=True, auto_upload=True)
+        if resource_show['save'] =='go-metadata':
+            dataset.finalize(verbose=True, raise_on_error=True, auto_upload=True)
         # warning(f"THIS IS THE CLEARML ID: {dataset.id}")
         package_show['clearml_id'] = dataset.id
         new_package = toolkit.get_action("package_update")({}, package_show)
@@ -126,10 +131,10 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
         # for key, val in resource_show.items():
         #     warning(f"{key} : {val}")
 
-        warning(f"-- --- ---- ----- deletinggg")
-        toolkit.get_action('resource_delete')({}, {
-            "id": resource['id']
-        })
+        # warning(f"-- --- ---- ----- deletinggg")
+        # toolkit.get_action('resource_delete')({}, {
+        #     "id": resource['id']
+        # })
         return
 
     def before_resource_update(self, context: Context, current: dict[str, Any],
