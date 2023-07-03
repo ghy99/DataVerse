@@ -365,7 +365,7 @@ class CreateView(MethodView):
 
     def post(self, package_type: str, id: str) -> Union[str, Response]:
         logging.warning("__________________________________________________________________________")
-        logging.warning("THIS IS THE FIRST LINE OF POST IN RESOURCE")
+        logging.warning("THIS IS THE FIRST LINE OF POST IN RESOURCE.py")
         save_action = request.form.get(u'save')
         data = clean_dict(
             dict_fns.unflatten(tuplize_dict(parse_params(request.form)))
@@ -443,8 +443,6 @@ class CreateView(MethodView):
             u'user': current_user.name,
             u'auth_user_obj': current_user
         })
-
-
 
         # see if we have any data that we are trying to save
         data_provided = False
@@ -1066,6 +1064,8 @@ def register_dataset_plugin_rules(blueprint: Blueprint) -> None:
     blueprint.add_url_rule(
         u'/<resource_id>/edit_view/<view_id>', view_func=_edit_view
     )
+    for key,  val in blueprint.__dict__.items():
+        logging.warning(f"------_______----- {key} : {val}")
 
 
 register_dataset_plugin_rules(resource)

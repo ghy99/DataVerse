@@ -66,8 +66,11 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         blueprint.add_url_rule(
             "/new", 
             "OverrideResourceCreation", 
-            view_func=CreateResourceView.as_view(str(u"new")),
+            view_func=CreateResourceView.as_view("new"),
         )
+        # for key, val in blueprint.__dict__.items():
+        #     warning(f"__ -_ _- --- --- -__ __-- {key} : {val}")
+        # warning(f"-- --__ _ __ _- _ __ _ _--- rule: {blueprint.deferred_functions[0]}")
         return blueprint
 
     def _modify_package_schema(self, schema: Schema) -> Schema:
