@@ -28,6 +28,7 @@ from ckan.views.dataset import (
 from ckan.types import Context, Response
 
 import os
+import shutil
 from werkzeug.datastructures import FileStorage
 from clearml import Dataset
 
@@ -451,7 +452,11 @@ class CreateView(MethodView):
         # we don't want to include save as it is part of the form
         del data[u'save']
         # resource_id = data.pop(u'id')
-
+        try: 
+            logging.warning(f"-- __ -- __ REMOVING UPLOADED FILES FROM CKAN AS IT IS UPLOADED TO CLEARML ALREADY.")
+            shutil.rmtree(defaultpath)
+        except Exception as e:
+            logging.warning(f"-- __ -- __ UNABLE TO DELETE FOLDER FOR SOME GODFORSAKEN REASON: {e}")
         context = cast(Context, {
             u'model': model,
             u'session': model.Session,
