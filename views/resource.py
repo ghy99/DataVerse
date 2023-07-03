@@ -188,9 +188,9 @@ def download(package_type: str,
     return h.redirect_to(rsc[u'url'])
 
 
-def upload_to_clearml(folderpath, package_id, project_title, dataset_title, parent_datasets):
+def upload_to_clearml(path_to_folder, path_to_file, package_id, project_title, dataset_title, parent_datasets):
     logging.warning(f"Package ID: {package_id}")
-    logging.warning(f"Folder Path: {folderpath}")
+    logging.warning(f"Folder Path: {path_to_folder}")
     logging.warning(f"Project Title: {project_title}")
     logging.warning(f"Dataset Title: {dataset_title}")
     logging.warning(f"Parent Datasets: {parent_datasets}")
@@ -209,7 +209,10 @@ def upload_to_clearml(folderpath, package_id, project_title, dataset_title, pare
         )
 
     logging.warning(f"----------ADDING FILES TO DATASET----------")
-    dataset.add_files(path=r'{}'.format(folderpath))
+    if path_to_folder != None:
+        dataset.add_files(path=r'{}'.format(path_to_folder))
+    if path_to_file != None:
+        dataset.add_files(path=r'{}'.format(path_to_file))
     logging.warning(f"----------UPLOADING TO CLEARML----------")
     dataset.upload(show_progress=True, verbose=True)
     logging.warning(f"----------FINALIZING DATASET----------")
@@ -378,7 +381,8 @@ class CreateView(MethodView):
         logging.warning(f"THIS IS THE CONTENT OF THE FILES: {files}")
         defaultpath = r"/var/lib/ckan/default"
         folderpath = None
-        parentfolderpath = None
+        pathtofolder = None
+        pathtofile = None
         if isinstance(files['upload'], list):
             logging.warning(f"---- ---- -- ---- ---- IM ONLY JUST A FOLDER")
             for eachfile in files['upload']:
@@ -389,7 +393,7 @@ class CreateView(MethodView):
                 if len(splitFileName) > 1:
                     folderpath = defaultpath
                     filepath = defaultpath
-                    parentfolderpath = os.path.join(defaultpath, splitFileName[0])
+                    pathtofolder = os.path.join(defaultpath, splitFileName[0])
                     for i in range(len(splitFileName)):
                         filepath = os.path.join(filepath, splitFileName[i])
                         if i != len(splitFileName) - 1:
@@ -407,10 +411,10 @@ class CreateView(MethodView):
                 #     eachfile.save(filepath)
                 #     # files['upload'].remove(eachfile)
                 else:
-                    parentfolderpath= defaultpath + "/temp/"
-                    os.makedirs(parentfolderpath, exist_ok=True)
+                    pathtofile= defaultpath + "/temp/"
+                    os.makedirs(pathtofile, exist_ok=True)
                     logging.warning(f"split file name: {splitFileName}")
-                    filepath = os.path.join(parentfolderpath, splitFileName[0])
+                    filepath = os.path.join(pathtofile, splitFileName[0])
                     logging.warning(f"FILE PATH: {filepath}")
                     if os.path.isdir(filepath):
                         logging.error(f"{filepath} is a directory")
@@ -433,7 +437,8 @@ class CreateView(MethodView):
             #     })
             # files['upload'] = temp
         # if files['upload']:
-        logging.warning(f"____-----_____----- printing folder path: {parentfolderpath}")
+        logging.warning(f"____-----_____----- printing path to folder: {pathtofolder}")
+        logging.warning(f"____-----_____----- printing path to file: {pathtofile}")
         package_details = get_action("package_show")({}, {"id": id})
         logging.warning(f"Package Details: ")
         for key, val in package_details.items():
@@ -442,14 +447,15 @@ class CreateView(MethodView):
         if "extras" in package_details:
             for extra in package_details['extras']:
                 parent_ids.append(extra['key'])
-
         clearml_id = upload_to_clearml(
-            parentfolderpath, 
+            pathtofolder, 
+            pathtofile,
             id, 
             package_details['project_title'], 
             package_details['dataset_title'], 
             parent_ids
         )
+        
         package_details['clearml_id'] = clearml_id
         get_action("package_update")({}, package_details)
         # files['upload'] = folderpath
