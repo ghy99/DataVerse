@@ -169,14 +169,13 @@ def register_package_blueprints(app: 'CKANFlask') -> None:
                 resource.import_name,
                 url_prefix=u'/{}/<id>/resource'.format(package_type),
                 url_defaults={u'package_type': package_type})
-            # I shifted this to be above the if condition below
-            dataset_resource_rules(resource_blueprint)
             if hasattr(plugin, 'prepare_resource_blueprint'):
                 logging.warning(f"I DEFINITELY REACHED PREPARE RESOURCE BLUEPRINT in REGISTER PACKAGE BLUEPRINT")
                 resource_blueprint = plugin.prepare_resource_blueprint(
                     package_type,
                     resource_blueprint)
-            
+            dataset_resource_rules(resource_blueprint)
+
             signals.register_blueprint.send(
                 u"resource", blueprint=resource_blueprint)
             app.register_blueprint(resource_blueprint)
