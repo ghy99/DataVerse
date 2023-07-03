@@ -374,31 +374,46 @@ class CreateView(MethodView):
         for key, val in data.items():
             logging.warning(f"------------------ {key} : {val}")
         files = dict_fns.unflatten(tuplize_dict(parse_params(request.files)))
+        logging.warning(f"THIS IS THE CONTENT OF THE FILES: {files}")
         defaultpath = r"/var/lib/ckan/default"
         folderpath = None
         if isinstance(files['upload'], list):
             logging.warning(f"---- ---- -- ---- ---- IM ONLY JUST A FOLDER")
             for eachfile in files['upload']:
                 splitFileName = eachfile.filename.split("/")
-                logging.warning(f"split file name: {splitFileName}")
-                folderpath = os.path.join(defaultpath, splitFileName[0])
-                os.makedirs(folderpath, exist_ok=True)
-                # logging.warning(f"---- ---- -- ---- ---- IM ONLY JUST A SINGLE FILE {dest}")
-                logging.warning(f"------- ---- {eachfile.filename}, type : {type(eachfile.filename)}")
-                filepath = os.path.join(folderpath, splitFileName[1])
-                logging.warning(f"FILE PATH: {filepath}")
-                eachfile.save(filepath)
-                # files['upload'].remove(eachfile)
-        elif isinstance(files['upload'], FileStorage):
-            splitFileName = files['upload'].filename.split("/")
-            logging.warning(f"split file name: {splitFileName}")
-            folderpath = os.path.join(defaultpath, splitFileName[0])
-            os.makedirs(folderpath, exist_ok=True)
-            # logging.warning(f"---- ---- -- ---- ---- IM ONLY JUST A SINGLE FILE {dest}")
-            logging.warning(f"------- ---- {files['upload'].filename}, type : {type(files['upload'].filename)}")
-            filepath = os.path.join(folderpath, splitFileName[1])
-            logging.warning(f"FILE PATH: {filepath}")
-            files['upload'].save(filepath)
+                # (comment) splitFileName == [""] when the file upload or folder upload is not filled
+                if splitFileName == [""]:
+                    continue
+                if len(splitFileName) > 1:
+                    logging.warning(f"split file name: {splitFileName}")
+                    folderpath = os.path.join(defaultpath, splitFileName[0])
+                    os.makedirs(folderpath, exist_ok=True)
+                    # logging.warning(f"---- ---- -- ---- ---- IM ONLY JUST A SINGLE FILE {dest}")
+                    #logging.warning(f"------- ---- {eachfile.filename}, type : {type(eachfile.filename)}")
+                    filepath = os.path.join(folderpath, splitFileName[1])
+                    logging.warning(f"FILE PATH: {filepath}")
+                    eachfile.save(filepath)
+                    # files['upload'].remove(eachfile)
+                else:
+                    folderpath= defaultpath + "/temp/"
+                    os.makedirs(folderpath, exist_ok=True)
+                    logging.warning(f"split file name: {splitFileName}")
+                    filepath = os.path.join(folderpath, splitFileName[0])
+                    logging.warning(f"FILE PATH: {filepath}")
+                    if os.path.isdir(filepath):
+                        logging.error(f"{filepath} is a directory")
+                    else:
+                        eachfile.save(filepath)
+        # elif isinstance(files['upload'], FileStorage):
+        #     splitFileName = files['upload'].filename.split("/")
+        #     logging.warning(f"split file name: {splitFileName}")
+        #     folderpath = os.path.join(defaultpath, splitFileName[0])
+        #     os.makedirs(folderpath, exist_ok=True)
+        #     # logging.warning(f"---- ---- -- ---- ---- IM ONLY JUST A SINGLE FILE {dest}")
+        #     logging.warning(f"------- ---- {files['upload'].filename}, type : {type(files['upload'].filename)}")
+        #     filepath = os.path.join(folderpath, splitFileName[1])
+        #     logging.warning(f"FILE PATH: {filepath}")
+        #     files['upload'].save(filepath)
         # del files['upload']
             # for eachFile in files['upload'] :
             #     temp.append({
