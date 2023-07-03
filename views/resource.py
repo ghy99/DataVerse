@@ -378,6 +378,7 @@ class CreateView(MethodView):
         logging.warning(f"THIS IS THE CONTENT OF THE FILES: {files}")
         defaultpath = r"/var/lib/ckan/default"
         folderpath = None
+        parentfolderpath = None
         if isinstance(files['upload'], list):
             logging.warning(f"---- ---- -- ---- ---- IM ONLY JUST A FOLDER")
             for eachfile in files['upload']:
@@ -386,20 +387,30 @@ class CreateView(MethodView):
                 if splitFileName == [""]:
                     continue
                 if len(splitFileName) > 1:
-                    logging.warning(f"split file name: {splitFileName}")
-                    folderpath = os.path.join(defaultpath, splitFileName[0])
+                    folderpath = defaultpath
+                    filepath = defaultpath
+                    parentfolderpath = os.path.join(defaultpath, splitFileName[0])
+                    for i in range(len(splitFileName)):
+                        filepath = os.path.join(filepath, splitFileName[i])
+                        if i != len(splitFileName) - 1:
+                            folderpath = os.path.join(folderpath, splitFileName[i])
                     os.makedirs(folderpath, exist_ok=True)
-                    # logging.warning(f"---- ---- -- ---- ---- IM ONLY JUST A SINGLE FILE {dest}")
-                    #logging.warning(f"------- ---- {eachfile.filename}, type : {type(eachfile.filename)}")
-                    filepath = os.path.join(folderpath, splitFileName[1])
-                    logging.warning(f"FILE PATH: {filepath}")
                     eachfile.save(filepath)
-                    # files['upload'].remove(eachfile)
+                # if len(splitFileName) > 1:
+                #     logging.warning(f"split file name: {splitFileName}")
+                #     folderpath = os.path.join(defaultpath, splitFileName[0])
+                #     os.makedirs(folderpath, exist_ok=True)
+                #     # logging.warning(f"---- ---- -- ---- ---- IM ONLY JUST A SINGLE FILE {dest}")
+                #     #logging.warning(f"------- ---- {eachfile.filename}, type : {type(eachfile.filename)}")
+                #     filepath = os.path.join(folderpath, splitFileName[1])
+                #     logging.warning(f"FILE PATH: {filepath}")
+                #     eachfile.save(filepath)
+                #     # files['upload'].remove(eachfile)
                 else:
-                    folderpath= defaultpath + "/temp/"
-                    os.makedirs(folderpath, exist_ok=True)
+                    parentfolderpath= defaultpath + "/temp/"
+                    os.makedirs(parentfolderpath, exist_ok=True)
                     logging.warning(f"split file name: {splitFileName}")
-                    filepath = os.path.join(folderpath, splitFileName[0])
+                    filepath = os.path.join(parentfolderpath, splitFileName[0])
                     logging.warning(f"FILE PATH: {filepath}")
                     if os.path.isdir(filepath):
                         logging.error(f"{filepath} is a directory")
@@ -422,7 +433,7 @@ class CreateView(MethodView):
             #     })
             # files['upload'] = temp
         # if files['upload']:
-        logging.warning(f"____-----_____----- printing folder path: {folderpath}")
+        logging.warning(f"____-----_____----- printing folder path: {parentfolderpath}")
         package_details = get_action("package_show")({}, {"id": id})
         logging.warning(f"Package Details: ")
         for key, val in package_details.items():
@@ -433,7 +444,7 @@ class CreateView(MethodView):
                 parent_ids.append(extra['key'])
 
         clearml_id = upload_to_clearml(
-            folderpath, 
+            parentfolderpath, 
             id, 
             package_details['project_title'], 
             package_details['dataset_title'], 
