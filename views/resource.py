@@ -28,6 +28,7 @@ from ckan.views.dataset import (
 from ckan.types import Context, Response
 
 import os
+import shutil
 from werkzeug.datastructures import FileStorage
 from clearml import Dataset
 
@@ -365,7 +366,7 @@ class CreateView(MethodView):
 
     def post(self, package_type: str, id: str) -> Union[str, Response]:
         logging.warning("__________________________________________________________________________")
-        logging.warning("THIS IS THE FIRST LINE OF POST IN RESOURCE")
+        logging.warning("THIS IS THE FIRST LINE OF POST IN RESOURCE.py")
         save_action = request.form.get(u'save')
         data = clean_dict(
             dict_fns.unflatten(tuplize_dict(parse_params(request.form)))
@@ -462,15 +463,17 @@ class CreateView(MethodView):
         # we don't want to include save as it is part of the form
         del data[u'save']
         # resource_id = data.pop(u'id')
-
+        try: 
+            logging.warning(f"-- __ -- __ REMOVING UPLOADED FILES FROM CKAN AS IT IS UPLOADED TO CLEARML ALREADY.")
+            shutil.rmtree(defaultpath)
+        except Exception as e:
+            logging.warning(f"-- __ -- __ UNABLE TO DELETE FOLDER FOR SOME GODFORSAKEN REASON: {e}")
         context = cast(Context, {
             u'model': model,
             u'session': model.Session,
             u'user': current_user.name,
             u'auth_user_obj': current_user
         })
-
-
 
         # see if we have any data that we are trying to save
         data_provided = False
@@ -1092,6 +1095,8 @@ def register_dataset_plugin_rules(blueprint: Blueprint) -> None:
     blueprint.add_url_rule(
         u'/<resource_id>/edit_view/<view_id>', view_func=_edit_view
     )
+    for key,  val in blueprint.__dict__.items():
+        logging.warning(f"------_______----- {key} : {val}")
 
 
 register_dataset_plugin_rules(resource)
