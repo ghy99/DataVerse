@@ -141,32 +141,40 @@ class CreateResourceView(MethodView):
         for key, val in data.items():
             logging.warning(f"------------------ {key} : {val}")
         files = dict_fns.unflatten(tuplize_dict(parse_params(request.files)))
+        logging.warning(f"THIS IS THE CONTENT OF THE FILES: {files}")
         defaultpath = r"/var/lib/ckan/default"
         folderpath = None
+        pathtofolder = None
+        pathtofile = None
         if isinstance(files['upload'], list):
             logging.warning(f"---- ---- -- ---- ---- IM ONLY JUST A FOLDER")
             for eachfile in files['upload']:
                 splitFileName = eachfile.filename.split("/")
-                logging.warning(f"split file name: {splitFileName}")
-                folderpath = os.path.join(defaultpath, splitFileName[0])
-                os.makedirs(folderpath, exist_ok=True)
-                # logging.warning(f"---- ---- -- ---- ---- IM ONLY JUST A SINGLE FILE {dest}")
-                logging.warning(f"------- ---- {eachfile.filename}, type : {type(eachfile.filename)}")
-                filepath = os.path.join(folderpath, splitFileName[1])
-                logging.warning(f"FILE PATH: {filepath}")
-                eachfile.save(filepath)
-                # files['upload'].remove(eachfile)
-        elif isinstance(files['upload'], FileStorage):
-            splitFileName = files['upload'].filename.split("/")
-            logging.warning(f"split file name: {splitFileName}")
-            folderpath = os.path.join(defaultpath, splitFileName[0])
-            os.makedirs(folderpath, exist_ok=True)
-            # logging.warning(f"---- ---- -- ---- ---- IM ONLY JUST A SINGLE FILE {dest}")
-            logging.warning(f"------- ---- {files['upload'].filename}, type : {type(files['upload'].filename)}")
-            filepath = os.path.join(folderpath, splitFileName[1])
-            logging.warning(f"FILE PATH: {filepath}")
-            files['upload'].save(filepath)
-        logging.warning(f"____-----_____----- printing folder path: {folderpath}")
+                # (comment) splitFileName == [""] when the file upload or folder upload is not filled
+                if splitFileName == [""]:
+                    continue
+                if len(splitFileName) > 1:
+                    folderpath = defaultpath
+                    filepath = defaultpath
+                    pathtofolder = os.path.join(defaultpath, splitFileName[0])
+                    for i in range(len(splitFileName)):
+                        filepath = os.path.join(filepath, splitFileName[i])
+                        if i != len(splitFileName) - 1:
+                            folderpath = os.path.join(folderpath, splitFileName[i])
+                    os.makedirs(folderpath, exist_ok=True)
+                    eachfile.save(filepath)
+                else:
+                    pathtofile= defaultpath + "/temp/"
+                    os.makedirs(pathtofile, exist_ok=True)
+                    logging.warning(f"split file name: {splitFileName}")
+                    filepath = os.path.join(pathtofile, splitFileName[0])
+                    logging.warning(f"FILE PATH: {filepath}")
+                    if os.path.isdir(filepath):
+                        logging.error(f"{filepath} is a directory")
+                    else:
+                        eachfile.save(filepath)
+        logging.warning(f"____-----_____----- printing path to folder: {pathtofolder}")
+        logging.warning(f"____-----_____----- printing path to file: {pathtofile}")
         package_details = get_action("package_show")({}, {"id": id})
         logging.warning(f"Package Details: ")
         for key, val in package_details.items():
@@ -175,20 +183,24 @@ class CreateResourceView(MethodView):
         if "extras" in package_details:
             for extra in package_details['extras']:
                 parent_ids.append(extra['key'])
-
         clearml_id = upload_to_clearml(
-            folderpath, 
+            pathtofolder, 
+            pathtofile,
             id, 
             package_details['project_title'], 
             package_details['dataset_title'], 
             parent_ids
         )
+        
         package_details['clearml_id'] = clearml_id
         get_action("package_update")({}, package_details)
         # we don't want to include save as it is part of the form
         del data[u'save']
-        # resource_id = data.pop(u'id')
-
+        try: 
+            logging.warning(f"-- __ -- __ REMOVING UPLOADED FILES FROM CKAN AS IT IS UPLOADED TO CLEARML ALREADY.")
+            shutil.rmtree(defaultpath)
+        except Exception as e:
+            logging.warning(f"-- __ -- __ UNABLE TO DELETE FOLDER FOR SOME GODFORSAKEN REASON: {e}")
         context = cast(Context, {
             u'model': model,
             u'session': model.Session,
