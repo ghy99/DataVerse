@@ -24,14 +24,18 @@
   {% set first_button = 'resource-upload-button' if is_upload_enabled else 'resource-link-button' %}
   
   {% macro remove_button(js='') %}
-    <button type="button" class="btn btn-danger btn-remove-url"
+    <button type="button" class="btn btn-danger btn-remove-url" id="remove-button"
       onclick="
         document.getElementById('resource-url-none').checked = true;
         document.getElementById('{{ first_button }}').focus();
+        document.getElementById('remove-button-div').style.display = 'none';
         {{ js }}
-      ">{{ _('Remove') }}</button>
-  {% endmacro %}
-  
+      ">{{ _('Clear Upload') }}</button>
+      
+  {% endmacro %} 
+
+
+
   <div data-module="resource-upload-field" class="resource-upload-field form-group">
     <input type="radio" id="resource-url-none" name="url_type" value="" {{
       'checked' if not data.url and not data.url_type else '' }}>
@@ -47,7 +51,8 @@
               title="{{ _('Upload a file on your computer') }}"
               onclick="
                 document.getElementById('resource-url-upload').checked = true;
-                document.getElementById('field-resource-upload').click();
+                document.getElementById('field-folder-upload').click();
+                document.getElementById('remove-button-div').style.display='block';
               "><i class="fa fa-cloud-upload"></i>{{ _("Upload") }}</button>
           {% endif %}
 
@@ -68,61 +73,40 @@
           'checked' if is_upload else '' }}>
         <div class="select-type">
           {% block upload_controls %}
-            {% if is_upload %}
-              {# for existing uploads we show the file name in a readonly input box #}
-              <input type="checkbox" id="field-clear-upload" value="true">
-              <div class="upload-type">
-                <button type="button" class="btn btn-danger btn-remove-url"
-                  onclick="
-                    document.getElementById('field-clear-upload').checked = true;
-                    document.getElementById('field-resource-upload').focus();
-                  ">{{ _('Clear Upload') }}</button>
-                <label class="form-label">{{ upload_label or _('File') }}</label>
-                <div class="controls">
-                  {% set existing_name = data.get('url', '').split('/')[-1].split('?')[0].split('#')[0] %}
-                  <input value="{{ existing_name }}" class="form-control" readonly>
-                </div>
-              </div>
-            {% endif %}   
+          {% if is_upload %}
+          {# for existing uploads we show the file name in a readonly input box #}
+          <input type="checkbox" id="field-clear-upload" value="true">
+          <div class="upload-type">
+            <button type="button" class="btn btn-danger btn-remove-url"
+              onclick="
+                document.getElementById('field-clear-upload').checked = true;
+                document.getElementById('field-folder-upload').focus();
+                document.getElementById('field-file-upload').focus()
+              ">{{ _('Clear Upload') }}</button>
+            <label class="form-label">{{ upload_label or _('File') }}</label>
+            <div class="controls">
+              {% set existing_name = data.get('url', '').split('/')[-1].split('?')[0].split('#')[0] %}
+              <input value="{{ existing_name }}" class="form-control" readonly>
+            </div>
+          </div>
+        {% endif %} 
             <div class="upload-type">
-              {# (jinrui) the red remove button #}
-              {{ remove_button(
-                js="$('#field-resource-upload').replaceWith($('#field-resource-upload').val('').clone(true))") }}
-
-                {#todo (jinrui): change the logic so that it zips folders#}
-                
-                {#
-              {{ form.input(
-                'upload',
-                label=upload_label or _('File'),
-                id='field-resource-upload',
-                type='file',
-                classes=['control-full']) }}
-                #}
-
-                
                 <div class="upload-type">
                   <label class="form-label" for="upload">Upload a Folder</label>
                   <div class="controls">
-                    <input name="upload" id="field-resource-upload'" type="file" class="form-control" multiple webkitdirectory> 
+                    <input name="upload" id="field-folder-upload" type="file" class="form-control" multiple webkitdirectory> 
                   </div>
                 </div>
                 <p></p>
                 <div class="upload-type">
                   <label class="form-label" for="upload">Upload File(s)</label>
                   <div class="controls">
-                    <input name="upload" id="field-file-upload'" type="file" class="form-control" multiple> 
+                    <input name="upload" id="field-file-upload" type="file" class="form-control" multiple> 
                   </div>
                 </div>
-                
-
-                
-
-
-
             </div>
           {% endblock %}
-        </div>
+        </div> 
       {% endif %}
   
       <input type="radio" id="resource-url-link" name="url_type" value="" {{
@@ -145,3 +129,12 @@
     {% endblock %}
   </div>
   
+{% if is_upload_enabled %}
+<div id="remove-button-div" style="display:none;">
+    {{ remove_button(
+      js="$('#field-folder-upload').replaceWith($('#field-folder-upload').val('').clone(true));
+      $('#field-file-upload').replaceWith($('#field-file-upload').val('').clone(true));"
+  ) }}
+</div>
+{% endif %}
+<p> </p>
