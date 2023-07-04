@@ -240,18 +240,18 @@ class CreatePackageView(MethodView):
             # create_on_ui_requires_resources = config.get(
             #     'ckan.dataset.create_on_ui_requires_resources'
             # )
-            logging.warning(f"--- ___ --- ___ IM GONNA CREATE MY RESOURCE VIEW HERE")
-            resource_view = get_action("package_create_default_resource_views")({}, {
-                "package" : pkg_dict,
-                "create_datastore_views" : True,
-            })
-            if not resource_view:
-                logging.warning(f"-- __ -- __ -- __ damn well failed creating a resource view innit bruv")
-            else:
-                logging.warning(f"__ -- __ -- __ -- RESOURCE VIEW SUCCESSFULLY CREATED. PRINTING RESOURCE VIEW")
-                for each_view in resource_view:
-                    for key, val in resource_view.items():
-                        logging.warning(f" --- ___ ___ --- {key} : {val}")
+            # logging.warning(f"--- ___ --- ___ IM GONNA CREATE MY RESOURCE VIEW HERE")
+            # resource_view = get_action("package_create_default_resource_views")({}, {
+            #     "package" : pkg_dict,
+            #     "create_datastore_views" : True,
+            # })
+            # if not resource_view:
+            #     logging.warning(f"-- __ -- __ -- __ damn well failed creating a resource view innit bruv")
+            # else:
+            #     logging.warning(f"__ -- __ -- __ -- RESOURCE VIEW SUCCESSFULLY CREATED. PRINTING RESOURCE VIEW")
+            #     for each_view in resource_view:
+            #         for key, val in resource_view.items():
+            #             logging.warning(f" --- ___ ___ --- {key} : {val}")
 
             new_or_existing = pkg_dict["new_or_existing"]
             if ckan_phase:

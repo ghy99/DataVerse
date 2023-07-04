@@ -901,8 +901,8 @@ def register_dataset_plugin_rules(blueprint: Blueprint) -> None:
     blueprint.add_url_rule(
         u'/<resource_id>/edit_view/<view_id>', view_func=_edit_view
     )
-    for key,  val in blueprint.__dict__.items():
-        logging.warning(f"------_______----- {key} : {val}")
+    # for key,  val in blueprint.__dict__.items():
+    #     logging.warning(f"------_______----- {key} : {val}")
 
 
 register_dataset_plugin_rules(resource)

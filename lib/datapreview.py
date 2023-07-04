@@ -67,8 +67,10 @@ def get_view_plugin(view_type: Optional[str]) -> Optional[p.IResourceView]:
     Returns the IResourceView plugin associated with the given view_type.
     '''
     for plugin in p.PluginImplementations(p.IResourceView):
+        logging.warning(f"-- __ -- __ **** datapreview.py -- plugin : {plugin}")
         info = plugin.info()
         name = info.get('name')
+        logging.warning(f"-- __ -- __ **** datapreview.py -- plugin : {name} *** view type : {view_type}")
         if name == view_type:
             return plugin
     return None
@@ -128,21 +130,23 @@ def get_default_view_plugins(
 
     default_view_plugins = []
     for view_type in default_view_types:
-
+        
         view_plugin = get_view_plugin(view_type)
-
+        
         if not view_plugin:
             log.warning(
                 'Plugin for view {0} could not be found'.format(view_type))
             # We should probably check on startup if the default
             # view types exist
             continue
-
+        logging.warning(f"-- __ ^^ ** datapreview.py -- view type: {view_type}")
+        logging.warning(f"-- __  view plugin: {view_plugin}")
         info = view_plugin.info()
-
+        logging.warning(f" Getting my info type: {info} -- {info.get('requires_datastore')}")
         plugin_requires_datastore = info.get('requires_datastore', False)
 
         if plugin_requires_datastore == get_datastore_views:
+            logging.warning(f"plugin_requires_datastore : {plugin_requires_datastore} -- get_datastore_views : {get_datastore_views}")
             default_view_plugins.append(view_plugin)
 
     return default_view_plugins
@@ -182,6 +186,7 @@ def add_views_to_resource(context: Context,
             context, {'id': resource_dict['package_id']})
 
     if not view_types:
+        logging.warning(f"datapreview.py calling 'get_default_view_plugins'")
         view_plugins = get_default_view_plugins(create_datastore_views)
     else:
         view_plugins = get_view_plugins(view_types)
@@ -246,6 +251,8 @@ def add_views_to_dataset_resources(
 
     created_views = []
     for resource_dict in dataset_dict.get('resources', []):
+        logging.warning(f"-- __ ** ^^ add_views_to_dataset_resources -- For each resource: ")
+        logging.warning(f"{resource_dict}")
         new_views = add_views_to_resource(context,
                                           resource_dict,
                                           dataset_dict,

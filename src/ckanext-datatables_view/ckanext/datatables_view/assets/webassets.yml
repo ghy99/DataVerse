@@ -1,0 +1,14 @@
+# datatables_view-js:
+#   filter: rjsmin
+#   output: ckanext-datatables_view/%(version)s-datatables_view.js
+#   contents:
+#     - js/datatables_view.js
+#   extra:
+#     preload:
+#       - base/main
+
+# datatables_view-css:
+#   filter: cssrewrite
+#   output: ckanext-datatables_view/%(version)s-datatables_view.css
+#   contents:
+#     - css/datatables_view.css
