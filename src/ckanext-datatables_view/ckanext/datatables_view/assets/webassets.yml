@@ -1,14 +1,19 @@
-# datatables_view-js:
-#   filter: rjsmin
-#   output: ckanext-datatables_view/%(version)s-datatables_view.js
-#   contents:
-#     - js/datatables_view.js
-#   extra:
-#     preload:
-#       - base/main
-
-# datatables_view-css:
-#   filter: cssrewrite
-#   output: ckanext-datatables_view/%(version)s-datatables_view.css
-#   contents:
-#     - css/datatables_view.css
+main-css:
+  output: ckanext-datatables_view/%(version)s_datatablesview.css
+  filters: cssrewrite
+  contents:
+    - vendor/DataTables/datatables.css
+    - vendor/DataTables/datatables.mark.css
+    - datatables_view.css
+main-js:
+  output: ckanext-datatables_view/%(version)s_datatablesview.js
+  extra:
+    preload:
+      - base/main
+  contents:
+    - vendor/DataTables/datatables.js
+    - vendor/DataTables/datatables.mark.js
+    - vendor/DataTables/jquery.mark.js
+    - vendor/DataTables/dataTables.scrollResize.js
+    - vendor/DataTables/datetime.js
+    - datatablesview.js
