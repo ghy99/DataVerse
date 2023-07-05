@@ -1,0 +1,14 @@
+# audio_view-js:
+#   filter: rjsmin
+#   output: ckanext-audio_view/%(version)s-audio_view.js
+#   contents:
+#     - js/audio_view.js
+#   extra:
+#     preload:
+#       - base/main
+
+# audio_view-css:
+#   filter: cssrewrite
+#   output: ckanext-audio_view/%(version)s-audio_view.css
+#   contents:
+#     - css/audio_view.css
