@@ -70,7 +70,7 @@ def get_view_plugin(view_type: Optional[str]) -> Optional[p.IResourceView]:
         logging.warning(f"-- __ -- __ **** datapreview.py -- plugin : {plugin}")
         info = plugin.info()
         name = info.get('name')
-        logging.warning(f"-- __ -- __ **** datapreview.py -- plugin : {name} *** view type : {view_type}")
+        logging.warning(f"-- __ -- __ **** datapreview.py -- plugin name : {name} *** view type : {view_type}")
         if name == view_type:
             return plugin
     return None
@@ -126,8 +126,11 @@ def get_default_view_plugins(
 
     Returns a list of IResourceView plugins
     '''
-    default_view_types = config.get('ckan.views.default_views')
-
+    # i changed this from getting a string to converting the string to a list before storing it in default_view_types
+    # cos its a bug i think. When retrieving from config.get its only a string if i edited it in my .env.
+    # default_view_types = config.get('ckan.views.default_views')
+    default_view_types = config.get('ckan.views.default_views').split(" ")
+    logging.warning(f"********* WHAT ARE THE DEFAULT VIEW TYPES??????????????? : {default_view_types} || Type : {type(default_view_types)}")
     default_view_plugins = []
     for view_type in default_view_types:
         
