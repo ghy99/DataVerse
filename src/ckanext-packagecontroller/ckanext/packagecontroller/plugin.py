@@ -60,6 +60,10 @@ class PackagecontrollerPlugin(plugins.SingletonPlugin):
                 dataset_id=pkg_dict['clearml_id']
             )
 
+            # put the download url in pkg_dict'
+            
+            package_show["clearml_download_url"] = dataset.get_default_storage()
+            
             # Changing metadata fields for the things below
             package_show['project_title'] = dataset.project
             package_show['dataset_title'] = dataset.name
