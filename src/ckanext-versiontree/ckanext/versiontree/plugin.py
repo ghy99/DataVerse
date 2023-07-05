@@ -151,6 +151,12 @@ def renderVersionTree():
         dataset_IDs=dataset_IDs,
         dataset_details=dataset_details,
     )
+    
+def downloadDatasets():
+    warning("--------------POST METHOD FOR DOWNLOAD DATASETS-------------------")
+    clearml_id = request.args.get("clearml_id")
+    warning(f"CLEARML_ID : {clearml_id}")
+    return render_template("downloadDatasets.html", clearml_id = clearml_id)
 
 
 class VersiontreePlugin(plugins.SingletonPlugin):
@@ -170,6 +176,7 @@ class VersiontreePlugin(plugins.SingletonPlugin):
 
         rules = [
             ("/versiontree", "versiontree", renderVersionTree),
+            ("/downloaddatasets", "downloaddatasets", downloadDatasets)
         ]
 
         for rule in rules:
