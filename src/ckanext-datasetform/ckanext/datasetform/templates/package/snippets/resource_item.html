@@ -70,6 +70,15 @@
           </a>
         </li>
         {% endif %}
+        {# button to download datasets #}
+        <li>    
+            <button class="dropdown-item"> 
+                <a href="{{h.url_for('versiontree.downloaddatasets', clearml_id=pkg.clearml_id)}}" title={{_('Download Datasets')}}>
+                    <i class="fa fa-info-circle"></i>
+                    {{ _('Download Datasets') }}
+                </a>
+            </button>
+        </li>
         {% endblock %}
       </ul>
     </div>
@@ -77,6 +86,8 @@
     {% endblock %}
   </li>
   
+
+
 
 {% block resource_item_title %}
     <a class="heading" href="{{ url }}" title="{{ res.name or res.description }}">

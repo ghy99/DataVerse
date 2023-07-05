@@ -18,6 +18,11 @@ versionTree_style:
     output: ckanext-versiontree/%(version)s_styles.css
     contents: versionTree_style.css
 
+downloadDatasets_style:
+    filters: cssrewrite
+    output: ckanext-versiontree/%(version)s_styles.css
+    contents: downloadDatasets_style.css
+
 versionTree_script:
     filters: rjsmin
     output: ckanext-versiontree/%(version)s_main.js

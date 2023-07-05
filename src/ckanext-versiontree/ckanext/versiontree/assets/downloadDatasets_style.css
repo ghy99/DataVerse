@@ -1,0 +1,23 @@
+.download-code-div {
+    padding: 10px;
+    margin-bottom: 10px;
+    height: 45;
+    width: 21%;
+    background-color: #000000;
+    border-radius:10px;
+  }
+
+#download-code{
+    color: white;
+    text-align: center;
+}
+
+table{
+    width: 100%;
+}
+
+tr{
+    height:70px;
+}
+
+
