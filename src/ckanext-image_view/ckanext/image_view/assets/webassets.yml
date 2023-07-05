@@ -1,0 +1,14 @@
+# image_view-js:
+#   filter: rjsmin
+#   output: ckanext-image_view/%(version)s-image_view.js
+#   contents:
+#     - js/image_view.js
+#   extra:
+#     preload:
+#       - base/main
+
+# image_view-css:
+#   filter: cssrewrite
+#   output: ckanext-image_view/%(version)s-image_view.css
+#   contents:
+#     - css/image_view.css

@@ -1,0 +1,14 @@
+# video_view-js:
+#   filter: rjsmin
+#   output: ckanext-video_view/%(version)s-video_view.js
+#   contents:
+#     - js/video_view.js
+#   extra:
+#     preload:
+#       - base/main
+
+# video_view-css:
+#   filter: cssrewrite
+#   output: ckanext-video_view/%(version)s-video_view.css
+#   contents:
+#     - css/video_view.css
