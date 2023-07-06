@@ -12,7 +12,6 @@ ckan/*
 nginx/*
 postgresql/*
 .env.example
-venv/
 
 /templates/
 public/
@@ -22,3 +21,5 @@ logic/
 __pycache__/
 varlibckan/
 desktop.ini
+
+css/
