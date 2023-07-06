@@ -48,10 +48,14 @@
             <tr>
                 <td>        
                     <h3> Download through CLI </h3>
-                    <div class="download-code-div"> 
-                        <pre><code id="download-code" value="hello world">clearml-data get --id {{clearml_id}}</code></pre>
+                    <div class="code-div"> 
+                        <div class="sub-code-div">
+                            <pre><code id="download-code" value="hello world">clearml-data get --id {{clearml_id}}</code></pre>
+                        </div>
+                        <div class="sub-code-div">
+                            <button id="copy-button" onclick="copyCodeToClipboard()"><img src="http://clipground.com/images/copy-4.png" ></button>
+                        </div>
                     </div>
-                    <button onclick="copyCodeToClipboard()"> Copy Code </button>
                     <script>
                         function copyCodeToClipboard() {
                             // Get the code element
@@ -87,7 +91,13 @@
                     </script> 
                 </td>
             </tr>
+            <tr>
+                <td>
+                    <a class="download-link" href="https://app.clear.ml/projects/{{project_title}}/experiments/{{clearml_id}}/output/artifacts/other/data/output">Go to Download Page </a>
+                </td>
+            </tr>
         </table>
+        
         {%- block footer %}
         {% include "footer.html" %}
         {% endblock -%}
