@@ -154,9 +154,10 @@ def renderVersionTree():
     
 def downloadDatasets():
     warning("--------------POST METHOD FOR DOWNLOAD DATASETS-------------------")
+    project_title = request.args.get("project_title")
     clearml_id = request.args.get("clearml_id")
     warning(f"CLEARML_ID : {clearml_id}")
-    return render_template("downloadDatasets.html", clearml_id = clearml_id)
+    return render_template("downloadDatasets.html", clearml_id = clearml_id, project_title =  project_title)
 
 
 class VersiontreePlugin(plugins.SingletonPlugin):

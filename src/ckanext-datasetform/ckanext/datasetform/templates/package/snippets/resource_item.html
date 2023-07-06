@@ -80,7 +80,7 @@ Example:
             {# button to download datasets #}
             <li>
                 <button class="dropdown-item">
-                    <a href="{{h.url_for('versiontree.downloaddatasets', clearml_id=pkg.clearml_id)}}"
+                    <a href="{{h.url_for('versiontree.downloaddatasets', clearml_id=pkg.clearml_id, project_title=pkg.project_title)}}"
                         title={{_('Download Datasets')}}>
                         <i class="fa fa-info-circle"></i>
                         {{ _('Download Datasets') }}
