@@ -256,13 +256,13 @@ sup {
 
 a {
     /* color: #206b82; */
-    color: rgb(255, 0, 0);
+    color: rgb(19, 216, 29);
     text-decoration: underline;
 }
 
 a:hover {
     /* color: #1a5668; */
-    color: rgb(0, 255, 0);
+    color: rgb(0, 25, 253);
     text-decoration: underline;
 }
 
@@ -2030,15 +2030,15 @@ progress {
 .table {
     --bs-table-bg: transparent;
     --bs-table-accent-bg: transparent;
-    --bs-table-striped-color: #333333;
+    --bs-table-striped-color: #ffffff;
     --bs-table-striped-bg: rgba(0, 0, 0, 0.05);
-    --bs-table-active-color: #333333;
+    --bs-table-active-color: #ffffff;
     --bs-table-active-bg: rgba(0, 0, 0, 0.1);
-    --bs-table-hover-color: #333333;
+    --bs-table-hover-color: #888888;
     --bs-table-hover-bg: rgba(0, 0, 0, 0.075);
     width: 100%;
     margin-bottom: 1rem;
-    color: #333333;
+    color: #ffffff;
     vertical-align: top;
     border-color: #dee2e6;
 }
@@ -12263,7 +12263,8 @@ a.tag:hover {
 
 .box,
 .wrapper {
-    background-color: #fff;
+    /* background-color: #fff; */
+    background: rgb(50, 50, 50);
     border: 1px solid #ccc;
     border-radius: 4px;
     box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
@@ -12413,7 +12414,8 @@ a.tag:hover {
 .module-resource {
     z-index: 5;
     position: relative;
-    background-color: #fff;
+    /* background-color: #fff; */
+    background: rgb(75, 75, 75);
     border-bottom: 1px solid #ddd;
     margin-top: 0;
     margin-bottom: 0;
@@ -13643,11 +13645,12 @@ select[data-module=autocomplete] {
 }
 
 .resource-item:hover {
-    background-color: #eee;
+    background-color: rgb(245, 245, 245);
+    color: rgb(45, 45, 45);
 }
 
 .resource-item .heading {
-    color: #000;
+    /* color: rgb(245, 245, 245); */
     font-size: 14px;
     font-weight: bold;
 }
@@ -14102,7 +14105,8 @@ td.diff_header {
 
 .group-list .module-heading h3 a,
 .group-list .module-heading .h3 a {
-    color: #333;
+    /* color: #333; */
+    color: rgb(255, 255, 255);
 }
 
 .group-list .module-heading .media-image {
@@ -14583,7 +14587,8 @@ td.diff_header {
     float: left;
     width: 50%;
     margin: 5px 0 0 0;
-    color: #444;
+    /* color: #444; */
+    color: rgb(245, 245, 245);
 }
 
 .context-info .nums dl dt {
@@ -14629,12 +14634,14 @@ td.diff_header {
 }
 
 .homepage .hero {
-    background: url("../../../base/images/background-tile.png");
+    /* background: url("../../../base/images/background-tile.png"); */
+    background: rgb(75, 75, 75);
     padding: 20px 0;
 }
 
 .homepage .module-promotion {
-    background: #fff;
+    /* background: #fff; */
+    background: rgb(50, 50, 50);;
     padding: 30px;
 }
 
@@ -14646,7 +14653,8 @@ td.diff_header {
 
 .homepage .module-search .search-form {
     border-radius: 0.25rem;
-    background-color: #005d7a;
+    /* background-color: #005d7a; */
+    background: rgb(50, 50, 50);
     padding: 30px 20px;
 }
 
@@ -14672,7 +14680,8 @@ td.diff_header {
 .homepage .module-search .tags {
     margin-top: -5px;
     padding: 5px 10px 10px 10px;
-    background-color: #003647;
+    /* background-color: #003647; */
+    background: rgb(139, 139, 139)
 }
 
 .homepage .module-search .tags h3,
