@@ -1,14 +1,15 @@
-.download-code-div {
+.code-div {
     padding: 10px;
     margin-bottom: 10px;
-    height: 45;
-    width: 21%;
-    background-color: #000000;
+    height: 40;
+    width: 23%;
+    background: #eee;
     border-radius:10px;
+    overflow:hidden;
   }
 
 #download-code{
-    color: white;
+    color: black;
     text-align: center;
 }
 
@@ -20,4 +21,38 @@ tr{
     height:70px;
 }
 
+#copy-button{
+    width: 30px;
+    height: 30px;
+    margin-left: 10px;
+    float: left;
+}
 
+#copy-button img{
+    width: 100%;
+    height: 100%;
+    float:left;
+}
+
+.sub-code-div{
+    float: left;
+    display:inline-block;
+}
+
+.download-link {
+    /* Add your desired styles here */
+    display: inline-block; /* Ensures the link behaves like a- block element */
+    padding: 15px 30px; /* Adds padding around the link */
+    background-color: black; /* Sets the background color to blue */
+    color: white; /* Sets the text color to white */
+    text-decoration: none; /* Removes the underline */
+    font-weight: bold; /* Sets the text to bold */
+    font-size: 18px;
+    border-radius: 5px; /* Adds rounded corners to the button */
+  }
+  
+  .download-link:hover {
+    /* Styles to apply when hovering over the link */
+    background-color: black; /* Darkens the background color on hover */
+  }
+  
