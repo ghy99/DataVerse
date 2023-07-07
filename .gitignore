@@ -12,12 +12,6 @@ ckan/*
 nginx/*
 postgresql/*
 .env.example
-
-/templates/
-public/
-views/
-plugins/
-logic/
 __pycache__/
+
 varlibckan/
-desktop.ini
