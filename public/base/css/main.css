@@ -13345,7 +13345,8 @@ select[data-module=autocomplete] {
 }
 
 .slug-preview-value {
-    background-color: #faedcf;
+    /* background-color: #faedcf; */
+    background: rgb(0, 0, 0);
     margin-right: 3px;
 }
 
