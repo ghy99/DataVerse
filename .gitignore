@@ -14,5 +14,3 @@ postgresql/*
 .env.example
 __pycache__/
 
-
-css/
