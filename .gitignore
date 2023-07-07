@@ -21,3 +21,4 @@ logic/
 __pycache__/
 varlibckan/
 desktop.ini
+**/test.ini
