@@ -8,5 +8,4 @@ _solr/schema.xml
 _src/*
 local/*
 __pycache__/
-
 varlibckan/
