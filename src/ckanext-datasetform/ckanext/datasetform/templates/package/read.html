@@ -37,6 +37,48 @@
     {% snippet "package/snippets/resources_list.html", pkg=pkg, resources=pkg.resources %}
   {% endblock %}
 
+  {% block download %}
+    <div id="download-methods" style="display:none;">
+      <div onclick="copyToClipboard()">
+          <pre class="btn btn-light"><code id="download-code">clearml-data get --id {{pkg.clearml_id}}</code></pre>
+      </div>
+      <script>
+        function copyToClipboard() {
+          var codeElement = document.getElementById("download-code");
+          var code = codeElement.innerText || codeElement.textContent;
+      
+          var textarea = document.createElement("textarea");
+          textarea.value = code;
+          textarea.style.position = "fixed";  // Prevent scrolling to bottom
+          document.body.appendChild(textarea);
+          textarea.select();
+          try {
+            document.execCommand("copy");
+            alert("Content copied to clipboard!");
+          } catch (err) {
+            console.error("Failed to copy content to clipboard:", err);
+          } finally {
+            document.body.removeChild(textarea);
+          }
+        }
+      </script>
+      <div>
+        <a class="btn btn-light" href="https://app.clear.ml/projects/{{project_title}}/experiments/{{clearml_id}}/output/artifacts/other/data/output">Go to Download Page </a>
+      </div>
+    </div>
+    <script>
+      // JavaScript code
+      document.getElementById("download-option").addEventListener("click", function() {
+        var hiddenDiv = document.getElementById("download-methods");
+        if (hiddenDiv.style.display === "none") {
+          hiddenDiv.style.display = "block";
+        } else {
+          hiddenDiv.style.display = "none";
+        }
+      });
+    </script>
+  {% endblock %}
+
   {% block package_tags %}
     {% snippet "package/snippets/tags.html", tags=pkg.tags %}
   {% endblock %}
