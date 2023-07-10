@@ -6,6 +6,7 @@ body {
 
 pre {
   font-size: 13px;
+  color: rgb(255, 255, 255);
 }
 
 .loading {
@@ -15,4 +16,5 @@ pre {
   position: fixed;
   left: -20px;
   top: 20px;
+  color: rgb(255, 255, 255);
 }
