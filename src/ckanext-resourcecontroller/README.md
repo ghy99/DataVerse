@@ -5,6 +5,10 @@
 This module extends the IResourceController interface provided by CKAN, and is used to hook logic into the resource view.
 
 >> ** This module is no longer used** 
+This extension is supposed to be used to make any changes after resource create.
+But this does not seem to be used. For now. 
+Next time can use I guess.
+
 
 ## Installation
 
@@ -29,3 +33,8 @@ None at present
 ## Tests
 
 None at present
+
+
+## License
+
+[AGPL](https://www.gnu.org/licenses/agpl-3.0.en.html)
