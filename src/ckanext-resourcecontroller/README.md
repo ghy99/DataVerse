@@ -2,7 +2,7 @@
 
 # ckanext-resourcecontroller
 
-This module extends the IPackageController interface provided by CKAN 
+This module extends the IResourceController interface provided by CKAN, and is used to hook logic into the resource view.
 
 >> ** This module is no longer used** 
 
