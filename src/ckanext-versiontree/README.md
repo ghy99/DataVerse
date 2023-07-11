@@ -1,123 +1,69 @@
-[![Tests](https://github.com/ghy99/ckanext-versiontree/workflows/Tests/badge.svg?branch=main)](https://github.com/ghy99/ckanext-versiontree/actions)
+[Refer to HaoYi's GitHub for DataVerse for reference i guess](https://github.com/ghy99/DataVerse)
 
 # ckanext-versiontree
 
-**TODO:** Put a description of your extension here:  What does it do? What features does it have? Consider including some screenshots or embedding a video!
+This extension allows the rendering of a version tree acquired from ClearML and displaying it on CKAN.
 
+**plugins.py**
+    This plugin contains the functions for the dataset object from ClearML, fetching the dependency graph of the dataset, sorting dataset IDs, and rendering the version tree with dataset details on the frontend. Additionally, it provides a CKAN plugin class to handle configuration and routing.
+```python
 
-## Requirements
+    getDependencyGraph(dataset):
+        """
+        This function gets the dependency graph of the dataset parameter that is passed in and returns the dependency graph.
+        An error is thrown if the dependency graph cannot be obtained.
+        """
 
-**TODO:** For example, you might want to mention here which versions of CKAN this
-extension works with.
+    getAllDatasetID(dataset_id):
+        """
+        This function gets the dataset from the dataset_id passed in and returns the dataset. 
+        An errror is thrown if the dataset cannot be obtained.
+        """
 
-If your extension works across different versions you can add the following table:
+    sortDataset(dataset_IDs, dataset_details):
+        """ 
+        This function takes in a list of unsorted dataset IDs and returns a sorted list of the same IDs.
+        """
 
-Compatibility with core CKAN versions:
+    retrieveDatasetDetails(dataset_details):
+        """ 
+        This function takes a dataset object with dataset IDs and their attributes as input and returns a condensed dictionary. 
+        Each dataset ID is associated with a nested dictionary that includes the project name, dataset name, and version, along with their respective values.
+        """
 
-| CKAN version    | Compatible?   |
-| --------------- | ------------- |
-| 2.6 and earlier | not tested    |
-| 2.7             | not tested    |
-| 2.8             | not tested    |
-| 2.9             | not tested    |
+    renderVersionTree():
+        """
+        This function retrieves the specified dataset's object form ClearML and returns the dependency graph, dataset_IDs and the dataset_details through the render_template function to display them on the frontend
+        """
 
-Suggested values:
+   
+    get_blueprint(self):
+        """ 
+        This method under the IBlueprint interface creates a Flask bluepring object that associates the "/versiontree" URl path with the renderVersionTree function above.
+        """
 
-* "yes"
-* "not tested" - I can't think of a reason why it wouldn't work
-* "not yet" - there is an intention to get it working
-* "no"
-
+```
 
 ## Installation
 
-**TODO:** Add any additional install steps to the list below.
-   For example installing any non-Python dependencies or adding any required
-   config settings.
+1. Create an extension with the following command:
+   
+   `docker compose -f docker-compose.dev.yml exec ckan-dev /bin/sh -c "ckan generate extension --output-dir /srv/app/src_extensions"`
 
-To install ckanext-versiontree:
+2. Add your extension name to your .env file. 
 
-1. Activate your CKAN virtual environment, for example:
+   `CKAN__PLUGINS="envvars datastore datapusher datasetform"`
 
-     . /usr/lib/ckan/default/bin/activate
+3. Restart CKAN. 
 
-2. Clone the source and install it on the virtualenv
-
-    git clone https://github.com/ghy99/ckanext-versiontree.git
-    cd ckanext-versiontree
-    pip install -e .
-	pip install -r requirements.txt
-
-3. Add `versiontree` to the `ckan.plugins` setting in your CKAN
-   config file (by default the config file is located at
-   `/etc/ckan/default/ckan.ini`).
-
-4. Restart CKAN. For example if you've deployed CKAN with Apache on Ubuntu:
-
-     sudo service apache2 reload
+   `docker compose -f docker-compose.dev.yml up --build`
 
 
 ## Config settings
 
 None at present
 
-**TODO:** Document any optional config settings here. For example:
-
-	# The minimum number of hours to wait before re-checking a resource
-	# (optional, default: 24).
-	ckanext.versiontree.some_setting = some_default_value
-
-
-## Developer installation
-
-To install ckanext-versiontree for development, activate your CKAN virtualenv and
-do:
-
-    git clone https://github.com/ghy99/ckanext-versiontree.git
-    cd ckanext-versiontree
-    python setup.py develop
-    pip install -r dev-requirements.txt
-
 
 ## Tests
 
-To run the tests, do:
-
-    pytest --ckan-ini=test.ini
-
-
-## Releasing a new version of ckanext-versiontree
-
-If ckanext-versiontree should be available on PyPI you can follow these steps to publish a new version:
-
-1. Update the version number in the `setup.py` file. See [PEP 440](http://legacy.python.org/dev/peps/pep-0440/#public-version-identifiers) for how to choose version numbers.
-
-2. Make sure you have the latest version of necessary packages:
-
-    pip install --upgrade setuptools wheel twine
-
-3. Create a source and binary distributions of the new version:
-
-       python setup.py sdist bdist_wheel && twine check dist/*
-
-   Fix any errors you get.
-
-4. Upload the source distribution to PyPI:
-
-       twine upload dist/*
-
-5. Commit any outstanding changes:
-
-       git commit -a
-       git push
-
-6. Tag the new release of the project on GitHub with the version number from
-   the `setup.py` file. For example if the version number in `setup.py` is
-   0.0.1 then do:
-
-       git tag 0.0.1
-       git push --tags
-
-## License
-
-[AGPL](https://www.gnu.org/licenses/agpl-3.0.en.html)
+None at present

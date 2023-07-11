@@ -152,13 +152,6 @@ def renderVersionTree():
         dataset_details=dataset_details,
     )
     
-def downloadDatasets():
-    warning("--------------POST METHOD FOR DOWNLOAD DATASETS-------------------")
-    project_title = request.args.get("project_title")
-    clearml_id = request.args.get("clearml_id")
-    warning(f"CLEARML_ID : {clearml_id}")
-    return render_template("downloadDatasets.html", clearml_id = clearml_id, project_title =  project_title)
-
 
 class VersiontreePlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
@@ -176,8 +169,7 @@ class VersiontreePlugin(plugins.SingletonPlugin):
         blueprint.template_folder = "templates"
 
         rules = [
-            ("/versiontree", "versiontree", renderVersionTree),
-            ("/downloaddatasets", "downloaddatasets", downloadDatasets)
+            ("/versiontree", "versiontree", renderVersionTree)
         ]
 
         for rule in rules:
