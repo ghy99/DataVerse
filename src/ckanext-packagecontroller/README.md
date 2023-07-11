@@ -1,123 +1,100 @@
-[![Tests](https://github.com/jinruiiii/ckanext-packagecontroller/workflows/Tests/badge.svg?branch=main)](https://github.com/jinruiiii/ckanext-packagecontroller/actions)
+[Refer to HaoYi's GitHub for DataVerse for reference i guess](https://github.com/ghy99/DataVerse)
 
 # ckanext-packagecontroller
 
-**TODO:** Put a description of your extension here:  What does it do? What features does it have? Consider including some screenshots or embedding a video!
+This module extends the IPackageController interface provided by CKAN and implements custom logic for the `after_dataset_create` method.
 
 
-## Requirements
 
-**TODO:** For example, you might want to mention here which versions of CKAN this
-extension works with.
+**plugins.py**
+```python
 
-If your extension works across different versions you can add the following table:
+    read(self, entity: 'model.Package') -> None:
+        ''' This method is called after IPackageController before_dataset_view insidepackage_show. This method currently does nothing and can be customised as per your requirements. '''
 
-Compatibility with core CKAN versions:
 
-| CKAN version    | Compatible?   |
-| --------------- | ------------- |
-| 2.6 and earlier | not tested    |
-| 2.7             | not tested    |
-| 2.8             | not tested    |
-| 2.9             | not tested    |
+    create(self, entity: 'model.Package') -> None:
+        ''' This method is called after the datasett had been created insde package_create. This method currently does nothing and can be customised as per your requirements.'''
 
-Suggested values:
+    edit(self, entity: 'model.Package') -> None:
+        ''' This method is called after the dataset had been updated inside package_update. This method currently does nothing and can be customised as per your requirements.'''
 
-* "yes"
-* "not tested" - I can't think of a reason why it wouldn't work
-* "not yet" - there is an intention to get it working
-* "no"
+
+    delete(self, entity: 'model.Package') -> None:
+        ''' This method is called before commit inside package_delete. This method currently does nothing and can be customised as per your requirements.'''
+
+
+    after_dataset_create(
+            self, context: Context, pkg_dict: dict[str, Any]) -> None:
+        
+        ''' This method is called after the dataset has been created. If a dataset is referenced and not created in the dataset form, the method retrieves the clearml_id from pkg_dict, and updates the package_show dictionary based on the referenced dataset information.'''
+
+    after_dataset_update(
+            self, context: Context, pkg_dict: dict[str, Any]) -> None:
+             
+        ''' This method is called after the dataset is updated. This method currently does nothing and can be customised as per your requirements.'''
+
+    after_dataset_delete(
+            self, context: Context, pkg_dict: dict[str, Any]) -> None:
+             
+        ''' This method is called after the dataset is deleted. This method currently does nothing and can be customised as per your requirements.'''
+
+    after_dataset_show(
+            self, context: Context, pkg_dict: dict[str, Any]) -> None:
+          
+        ''' This method is called after the dataset is displayed. This method currently does nothing and can be customised as per your requirements.'''
+
+    before_dataset_search(
+            self, search_params: dict[str, Any]) -> dict[str, Any]:
+            
+        ''' This method is called before search for datasets. This method currently does nothing and returns the search_params in the form of a dictionary.'''
+        return search_params
+
+    after_dataset_search(
+            self, search_results: dict[str, Any],
+            search_params: dict[str, Any]) -> dict[str, Any]:
+    
+        ''' This method is called after searching for datasets. This method curerently does nothing and returns the results of the search in the form of a dictionary.'''
+
+        return search_results
+
+    before_dataset_index(self, pkg_dict: dict[str, Any]) -> dict[str, Any]:
+        u
+        '''
+        This method will receive what will be given to Solr for indexing. This is essentially a flattened dict (except for
+        multi-valued fields such as tags) of all the terms sent to
+        the indexer. This method currently does nothing and returns the pkg_dict.
+        '''
+        return pkg_dict
+
+    before_dataset_view(self, pkg_dict: dict[str, Any]) -> dict[str, Any]:
+        u
+        ''' This method is called before the dataset gets displayed. This method currently does nothing and returns the pkg_dict.'''
+        return pkg_dict
+
+```
 
 
 ## Installation
 
-**TODO:** Add any additional install steps to the list below.
-   For example installing any non-Python dependencies or adding any required
-   config settings.
+1. Create an extension with the following command:
+   
+   `docker compose -f docker-compose.dev.yml exec ckan-dev /bin/sh -c "ckan generate extension --output-dir /srv/app/src_extensions"`
 
-To install ckanext-packagecontroller:
+2. Add your extension name to your .env file. 
 
-1. Activate your CKAN virtual environment, for example:
+   `CKAN__PLUGINS="envvars datastore datapusher packagecontroller"`
 
-     . /usr/lib/ckan/default/bin/activate
+3. Restart CKAN. 
 
-2. Clone the source and install it on the virtualenv
-
-    git clone https://github.com/jinruiiii/ckanext-packagecontroller.git
-    cd ckanext-packagecontroller
-    pip install -e .
-	pip install -r requirements.txt
-
-3. Add `packagecontroller` to the `ckan.plugins` setting in your CKAN
-   config file (by default the config file is located at
-   `/etc/ckan/default/ckan.ini`).
-
-4. Restart CKAN. For example if you've deployed CKAN with Apache on Ubuntu:
-
-     sudo service apache2 reload
+   `docker compose -f docker-compose.dev.yml up --build`
 
 
 ## Config settings
 
 None at present
 
-**TODO:** Document any optional config settings here. For example:
-
-	# The minimum number of hours to wait before re-checking a resource
-	# (optional, default: 24).
-	ckanext.packagecontroller.some_setting = some_default_value
-
-
-## Developer installation
-
-To install ckanext-packagecontroller for development, activate your CKAN virtualenv and
-do:
-
-    git clone https://github.com/jinruiiii/ckanext-packagecontroller.git
-    cd ckanext-packagecontroller
-    python setup.py develop
-    pip install -r dev-requirements.txt
-
 
 ## Tests
 
-To run the tests, do:
-
-    pytest --ckan-ini=test.ini
-
-
-## Releasing a new version of ckanext-packagecontroller
-
-If ckanext-packagecontroller should be available on PyPI you can follow these steps to publish a new version:
-
-1. Update the version number in the `setup.py` file. See [PEP 440](http://legacy.python.org/dev/peps/pep-0440/#public-version-identifiers) for how to choose version numbers.
-
-2. Make sure you have the latest version of necessary packages:
-
-    pip install --upgrade setuptools wheel twine
-
-3. Create a source and binary distributions of the new version:
-
-       python setup.py sdist bdist_wheel && twine check dist/*
-
-   Fix any errors you get.
-
-4. Upload the source distribution to PyPI:
-
-       twine upload dist/*
-
-5. Commit any outstanding changes:
-
-       git commit -a
-       git push
-
-6. Tag the new release of the project on GitHub with the version number from
-   the `setup.py` file. For example if the version number in `setup.py` is
-   0.0.1 then do:
-
-       git tag 0.0.1
-       git push --tags
-
-## License
-
-[AGPL](https://www.gnu.org/licenses/agpl-3.0.en.html)
+None at present
