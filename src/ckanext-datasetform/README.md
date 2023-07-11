@@ -3,6 +3,12 @@
 # ckanext-datasetform
 
 This extension is used to modify the package and resource creation form. 
+
+>The HTML files written by us to overwrite the original are also stored in this extension. 
+>>The modified HTML files are stored in templates. 
+>>It is mostly a reflection of the files stored in /templates. 
+>>The modifications mostly overwrite the {% block %} from the original HTML files. 
+
     
 **views.py**
     This plugin contains the classes that are used to overwrite the package / resource creation process. 
