@@ -2,122 +2,145 @@
 
 # ckanext-datasetform
 
-This extension is used to modify the 
+This extension is used to modify the package and resource creation form. 
+    
+**views.py**
+    This plugin contains the classes that are used to overwrite the package / resource creation process. 
+```python
+    '''
+    Most of the functions in here are directly copied from views/dataset.py and views/resource.py to ensure that the classes would work properly.
 
+    We will only explain the functions that we added ourselves. 
+    '''
 
-## Requirements
+    upload_to_clearml(folderpath, package_id, project_title, dataset_title, parent_datasets)
+    '''
+    This function is used to upload the uploaded files to ClearML. 
+    `folderpath` is passed in as the files that are uploaded are stored inside the docker container in the filepath `folderpath`. We then upload the files by specifying the filepath for ClearML to retrieve and upload to the server. 
 
-**TODO:** For example, you might want to mention here which versions of CKAN this
-extension works with.
+    `package_id` is not used idk why i passed it in. I thought it was necessary. 
 
-If your extension works across different versions you can add the following table:
+    `project_title` is the project title used to create the project in ClearML. 
 
-Compatibility with core CKAN versions:
+    `dataset_title` is the dataset title used to create the dataset in ClearML. 
 
-| CKAN version    | Compatible?   |
-| --------------- | ------------- |
-| 2.6 and earlier | not tested    |
-| 2.7             | not tested    |
-| 2.8             | not tested    |
-| 2.9             | not tested    |
+    `parent_datasets` are IDs of datasets that the newly created dataset will inherit from. 
+    '''
 
-Suggested values:
+    class CreatePackageView(MethodView):
+        post(self, package_type)
+        '''
+        I will explain what we changed from the original `post` function from dataset.py.
 
-* "yes"
-* "not tested" - I can't think of a reason why it wouldn't work
-* "not yet" - there is an intention to get it working
-* "no"
+        We requested for the file uploaded for the preview parameter and created a resource for this preview. 
+        This is necessary to allow users to see the uploaded preview that is used to describe the dataset.
+
+        We also removed the check for `create_on_ui_requires_resources`, instead referring to the parameter `new_or_existing` passed in through `pkg_dict`.
+        This is used to differentiate between adding a new dataset and referencing an old dataset from ClearML. 
+        '''
+
+    class CreateResourceView(MethodView):
+    '''
+    This class is supposed to overwrite the resource form creation portion, but it is not being called. What it is supposed to do is:
+
+        Store the uploaded files from the resource form in the folder path `/var/lib/ckan/default`.
+
+        When the uploaded files are stored here, we will call the `upload_to_clearml` function to upload the files to ClearML. 
+
+        After the upload, we will then delete the uploaded files to reduce space wastage. 
+    '''
+```
+
+**plugin.py:**
+    This plugin mainly uses the IDatasetForm Interface. There are 8 main functions used in IDatasetForm.
+```python
+    prepare_dataset_blueprint(self, package_type, bp)
+    '''
+    We added a url rule to the blueprint `bp` to overwrite the package creation process. 
+    This new rule will call the Class CreatePackageView from views.py. 
+    '''
+
+    prepare_resource_blueprint(self, package_type, blueprint)
+    '''
+    We added a url rule to the blueprint `blueprint` to overwrite the resource creation.
+    However, this does not work for some reason even though the steps were exactly the same as in prepare_dataset_blueprint. 
+    Mira was unsure of what happened here too. 
+    Might have to fix this. 
+    We overwrote the original /views/resource.py code instead. 
+
+    **fix this**
+    '''
+
+    _modify_package_schema(self, schema)
+    '''
+    This function is a helper function to consolidate all the additional parameters that we added into package schema. 
+    Each key in schema.update is a form input from package form (Dataset creation).
+    
+    `toolkit.get_converter('convert_to_extras')` is added to a list of checklist that CKAN checks before storing it in the database. 
+    This parameter ensures that all added form inputs will be stored inside the `extras` table.
+
+    `toolkit.get_validator("ignore_missing")` is added to a list of checklist that CKAN checks before storing it in the database. 
+    This parameter is added when the form input is not compulsory. 
+
+    As we did not add any new form inputs in the resource form, we did not need to cast the schema to ['resources'] to store data in the resource table. 
+    Please refer to the commented line of code in line 177 - 184 for an example of how to cast to the resource form. 
+    '''
+
+    create_package_schema(self)
+    '''
+    This function creates the schema and calls _modify_package_schema() to store values in the database.
+    '''
+
+    update_package_schema(self)
+    '''
+    This function updates the schema and calls _modify_package_schema() to update values in the database.
+    '''
+
+    show_package_schema(self)
+    '''
+    This function retrieves data stored in the database. 
+    `toolkit.get_converter("convert_from_extras)` is added to convert data from the `extras` parameter to a key : value pair data_dict.
+    '''
+
+    is_fallback(self)
+    '''
+    If true, this IDatasetForm plugin will be used as the default handler for package types that are not handled by any other IDatasetForm plugin. 
+
+    Refer to package_types() function below.
+    '''
+
+    package_types(self)
+    '''
+    This function is used to specify what package types this plugin will handle. 
+    "dataset" is returned in this plugin, specifying that all `dataset` package types will be handled by this plugin. 
+
+    However, for some reason, the resource form does not enter here but goes to the original default resource form. Not sure why this is happening. 
+    
+    **fix this**
+    '''
+```
 
 
 ## Installation
 
-**TODO:** Add any additional install steps to the list below.
-   For example installing any non-Python dependencies or adding any required
-   config settings.
+1. Create an extension with the following command:
+   
+   `docker compose -f docker-compose.dev.yml exec ckan-dev /bin/sh -c "ckan generate extension --output-dir /srv/app/src_extensions"`
 
-To install ckanext-datasetform:
+2. Add your extension name to your .env file. 
 
-1. Activate your CKAN virtual environment, for example:
+   `CKAN__PLUGINS="envvars datastore datapusher datasetform"`
 
-     . /usr/lib/ckan/default/bin/activate
+3. Restart CKAN. 
 
-2. Clone the source and install it on the virtualenv
-
-    git clone https://github.com/ghy99/ckanext-datasetform.git
-    cd ckanext-datasetform
-    pip install -e .
-	pip install -r requirements.txt
-
-3. Add `datasetform` to the `ckan.plugins` setting in your CKAN
-   config file (by default the config file is located at
-   `/etc/ckan/default/ckan.ini`).
-
-4. Restart CKAN. For example if you've deployed CKAN with Apache on Ubuntu:
-
-     sudo service apache2 reload
+   `docker compose -f docker-compose.dev.yml up --build`
 
 
 ## Config settings
 
 None at present
 
-**TODO:** Document any optional config settings here. For example:
-
-	# The minimum number of hours to wait before re-checking a resource
-	# (optional, default: 24).
-	ckanext.datasetform.some_setting = some_default_value
-
-
-## Developer installation
-
-To install ckanext-datasetform for development, activate your CKAN virtualenv and
-do:
-
-    git clone https://github.com/ghy99/ckanext-datasetform.git
-    cd ckanext-datasetform
-    python setup.py develop
-    pip install -r dev-requirements.txt
-
 
 ## Tests
 
-To run the tests, do:
-
-    pytest --ckan-ini=test.ini
-
-
-## Releasing a new version of ckanext-datasetform
-
-If ckanext-datasetform should be available on PyPI you can follow these steps to publish a new version:
-
-1. Update the version number in the `setup.py` file. See [PEP 440](http://legacy.python.org/dev/peps/pep-0440/#public-version-identifiers) for how to choose version numbers.
-
-2. Make sure you have the latest version of necessary packages:
-
-    pip install --upgrade setuptools wheel twine
-
-3. Create a source and binary distributions of the new version:
-
-       python setup.py sdist bdist_wheel && twine check dist/*
-
-   Fix any errors you get.
-
-4. Upload the source distribution to PyPI:
-
-       twine upload dist/*
-
-5. Commit any outstanding changes:
-
-       git commit -a
-       git push
-
-6. Tag the new release of the project on GitHub with the version number from
-   the `setup.py` file. For example if the version number in `setup.py` is
-   0.0.1 then do:
-
-       git tag 0.0.1
-       git push --tags
-
-## License
-
-[AGPL](https://www.gnu.org/licenses/agpl-3.0.en.html)
+None at present
