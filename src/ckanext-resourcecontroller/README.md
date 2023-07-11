@@ -1,8 +1,10 @@
 [Refer to HaoYi's GitHub for DataVerse for reference i guess](https://github.com/ghy99/DataVerse)
 
-
 # ckanext-resourcecontroller
 
+This module extends the IResourceController interface provided by CKAN, and is used to hook logic into the resource view.
+
+>> ** This module is no longer used** 
 This extension is supposed to be used to make any changes after resource create.
 But this does not seem to be used. For now. 
 Next time can use I guess.
