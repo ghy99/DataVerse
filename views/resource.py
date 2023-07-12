@@ -261,6 +261,21 @@ class CreateView(MethodView):
     def post(self, package_type: str, id: str) -> Union[str, Response]:
         logging.warning("__________________________________________________________________________")
         logging.warning("THIS IS THE FIRST LINE OF POST IN RESOURCE.py")
+        package_details = get_action("package_show")({}, {"id": id})
+        logging.warning(f"Package Details: ")
+        for key, val in package_details.items():
+            logging.warning(f"{key} : {val}")
+        parent_ids = []
+        if "extras" in package_details:
+            for extra in package_details['extras']:
+                parent_ids.append(extra['key'])
+        try:
+            for parent_id in parent_ids:
+                ds = Dataset.get(
+                    dataset_id=parent_id
+                )
+        except Exception as e:
+                return base.abort(404, _(u'Invalid Parent ID'))
         save_action = request.form.get(u'save')
         data = clean_dict(
             dict_fns.unflatten(tuplize_dict(parse_params(request.form)))
@@ -303,14 +318,6 @@ class CreateView(MethodView):
                         eachfile.save(filepath)
         logging.warning(f"____-----_____----- printing path to folder: {pathtofolder}")
         logging.warning(f"____-----_____----- printing path to file: {pathtofile}")
-        package_details = get_action("package_show")({}, {"id": id})
-        logging.warning(f"Package Details: ")
-        for key, val in package_details.items():
-            logging.warning(f"{key} : {val}")
-        parent_ids = []
-        if "extras" in package_details:
-            for extra in package_details['extras']:
-                parent_ids.append(extra['key'])
         clearml_id = upload_to_clearml(
             pathtofolder, 
             pathtofile,
