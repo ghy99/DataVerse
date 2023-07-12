@@ -168,7 +168,16 @@ class CreatePackageView(MethodView):
             data_dict.update(clean_dict(files))
         except dict_fns.DataError:
             return base.abort(400, _("Integrity Error"))
-        
+        # validate ClearML ID for referencing existing dataset
+        if data_dict["new_or_existing"] == "Reference Existing Dataset":
+            try:
+                dataset = Dataset.get(
+                    dataset_id=data_dict["clearml_id"]
+                )
+            except Exception as e:
+                return base.abort(404, _("ClearML ID not found"))
+
+                
         try:
             if ckan_phase:
                 # prevent clearing of groups etc
@@ -186,7 +195,6 @@ class CreatePackageView(MethodView):
                     data_dict["state"] = "draft"
                     # this is actually an edit not a save
                     pkg_dict = get_action("package_update")(context, data_dict)
-
                     # redirect to add dataset resources
                     url = h.url_for(
                         "{}_resource.new".format(package_type), id=pkg_dict["name"]
@@ -268,6 +276,7 @@ class CreatePackageView(MethodView):
                 logging.warning(
                     f"THIS IS REFERENCING FROM CLEARMLLLLLLLLLLLLLLLLLLLLLLLLLL"
                 )
+                
                 get_action("package_update")(
                     cast(Context, dict(context, allow_state_change=True)),
                     dict(pkg_dict, state="active"),
