@@ -56,29 +56,32 @@ class PackagecontrollerPlugin(plugins.SingletonPlugin):
             package_show = toolkit.get_action('package_show')({}, {"id": pkg_dict['id']})
 
             # retrieved the dataset from ClearML. Should we allow auto create dataset if it doesnt exist?
-            dataset = Dataset.get(
-                dataset_id=pkg_dict['clearml_id']
-            )
-
-            # put the download url in pkg_dict'
+            try:
+                dataset = Dataset.get(
+                    dataset_id=pkg_dict['clearml_id']
+                )
+                # put the download url in pkg_dict'
             
-            package_show["clearml_download_url"] = dataset.get_default_storage()
-            
-            # Changing metadata fields for the things below
-            package_show['project_title'] = dataset.project
-            package_show['dataset_title'] = dataset.name
-            new_title = dataset.name + "-v" + dataset._dataset_version
-            new_title = new_title.replace(" ", "-")
-            new_title = new_title.replace(".", "-")
-            new_title = new_title.lower()
-            # warning(f"---------- NEW TITLE: {new_title}")
-            # package_show['name'] = new_name
-            package_show['title'] = new_title
+                package_show["clearml_download_url"] = dataset.get_default_storage()
+                
+                # Changing metadata fields for the things below
+                package_show['project_title'] = dataset.project
+                package_show['dataset_title'] = dataset.name
+                new_title = dataset.name + "-v" + dataset._dataset_version
+                new_title = new_title.replace(" ", "-")
+                new_title = new_title.replace(".", "-")
+                new_title = new_title.lower()
+                # warning(f"---------- NEW TITLE: {new_title}")
+                # package_show['name'] = new_name
+                package_show['title'] = new_title
 
-            new_pkg_dict = toolkit.get_action("package_update")({}, package_show)
-            # warning(f"---------- THIS IS THE UPDATED PKG DICT ----------")
-            # for key, val in new_pkg_dict.items():
-            #     warning(f"----- {key} : {val} -----")
+                new_pkg_dict = toolkit.get_action("package_update")({}, package_show)
+                # warning(f"---------- THIS IS THE UPDATED PKG DICT ----------")
+                # for key, val in new_pkg_dict.items():
+                #     warning(f"----- {key} : {val} -----")
+            except Exception as e:
+                warning(f"ClearML ID:{pkg_dict['clearml_id']} does not exist in the ClearML database.")
+
             return
 
     def after_dataset_update(
