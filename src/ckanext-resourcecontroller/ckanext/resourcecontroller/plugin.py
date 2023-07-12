@@ -65,10 +65,10 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
         :type resource: dictionary
         '''
         # check if it exist
-        if 'preview' in resource:
-            # check if its true
-            if resource['preview']:
-                return
+        # if 'preview' in resource:
+        #     # check if its true
+        #     if resource['preview']:
+        #         return
         
         # get the file path to the uploaded resource
         # resource_id = resource["id"]

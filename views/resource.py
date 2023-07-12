@@ -188,6 +188,42 @@ def download(package_type: str,
     return h.redirect_to(rsc[u'url'])
 
 
+def change_dataset_title(pkg_dict):
+    dataset = None
+    try:
+        dataset = Dataset.get(
+            dataset_id=pkg_dict['clearml_id']
+        )
+        # put the download url in pkg_dict'
+    except Exception as e:
+        logging.warning(f"ClearML ID:{pkg_dict['clearml_id']} does not exist in the ClearML database.")
+
+    if dataset== None:
+        logging.warning(f"****************CLEARML ID IS NOT VALID. DID NOT MANAGE TO RETRIEVE DATASET")
+        return pkg_dict
+
+    pkg_dict["clearml_download_url"] = dataset.get_default_storage()
+    
+    # Changing metadata fields for the things below
+    pkg_dict['project_title'] = dataset.project
+    pkg_dict['dataset_title'] = dataset.name
+    new_title = dataset.name + "-v" + dataset._dataset_version
+    new_title = new_title.replace(" ", "-")
+    new_title = new_title.replace(".", "-")
+    new_title = new_title.lower()
+    # warning(f"---------- NEW TITLE: {new_title}")
+    # pkg_dict['name'] = new_name
+    pkg_dict['title'] = new_title
+
+    new_pkg_dict = get_action("package_update")({}, pkg_dict)
+    logging.warning(f"-----*****----- THIS IS THE UPDATED PKG DICT -----*****-----")
+    for key, val in new_pkg_dict.items():
+        logging.warning(f"***** {key} : {val} -----")
+    
+
+    return new_pkg_dict
+
+
 def upload_to_clearml(path_to_folder, path_to_file, package_id, project_title, dataset_title, parent_datasets):
     logging.warning(f"Package ID: {package_id}")
     logging.warning(f"Folder Path: {path_to_folder}")
@@ -198,7 +234,7 @@ def upload_to_clearml(path_to_folder, path_to_file, package_id, project_title, d
         dataset = Dataset.create(
             dataset_project=project_title,
             dataset_name=dataset_title,
-            parent_datasets=parent_datasets
+            parent_datasets=list(parent_datasets)
         )
     else:
         dataset = Dataset.get(
@@ -285,6 +321,9 @@ class CreateView(MethodView):
         )
         
         package_details['clearml_id'] = clearml_id
+
+        package_Details = change_dataset_title(package_details)
+
         get_action("package_update")({}, package_details)
         # we don't want to include save as it is part of the form
         del data[u'save']
