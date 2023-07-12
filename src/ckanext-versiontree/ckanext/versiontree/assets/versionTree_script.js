@@ -147,9 +147,9 @@ function get_node_container(dataset_details, node) {
 function debug(graphData, dataset_IDs, dataset_details) {
     const container = d3.select("#graph-container");
 
-    const width = container.node().getBoundingClientRect().width;
-    const height = container.node().getBoundingClientRect().height;
-
+    const width = container.node().getBoundingClientRect().width - 20;
+    const height = container.node().getBoundingClientRect().height - 20;
+    console.log("width: " + width + " ----- height: " + height);
     const svg = container.append("svg")
         .attr("width", width)
         .attr("height", height)

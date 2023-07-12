@@ -195,11 +195,10 @@ def upload_to_clearml(path_to_folder, path_to_file, package_id, project_title, d
     logging.warning(f"Dataset Title: {dataset_title}")
     logging.warning(f"Parent Datasets: {parent_datasets}")
     if parent_datasets:
-        dataset = Dataset.get(
+        dataset = Dataset.create(
             dataset_project=project_title,
             dataset_name=dataset_title,
-            parent_datasets=parent_datasets,
-            auto_create=True
+            parent_datasets=parent_datasets
         )
     else:
         dataset = Dataset.get(
