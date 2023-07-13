@@ -6,7 +6,7 @@
 This extension uses the IUploader plugin Interface. 
 Mostly copied from github ckan.
 I used this to check the max file size that i can upload.
-
+Didn't use this to do anything else i think. 
 
 ## Installation
 
@@ -16,8 +16,7 @@ I used this to check the max file size that i can upload.
 
 2. Add your extension name to your .env file. 
 
-   `CKAN__PLUGINS="envvars audio_view"`
-   `CKAN__VIEWS__DEFAULT_VIEWS=<extension name> (separated by space)`
+   `CKAN__PLUGINS="envvars fileuploader"`
 
 3. Restart CKAN. 
 

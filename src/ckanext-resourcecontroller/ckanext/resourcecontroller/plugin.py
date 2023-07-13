@@ -19,6 +19,11 @@ def find_file(file_id):
 
 
 class ResourcecontrollerPlugin(plugins.SingletonPlugin):
+    """
+    We added the IResourceController plugin here previously to manipulate the resource form.
+    However, since we removed a lot of things from resource form, we don't use this anymore.
+    """
+
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IResourceController)
 
@@ -31,8 +36,9 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
 
     # IResourceController
     def before_resource_create(
-            self, context: Context, resource: dict[str, Any]) -> None:
-        u'''
+        self, context: Context, resource: dict[str, Any]
+    ) -> None:
+        """
         Extensions will receive this before a resource is created.
 
         :param context: The context object of the current request, this
@@ -41,17 +47,18 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
         :param resource: An object representing the resource to be added
             to the dataset (the one that is about to be created).
         :type resource: dictionary
-        '''
-        warning("-----------------------------THIS IS BEFORE RESOURCE CREATE -----------------------------")
+        """
+        warning(
+            "-----------------------------THIS IS BEFORE RESOURCE CREATE -----------------------------"
+        )
         for key, val in resource.items():
             warning(f"-------------------{key}: {val}")
-        
-        resource['name'] = resource['upload'].filename
+
+        resource["name"] = resource["upload"].filename
         return
 
-    def after_resource_create(
-            self, context: Context, resource: dict[str, Any]) -> None:
-        u'''
+    def after_resource_create(self, context: Context, resource: dict[str, Any]) -> None:
+        """
         Extensions will receive this after a resource is created.
 
         :param context: The context object of the current request, this
@@ -63,13 +70,13 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
             set to ``upload`` when the resource file is uploaded instead
             of linked.
         :type resource: dictionary
-        '''
+        """
         # check if it exist
         # if 'preview' in resource:
         #     # check if its true
         #     if resource['preview']:
         #         return
-        
+
         # get the file path to the uploaded resource
         # resource_id = resource["id"]
         # resource_path = find_file(resource_id)
@@ -122,7 +129,6 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
         # # warning(f"THIS IS THE CLEARML ID: {dataset.id}")
         # package_show['clearml_id'] = dataset.id
         # new_package = toolkit.get_action("package_update")({}, package_show)
-        
 
         # warning(f"---------- NEW PACKAGE ITEMS: ----------")
         # for key, val in new_package.items():
@@ -138,9 +144,10 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
         # })
         return
 
-    def before_resource_update(self, context: Context, current: dict[str, Any],
-                               resource: dict[str, Any]) -> None:
-        u'''
+    def before_resource_update(
+        self, context: Context, current: dict[str, Any], resource: dict[str, Any]
+    ) -> None:
+        """
         Extensions will receive this before a resource is updated.
 
         :param context: The context object of the current request, this
@@ -151,12 +158,11 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
         :param resource: An object representing the updated resource which
             will replace the ``current`` one.
         :type resource: dictionary
-        '''
+        """
         pass
 
-    def after_resource_update(
-            self, context: Context, resource: dict[str, Any]) -> None:
-        u'''
+    def after_resource_update(self, context: Context, resource: dict[str, Any]) -> None:
+        """
         Extensions will receive this after a resource is updated.
 
         :param context: The context object of the current request, this
@@ -168,7 +174,7 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
             dictionary ``url_type`` which is set to ``upload`` when the
             resource file is uploaded instead of linked.
         :type resource: dictionary
-        '''
+        """
         # warning(f"IRESOURCECONTROLLER: AFTER RESOURCE UPDATE FUNCTION:")
         # warning(f"id: {resource['id']}")
         # warning(f"package_id: {resource['package_id']}")
@@ -191,9 +197,12 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
         # return
 
     def before_resource_delete(
-            self, context: Context, resource: dict[str, Any],
-            resources: list[dict[str, Any]]) -> None:
-        u'''
+        self,
+        context: Context,
+        resource: dict[str, Any],
+        resources: list[dict[str, Any]],
+    ) -> None:
+        """
         Extensions will receive this before a resource is deleted.
 
         :param context: The context object of the current request, this
@@ -207,13 +216,13 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
             be deleted (including the resource to be deleted if it existed
             in the dataset).
         :type resources: list
-        '''
+        """
         pass
 
     def after_resource_delete(
-            self, context: Context,
-            resources: list[dict[str, Any]]) -> None:
-        u'''
+        self, context: Context, resources: list[dict[str, Any]]
+    ) -> None:
+        """
         Extensions will receive this after a resource is deleted.
 
         :param context: The context object of the current request, this
@@ -222,18 +231,17 @@ class ResourcecontrollerPlugin(plugins.SingletonPlugin):
         :param resources: A list of objects representing the remaining
             resources after a resource has been removed.
         :type resource: list
-        '''
+        """
         pass
 
-    def before_resource_show(
-            self, resource_dict: dict[str, Any]) -> dict[str, Any]:
-        u'''
+    def before_resource_show(self, resource_dict: dict[str, Any]) -> dict[str, Any]:
+        """
         Extensions will receive the validated data dict before the resource
         is ready for display.
 
         Be aware that this method is not only called for UI display, but also
         in other methods, like when a resource is deleted, because package_show
         is used to get access to the resources in a dataset.
-        '''
+        """
 
         return resource_dict

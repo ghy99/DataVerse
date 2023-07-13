@@ -294,6 +294,11 @@ class ResourceUpload(DefaultResourceUpload):
 
 
 class FileuploaderPlugin(plugins.SingletonPlugin):
+    """
+    I added this class to check whats my max file size that i can upload. 
+    Current max is dependent on .env at 150MB. 
+    Can be increased but i'm not sure what the limit is.
+    """
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IUploader, inherit=True)
 

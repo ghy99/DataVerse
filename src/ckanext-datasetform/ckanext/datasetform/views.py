@@ -75,8 +75,7 @@ def _form_save_redirect(
     @param action - What the action of the edit was
     """
     assert action in ("new", "edit")
-    url = request.args.get("return_to") or config.get(
-        "package_%s_return_url" % action)
+    url = request.args.get("return_to") or config.get("package_%s_return_url" % action)
     if url:
         url = url.replace("<NAME>", pkg_name)
     else:
@@ -97,7 +96,9 @@ def _get_package_type(id: str) -> str:
     return "dataset"
 
 
-def upload_to_clearml(folderpath, package_id, project_title, dataset_title, parent_datasets):
+def upload_to_clearml(
+    folderpath, package_id, project_title, dataset_title, parent_datasets
+):
     logging.warning(f"Package ID: {package_id}")
     logging.warning(f"Folder Path: {folderpath}")
     logging.warning(f"Project Title: {project_title}")
@@ -108,17 +109,15 @@ def upload_to_clearml(folderpath, package_id, project_title, dataset_title, pare
             dataset_project=project_title,
             dataset_name=dataset_title,
             parent_datasets=parent_datasets,
-            auto_create=True
+            auto_create=True,
         )
     else:
         dataset = Dataset.get(
-            dataset_project=project_title,
-            dataset_name=dataset_title,
-            auto_create=True
+            dataset_project=project_title, dataset_name=dataset_title, auto_create=True
         )
 
     logging.warning(f"----------ADDING FILES TO DATASET----------")
-    dataset.add_files(path=r'{}'.format(folderpath))
+    dataset.add_files(path=r"{}".format(folderpath))
     logging.warning(f"----------UPLOADING TO CLEARML----------")
     dataset.upload(show_progress=True, verbose=True)
     logging.warning(f"----------FINALIZING DATASET----------")
@@ -151,6 +150,16 @@ class CreatePackageView(MethodView):
         return context
 
     def post(self, package_type: str) -> Union[Response, str]:
+        """
+        This function is called when user submits the package form when creating datasets.
+        What we did here was to request for uploaded files when user uploads a preview for the dataset.
+        Then, we create a resource for the preview file so that users can see the preview file when it is created.
+
+        Args:
+            package_type (str): This refers to the package type e.g. dataset.
+                                Can refer to plugins.py function package_types.
+                                It returns a list of package types that will pass through this class when that package type is called.
+        """
         # The staged add dataset used the new functionality when the dataset is
         # partially created so we need to know if we actually are updating or
         # this is a real new.
@@ -158,10 +167,10 @@ class CreatePackageView(MethodView):
         is_an_update = False
         ckan_phase = request.form.get("_ckan_phase")
         try:
-            data_dict = clean_dict(dict_fns.unflatten(
-                tuplize_dict(parse_params(request.form))))
-            files = dict_fns.unflatten(
-                tuplize_dict(parse_params(request.files)))
+            data_dict = clean_dict(
+                dict_fns.unflatten(tuplize_dict(parse_params(request.form)))
+            )
+            files = dict_fns.unflatten(tuplize_dict(parse_params(request.files)))
 
             logging.warning(f"-- ---- ---- VIEWS.py ---------- PACKAGE FORM UPLOADING ")
             logging.warning(f"-- ---- ---- FILES: {files} ----------------------------")
@@ -171,21 +180,17 @@ class CreatePackageView(MethodView):
         # validate ClearML ID for referencing existing dataset
         if data_dict["new_or_existing"] == "Reference Existing Dataset":
             try:
-                dataset = Dataset.get(
-                    dataset_id=data_dict["clearml_id"]
-                )
+                dataset = Dataset.get(dataset_id=data_dict["clearml_id"])
             except Exception as e:
                 return base.abort(404, _("ClearML ID not found"))
 
-                
         try:
             if ckan_phase:
                 # prevent clearing of groups etc
                 context["allow_partial_update"] = True
                 # sort the tags
                 if "tag_string" in data_dict:
-                    data_dict["tags"] = _tag_string_to_list(
-                        data_dict["tag_string"])
+                    data_dict["tags"] = _tag_string_to_list(data_dict["tag_string"])
                 if data_dict.get("pkg_name"):
                     is_an_update = True
                     # This is actually an update not a save
@@ -208,43 +213,34 @@ class CreatePackageView(MethodView):
 
             data_dict["type"] = package_type
 
-
             pkg_dict = get_action("package_create")(context, data_dict)
 
-            resource = get_action(f"resource_create")({}, {
-                "package_id": pkg_dict["id"],
-                "upload": data_dict['upload'],
-                'preview': True, 
-                "format" : "",
+            resource = get_action(f"resource_create")(
+                {},
+                {
+                    "package_id": pkg_dict["id"],
+                    "upload": data_dict["upload"],
+                    "preview": True,
+                    "format": "",
+                },
+            )
 
-            })
-
-            pkg_dict['resources'].append(resource)
-            # pkg_dict['resources'] = [{
-            #     "format": resource['format'],
-            #     "url": resource['url'],
-            #     "url_type": resource['url_type'],
-            #     "package_id": pkg_dict['name'] or pkg_dict['id'],
-            #     "name": resource['name'],
-            #     "last_modified": resource['last_modified'],
-            #     "mimetype": resource['mimetype'],
-            #     "size": resource['size'],
-            #     "id" : resource['id']
-            #     # "preview" : True,
-            # }]
+            pkg_dict["resources"].append(resource)
             pkg_dict = get_action("package_update")({}, pkg_dict)
 
-            logging.warning(f"PRINTING THE LATEST PACKAGE DICT AFTER UPDATE, BEFORE I CREATE A RESOURCE")
+            logging.warning(
+                f"PRINTING THE LATEST PACKAGE DICT AFTER UPDATE, BEFORE I CREATE A RESOURCE"
+            )
             for key, val in pkg_dict.items():
                 logging.warning(f"-- -- __ __ {key} : {val}")
             logging.warning("")
             logging.warning("")
 
             logging.warning(f"IM GONNA PRINT THE RESOURCE FROM THE PACKAGE DICT ABOVE:")
-            for resource in pkg_dict['resources']:
+            for resource in pkg_dict["resources"]:
                 for key, val in resource.items():
                     logging.warning(f"-- __ __ -- {key} : {val}")
-                
+
             # create_on_ui_requires_resources = config.get(
             #     'ckan.dataset.create_on_ui_requires_resources'
             # )
@@ -276,7 +272,7 @@ class CreatePackageView(MethodView):
                 logging.warning(
                     f"THIS IS REFERENCING FROM CLEARMLLLLLLLLLLLLLLLLLLLLLLLLLL"
                 )
-                
+
                 get_action("package_update")(
                     cast(Context, dict(context, allow_state_change=True)),
                     dict(pkg_dict, state="active"),
@@ -327,8 +323,7 @@ class CreatePackageView(MethodView):
 
         data = data or clean_dict(
             dict_fns.unflatten(
-                tuplize_dict(parse_params(
-                    request.args, ignore_keys=CACHE_PARAMETERS))
+                tuplize_dict(parse_params(request.args, ignore_keys=CACHE_PARAMETERS))
             )
         )
         resources_json = h.json.dumps(data.get("resources", []))
@@ -352,8 +347,7 @@ class CreatePackageView(MethodView):
             "groups__0__id"
         )
 
-        form_snippet = _get_pkg_template(
-            "package_form", package_type=package_type)
+        form_snippet = _get_pkg_template("package_form", package_type=package_type)
         form_vars: dict[str, Any] = {
             "data": data,
             "errors": errors,
@@ -421,8 +415,7 @@ class EditPackageView(MethodView):
                 # we allow partial updates to not destroy existing resources
                 context["allow_partial_update"] = True
                 if "tag_string" in data_dict:
-                    data_dict["tags"] = _tag_string_to_list(
-                        data_dict["tag_string"])
+                    data_dict["tags"] = _tag_string_to_list(data_dict["tag_string"])
                 del data_dict["_ckan_phase"]
                 del data_dict["save"]
             data_dict["id"] = id
@@ -492,8 +485,7 @@ class EditPackageView(MethodView):
                 h.dict_list_reduce(pkg_dict.get("tags", {}), "name")
             )
         errors = errors or {}
-        form_snippet = _get_pkg_template(
-            "package_form", package_type=package_type)
+        form_snippet = _get_pkg_template("package_form", package_type=package_type)
         form_vars: dict[str, Any] = {
             "data": data,
             "errors": errors,
@@ -509,8 +501,7 @@ class EditPackageView(MethodView):
         g.resources_json = resources_json
         g.errors_json = errors_json
 
-        _setup_template_variables(
-            context, {"id": id}, package_type=package_type)
+        _setup_template_variables(context, {"id": id}, package_type=package_type)
 
         # we have already completed stage 1
         form_vars["stage"] = ["active"]
@@ -532,17 +523,25 @@ class EditPackageView(MethodView):
             },
         )
 
+
 # resource.py
 # For Resource Form
 class CreateResourceView(MethodView):
+    """
+    This is not used for now as for some reason the blueprint is not registering this class but the original one.
+    Please refer to /views/resource.py for the changes that we added.
+    """
+
     def post(self, package_type: str, id: str) -> Union[str, Response]:
-        logging.warning("__________________________________________________________________________")
-        logging.warning("THIS IS THE FIRST LINE OF POST IN RESOURCE for VIEWS.PY")
-        save_action = request.form.get(u'save')
-        data = clean_dict(
-            dict_fns.unflatten(tuplize_dict(parse_params(request.form)))
+        logging.warning(
+            "__________________________________________________________________________"
         )
-        logging.warning(f"_________ PRINTING DATA DICTIONARY IN RESOURCE.PY ___________")
+        logging.warning("THIS IS THE FIRST LINE OF POST IN RESOURCE for VIEWS.PY")
+        save_action = request.form.get("save")
+        data = clean_dict(dict_fns.unflatten(tuplize_dict(parse_params(request.form))))
+        logging.warning(
+            f"_________ PRINTING DATA DICTIONARY IN RESOURCE.PY ___________"
+        )
         for key, val in data.items():
             logging.warning(f"------------------ {key} : {val}")
         files = dict_fns.unflatten(tuplize_dict(parse_params(request.files)))
@@ -551,9 +550,9 @@ class CreateResourceView(MethodView):
         folderpath = None
         pathtofolder = None
         pathtofile = None
-        if isinstance(files['upload'], list):
+        if isinstance(files["upload"], list):
             logging.warning(f"---- ---- -- ---- ---- IM ONLY JUST A FOLDER")
-            for eachfile in files['upload']:
+            for eachfile in files["upload"]:
                 splitFileName = eachfile.filename.split("/")
                 # (comment) splitFileName == [""] when the file upload or folder upload is not filled
                 if splitFileName == [""]:
@@ -569,7 +568,7 @@ class CreateResourceView(MethodView):
                     os.makedirs(folderpath, exist_ok=True)
                     eachfile.save(filepath)
                 else:
-                    pathtofile= defaultpath + "/temp/"
+                    pathtofile = defaultpath + "/temp/"
                     os.makedirs(pathtofile, exist_ok=True)
                     logging.warning(f"split file name: {splitFileName}")
                     filepath = os.path.join(pathtofile, splitFileName[0])
@@ -586,141 +585,144 @@ class CreateResourceView(MethodView):
             logging.warning(f"{key} : {val}")
         parent_ids = []
         if "extras" in package_details:
-            for extra in package_details['extras']:
-                parent_ids.append(extra['key'])
+            for extra in package_details["extras"]:
+                parent_ids.append(extra["key"])
         clearml_id = upload_to_clearml(
-            pathtofolder, 
+            pathtofolder,
             pathtofile,
-            id, 
-            package_details['project_title'], 
-            package_details['dataset_title'], 
-            parent_ids
+            id,
+            package_details["project_title"],
+            package_details["dataset_title"],
+            parent_ids,
         )
-        
-        package_details['clearml_id'] = clearml_id
+
+        package_details["clearml_id"] = clearml_id
         get_action("package_update")({}, package_details)
         # we don't want to include save as it is part of the form
-        del data[u'save']
-        try: 
-            logging.warning(f"-- __ -- __ REMOVING UPLOADED FILES FROM CKAN AS IT IS UPLOADED TO CLEARML ALREADY.")
+        del data["save"]
+        try:
+            logging.warning(
+                f"-- __ -- __ REMOVING UPLOADED FILES FROM CKAN AS IT IS UPLOADED TO CLEARML ALREADY."
+            )
             shutil.rmtree(defaultpath)
         except Exception as e:
-            logging.warning(f"-- __ -- __ UNABLE TO DELETE FOLDER FOR SOME GODFORSAKEN REASON: {e}")
-        context = cast(Context, {
-            u'model': model,
-            u'session': model.Session,
-            u'user': current_user.name,
-            u'auth_user_obj': current_user
-        })
+            logging.warning(
+                f"-- __ -- __ UNABLE TO DELETE FOLDER FOR SOME GODFORSAKEN REASON: {e}"
+            )
+        context = cast(
+            Context,
+            {
+                "model": model,
+                "session": model.Session,
+                "user": current_user.name,
+                "auth_user_obj": current_user,
+            },
+        )
 
         # see if we have any data that we are trying to save
         data_provided = False
         for key, value in data.items():
             if (
-                    (value or isinstance(value, cgi.FieldStorage))
-                    and key != u'resource_type'):
+                value or isinstance(value, cgi.FieldStorage)
+            ) and key != "resource_type":
                 data_provided = True
                 break
 
-        if not data_provided and save_action != u"go-dataset-complete":
-            if save_action == u'go-dataset':
+        if not data_provided and save_action != "go-dataset-complete":
+            if save_action == "go-dataset":
                 # go to final stage of adddataset
-                return h.redirect_to(u'{}.edit'.format(package_type), id=id)
+                return h.redirect_to("{}.edit".format(package_type), id=id)
             # see if we have added any resources
             try:
-                data_dict = get_action(u'package_show')(context, {u'id': id})
+                data_dict = get_action("package_show")(context, {"id": id})
             except NotAuthorized:
-                return base.abort(403, _(u'Unauthorized to update dataset'))
+                return base.abort(403, _("Unauthorized to update dataset"))
             except NotFound:
                 return base.abort(
-                    404,
-                    _(u'The dataset {id} could not be found.').format(id=id)
+                    404, _("The dataset {id} could not be found.").format(id=id)
                 )
-            if not len(data_dict[u'resources']):
+            if not len(data_dict["resources"]):
                 # no data so keep on page
-                msg = _(u'You must add at least one data resource')
+                msg = _("You must add at least one data resource")
                 # On new templates do not use flash message
 
                 errors: dict[str, Any] = {}
-                error_summary = {_(u'Error'): msg}
+                error_summary = {_("Error"): msg}
                 return self.get(package_type, id, data, errors, error_summary)
 
             # race condition if another user edits/deletes
-            data_dict = get_action(u'package_show')(context, {u'id': id})
-            get_action(u'package_update')(
+            data_dict = get_action("package_show")(context, {"id": id})
+            get_action("package_update")(
                 cast(Context, dict(context, allow_state_change=True)),
-                dict(data_dict, state=u'active')
+                dict(data_dict, state="active"),
             )
-            return h.redirect_to(u'{}.read'.format(package_type), id=id)
+            return h.redirect_to("{}.read".format(package_type), id=id)
 
-        data[u'package_id'] = id
-        if save_action == u'go-metadata':
+        data["package_id"] = id
+        if save_action == "go-metadata":
             # race condition if another user edits/deletes
-            data_dict = get_action(u'package_show')(context, {u'id': id})
-            get_action(u'package_update')(
+            data_dict = get_action("package_show")(context, {"id": id})
+            get_action("package_update")(
                 cast(Context, dict(context, allow_state_change=True)),
-                dict(data_dict, state=u'active')
+                dict(data_dict, state="active"),
             )
-            return h.redirect_to(u'{}.read'.format(package_type), id=id)
-        elif save_action == u'go-dataset':
+            return h.redirect_to("{}.read".format(package_type), id=id)
+        elif save_action == "go-dataset":
             # go to first stage of add dataset
-            return h.redirect_to(u'{}.edit'.format(package_type), id=id)
-        elif save_action == u'go-dataset-complete':
-
-            return h.redirect_to(u'{}.read'.format(package_type), id=id)
+            return h.redirect_to("{}.edit".format(package_type), id=id)
+        elif save_action == "go-dataset-complete":
+            return h.redirect_to("{}.read".format(package_type), id=id)
         else:
             # add more resources
-            return h.redirect_to(
-                u'{}_resource.new'.format(package_type),
-                id=id
-            )
+            return h.redirect_to("{}_resource.new".format(package_type), id=id)
 
-    def get(self,
-            package_type: str,
-            id: str,
-            data: Optional[dict[str, Any]] = None,
-            errors: Optional[dict[str, Any]] = None,
-            error_summary: Optional[dict[str, Any]] = None) -> str:
+    def get(
+        self,
+        package_type: str,
+        id: str,
+        data: Optional[dict[str, Any]] = None,
+        errors: Optional[dict[str, Any]] = None,
+        error_summary: Optional[dict[str, Any]] = None,
+    ) -> str:
         # get resources for sidebar
-        context = cast(Context, {
-            u'model': model,
-            u'session': model.Session,
-            u'user': current_user.name,
-            u'auth_user_obj': current_user
-        })
+        context = cast(
+            Context,
+            {
+                "model": model,
+                "session": model.Session,
+                "user": current_user.name,
+                "auth_user_obj": current_user,
+            },
+        )
         try:
-            pkg_dict = get_action(u'package_show')(context, {u'id': id})
+            pkg_dict = get_action("package_show")(context, {"id": id})
         except NotFound:
             return base.abort(
-                404, _(u'The dataset {id} could not be found.').format(id=id)
+                404, _("The dataset {id} could not be found.").format(id=id)
             )
         try:
-            check_access(
-                u'resource_create', context, {u"package_id": pkg_dict["id"]}
-            )
+            check_access("resource_create", context, {"package_id": pkg_dict["id"]})
         except NotAuthorized:
             return base.abort(
-                403, _(u'Unauthorized to create a resource for this package')
+                403, _("Unauthorized to create a resource for this package")
             )
 
-        package_type = pkg_dict[u'type'] or package_type
+        package_type = pkg_dict["type"] or package_type
 
         errors = errors or {}
         error_summary = error_summary or {}
         extra_vars: dict[str, Any] = {
-            u'data': data,
-            u'errors': errors,
-            u'error_summary': error_summary,
-            u'action': u'new',
-            u'resource_form_snippet': _get_pkg_template(
-                u'resource_form', package_type
-            ),
-            u'dataset_type': package_type,
-            u'pkg_name': id,
-            u'pkg_dict': pkg_dict
+            "data": data,
+            "errors": errors,
+            "error_summary": error_summary,
+            "action": "new",
+            "resource_form_snippet": _get_pkg_template("resource_form", package_type),
+            "dataset_type": package_type,
+            "pkg_name": id,
+            "pkg_dict": pkg_dict,
         }
-        template = u'package/new_resource_not_draft.html'
-        if pkg_dict[u'state'].startswith(u'draft'):
-            extra_vars[u'stage'] = ['complete', u'active']
-            template = u'package/new_resource.html'
+        template = "package/new_resource_not_draft.html"
+        if pkg_dict["state"].startswith("draft"):
+            extra_vars["stage"] = ["complete", "active"]
+            template = "package/new_resource.html"
         return base.render(template, extra_vars)

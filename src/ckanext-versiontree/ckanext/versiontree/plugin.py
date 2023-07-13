@@ -8,6 +8,9 @@ from clearml import Dataset
 
 def getDataset():
     """
+    ** This is not used btw.**
+
+
     This function retrieves the dataset object specified from ClearML.
 
     Returns:
@@ -28,6 +31,7 @@ def getDataset():
 
 def getDependencyGraph(dataset):
     """
+    ** This function is not used btw **
     This function gets the dependency graph of the
     dataset parameter that was passed in.
 
@@ -49,6 +53,15 @@ def getDependencyGraph(dataset):
 
 
 def getAllDatasetID(dataset_id):
+    """
+    Retrieves dataset ID from ClearML from the argument passed in.
+
+    Args:
+        dataset_id (str): ID of the dataset to be retrieved.
+
+    Returns:
+        Dataset (Object): the dataset that was retrieved.
+    """
     dataset = None
     try:
         dataset = Dataset.get(dataset_id=dataset_id)
@@ -59,7 +72,9 @@ def getAllDatasetID(dataset_id):
 
 def sortDataset(dataset_IDs, dataset_details):
     """
-    Returns a sorted list of ID
+    Returns a sorted list of ID.
+    I zipped the versions with its ID, and sorted them based on the version of the dataset.
+    Cos version will be smth like v1.0.0, so i can sort them, and tie them tgt with their ID so the ID can be sorted.
 
     Args:
         dataset_IDs (list): list of dataset ID unsorted
@@ -81,7 +96,10 @@ def sortDataset(dataset_IDs, dataset_details):
 
 def retrieveDatasetDetails(dataset_details):
     """
-    Take out the dataset version only
+    Retrieve all the things we gonna pass to the front so I don't need to touch them in the front end.
+    - project title,
+    - dataset name,
+    - dataset version
 
     Args:
         dataset_details (Dataset object): stores the Dataset object retrieved from ClearML
@@ -119,7 +137,7 @@ def renderVersionTree():
         warning(f"DATA TYPE: {type(data)}")
     if request.method == "GET":
         warning(f"---------- GET METHOD IN VERSION TREE HTML ----------")
-        clearml_id = request.args.get('clearml_id')
+        clearml_id = request.args.get("clearml_id")
         # clearml_id = "059bb2f1476f47f6b15fcb1081d190c9"
         warning(f"---------- CLEARML ID: {clearml_id}")
 
@@ -151,9 +169,13 @@ def renderVersionTree():
         dataset_IDs=dataset_IDs,
         dataset_details=dataset_details,
     )
-    
+
 
 class VersiontreePlugin(plugins.SingletonPlugin):
+    """
+    This class uses the IBlueprint plugin to render my own pages.
+    """
+
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IBlueprint)
 
@@ -168,9 +190,7 @@ class VersiontreePlugin(plugins.SingletonPlugin):
         blueprint = Blueprint(self.name, self.__module__)
         blueprint.template_folder = "templates"
 
-        rules = [
-            ("/versiontree", "versiontree", renderVersionTree)
-        ]
+        rules = [("/versiontree", "versiontree", renderVersionTree)]
 
         for rule in rules:
             blueprint.add_url_rule(*rule)
