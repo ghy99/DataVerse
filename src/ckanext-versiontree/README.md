@@ -4,8 +4,9 @@
 
 This extension allows the rendering of a version tree acquired from ClearML and displaying it on CKAN.
 
-**plugins.py**
-    This plugin contains the functions for the dataset object from ClearML, fetching the dependency graph of the dataset, sorting dataset IDs, and rendering the version tree with dataset details on the frontend. Additionally, it provides a CKAN plugin class to handle configuration and routing.
+**plugins.py:**
+
+This plugin contains the functions for the dataset object from ClearML, fetching the dependency graph of the dataset, sorting dataset IDs, and rendering the version tree with dataset details on the frontend. Additionally, it provides a CKAN plugin class `IBlueprint` to handle configuration and routing.
 ```python
 
     getDependencyGraph(dataset):
@@ -52,7 +53,7 @@ This extension allows the rendering of a version tree acquired from ClearML and 
 
 2. Add your extension name to your .env file. 
 
-   `CKAN__PLUGINS="envvars datastore datapusher datasetform"`
+   `CKAN__PLUGINS="envvars datastore datapusher versiontree"`
 
 3. Restart CKAN. 
 

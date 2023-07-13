@@ -74,6 +74,10 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         return blueprint
 
     def _modify_package_schema(self, schema: Schema) -> Schema:
+        """
+        Refer to CKAN Documentations for extensions, under IDatasetForm. 
+        You can look at their github for the examples as well. 
+        """
         warning(f"---------- MODIFYING PACKAGE SCHEMA HERE ----------")
         schema.update(
             {
@@ -322,6 +326,13 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         return False
 
     def package_types(self) -> list[str]:
+        """
+        Added `dataset` as the package type that will go through this plugin when `dataset` package type is created. 
+        E.g. Occurs when creating datasets.
+
+        Returns:
+            list[str]: _description_
+        """
         # This plugin doesn't handle any special package types, it just
         # registers itself as the default (above).
         return ["dataset"]
