@@ -79,12 +79,12 @@ body {
     font-weight: var(--bs-body-font-weight);
     line-height: var(--bs-body-line-height);
     /* color: var(--bs-body-color); */
-    color: rgb(225, 225, 225);
+    color: rgb(255, 255, 255);
     text-align: var(--bs-body-text-align);
     background-color: var(--bs-body-bg);
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    background-color: #000;
+    background: rgb(75, 75, 75);
 
 }
 
@@ -12298,7 +12298,8 @@ a.tag:hover {
 
 .module-content {
     padding: 1.5rem;
-    background: rgb(75, 75, 75);
+    /* background: rgb(75, 75, 75); */
+    background: rgb(40, 40, 40);
 }
 
 .module-content .add-to-group .btn-primary {
@@ -12675,7 +12676,7 @@ a.tag:hover {
 .module-narrow .nav-aside li a {
     text-decoration: none;
     display: block;
-    color: rgb(225, 225, 225);
+    color: rgb(255, 255, 255);
     font-size: 0.875rem;
     line-height: 1.5;
     margin: -7px -25px;
@@ -13729,7 +13730,8 @@ select[data-module=autocomplete] {
 
 .tag-list {
     padding: 10px 10px 5px 10px;
-    background-color: #f8f9fa;
+    /* background-color: #f8f9fa; */
+    background: rgb(40, 40, 40);
     border: 1px solid #ddd;
     border-radius: 0.25rem;
 }
@@ -14224,7 +14226,8 @@ td.diff_header {
 .page-header {
     margin-top: 1.5rem;
     border-bottom: 1px solid #ddd;
-    background-color: rgb(75, 75, 75);
+    /* background-color: rgb(75, 75, 75); */
+    background-color: rgb(40, 40, 40);
     border-radius: 0 3px 0 0;
 }
 
@@ -14251,7 +14254,8 @@ td.diff_header {
 .page-header .nav-tabs li.active a,
 .page-header .nav-tabs a:hover {
     border: 1px solid #dee2e6;
-    background-color: #fff;
+    /* background-color: #fff; */
+    background: rgb(40, 40, 40);
     border-bottom-color: transparent;
 }
 
@@ -14358,7 +14362,8 @@ td.diff_header {
 .main {
     padding: 20px 0;
     /* background: #eee url("../../../base/images/bg.png"); */
-    background: linear-gradient(rgb(155, 204, 204), rgb(217, 179, 209), rgb(202, 204, 155));
+    /* background: linear-gradient(rgb(155, 204, 204), rgb(217, 179, 209), rgb(202, 204, 155)); */
+    background: rgb(40, 40, 40);
 }
 
 .main:after,
@@ -14371,16 +14376,18 @@ td.diff_header {
     position: relative;
     float: right;
     margin-left: 0;
-    background: rgb(75, 75, 75);
-    color: rgb(225, 225, 225);
+    /* background: rgb(75, 75, 75); */
+    background: rgb(40, 40, 40);    
+    color: rgb(255, 255, 255);
 }
 
 .main .secondary {
     padding: 0;
     z-index: 1;
     padding-right: 1px;
-    background: rgb(75, 75, 75);
-    color: rgb(225, 225, 225);
+    /* background: rgb(75, 75, 75); */
+    background: rgb(40, 40, 40);
+    color: rgb(255, 255, 255);
 }
 
 /* Filters modal */
@@ -14590,7 +14597,7 @@ td.diff_header {
     width: 50%;
     margin: 5px 0 0 0;
     /* color: #444; */
-    color: rgb(245, 245, 245);
+    color: rgb(255, 255, 255);
 }
 
 .context-info .nums dl dt {
@@ -14774,6 +14781,7 @@ td.diff_header {
     color: #fff;
     /* background: #003647 url("../../../base/images/bg.png"); */
     background: rgb(130, 56, 54);
+    /* background: rgb(100, 100, 100); */
 }
 
 .account-masthead .account {
@@ -14852,7 +14860,8 @@ td.diff_header {
 
 .masthead {
     /* background: #005d7a url("../../../base/images/bg.png"); */
-    background: rgb(204, 155, 178);
+    /* background: rgb(204, 155, 178); */
+    background: rgb(40, 40, 40);
 }
 
 .masthead .debug {
@@ -14972,7 +14981,8 @@ td.diff_header {
 
 .site-footer {
     /* background: #005d7a url("../../../base/images/bg.png"); */
-    background: rgb(204, 155, 178);
+    /* background: rgb(204, 155, 178); */
+    background: rgb(40, 40, 40);
     padding: 20px 0;
 }
 
