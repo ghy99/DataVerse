@@ -258,9 +258,11 @@ To access the databases, follow the following instructions:
 # To Do: <a id="todo"></a>
 
 - [ ] Fix `Edit Datasets`. Allow Users to edit datasets without bugs.
+    - [ ] Unable to create datasets of the same name as it will crash, which results in being unable to "add" new versions of the dataset. Have to do it through edit which will in turn update the dataset with a new version in ClearML. 
 - [ ] Fix `Delete Datasets`. Allow Users to delete datasets without bugs, including on the ClearML side. 
 - [ ] Add ClearML credentials to the `Register Account`. Users should upload their ClearML credentials so that DataVerse has access to their ClearML account. 
 - [ ] Send credentials along with ClearML Dataset requests to communicate with ClearML servers. Currently rely on `clearml.conf` to establish connection to ClearML. Not feasible when introducing multiple users. 
 - [ ] Improve version tree design, as well as add more information for user to view in version tree, such as metadata details and links to dataset in DataVerse. 
 - [ ] Allow multiple dataset selection and manipulation. 
-- [ ] Add CSRF Token to allow removal of dataset from groups
+- [ ] Add CSRF Token to allow removal of dataset from groups.
+- [ ] Add a loading screen while uploading datasets to ClearML (There is a long buffer for some reason).
