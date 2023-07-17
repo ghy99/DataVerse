@@ -255,10 +255,10 @@ To access the databases, follow the following instructions:
 > E.g.: To select everything from table `package`:
 >> `select * from "package";`
 
-# To Do: <a id="todo"></a>
+# To Do after Alpha Version: <a id="todo"></a>
 
-- [ ] Fix `Edit Datasets`. Allow Users to edit datasets without bugs.
-    - [ ] Unable to create datasets of the same name as it will crash, which results in being unable to "add" new versions of the dataset. Have to do it through edit which will in turn update the dataset with a new version in ClearML. 
+- [ ] Fix `Edit Datasets`. Allow Users to edit datasets without bugs. (Currently, editing metadata works, but there are some empty fields for some reason not sure why, and we are not sure if we edit the resources, it will affect clearml side or not)
+    - [ ] Unable to create datasets of the same name as it will crash, which results in being unable to "add" new versions of the dataset. Have to do it through edit which will in turn update the dataset with a new version in ClearML. This will be under Edit Dataset as technically its a new version of the dataset. If edit, it is supposed to create a new dataset in ClearML with a new version under the same project and dataset title. 
 - [ ] Fix `Delete Datasets`. Allow Users to delete datasets without bugs, including on the ClearML side. 
 - [ ] Add ClearML credentials to the `Register Account`. Users should upload their ClearML credentials so that DataVerse has access to their ClearML account. 
 - [ ] Send credentials along with ClearML Dataset requests to communicate with ClearML servers. Currently rely on `clearml.conf` to establish connection to ClearML. Not feasible when introducing multiple users. 
