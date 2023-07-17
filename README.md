@@ -263,3 +263,4 @@ To access the databases, follow the following instructions:
 - [ ] Send credentials along with ClearML Dataset requests to communicate with ClearML servers. Currently rely on `clearml.conf` to establish connection to ClearML. Not feasible when introducing multiple users. 
 - [ ] Improve version tree design, as well as add more information for user to view in version tree, such as metadata details and links to dataset in DataVerse. 
 - [ ] Allow multiple dataset selection and manipulation. 
+- [ ] Add CSRF Token to allow removal of dataset from groups
