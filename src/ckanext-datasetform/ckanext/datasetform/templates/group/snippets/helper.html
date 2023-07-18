@@ -1,0 +1,25 @@
+{#
+    Displays a sidebard module with information about group.
+  
+    group_type    - The type of group.
+  
+    Example:
+  
+    {% snippet "group/snippets/helper.html", group_type=group_type %}
+  
+    #}
+  
+  <div class="module module-narrow module-shallow">
+    <h2 class="module-heading">
+      <i class="fa fa-info-circle"></i>
+      {{ _('What are Groups?') }}
+    </h2>
+    <div class="module-content">
+      <p>
+        {% trans %}
+        You can use DataVerse Groups to catalogue datasets on a particular theme.
+        {% endtrans %}
+      </p>
+    </div>
+  </div>
+  
