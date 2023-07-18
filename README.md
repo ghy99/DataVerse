@@ -267,3 +267,4 @@ To access the databases, follow the following instructions:
 - [ ] Add CSRF Token to allow removal of dataset from groups.
 - [ ] Add a loading screen while uploading datasets to ClearML (There is a long buffer for some reason).
 - [ ] Assign access to people who request for dataset download
+    - [ ] Show them who the Point Of Contact is when they want to download the dataset

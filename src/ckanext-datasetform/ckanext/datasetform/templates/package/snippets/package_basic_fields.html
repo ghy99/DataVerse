@@ -55,6 +55,9 @@
     {{ form.input('dataset_published_date', label=_('Dataset Published Date'), id='field-dataset_published_date', placeholder=_('dd/mm/yyyy'), value=data.dataset_published_date, error=errors.dataset_published_date, classes=['control-medium'], type="date") }}
     {{ form.input('dataset_license', label=_('Dataset Rights & License'), id='field-dataset_license', placeholder=_('License'), value=data.dataset_license, error=errors.dataset_license, classes=['control-medium']) }}
 
+    {% set tag_attrs = {'data-module': 'autocomplete', 'data-module-tags': '', 'data-module-source': '/api/2/util/tag/autocomplete?incomplete=?'} %}
+  {{ form.input('subject_tags', id='field-subject_tags', label=_('Subject Themes'), placeholder=_('eg. Computer Vision, Natural Language Processing, Time Series, etc.'), value=data.subject_tags, error=errors.subject_tags, classes=['control-full'], attrs=tag_attrs) }}
+
     {{ form.select(
         'privacy_marking_classification', label=_('Privacy Marking - Classification'), options=[
             {'value': '0', 'text': _('[Choose Privacy Classification]')},

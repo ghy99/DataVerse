@@ -167,6 +167,10 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                     toolkit.get_validator("ignore_missing"),
                     toolkit.get_converter("convert_to_extras"),
                 ],
+                "subject_tags" : [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_extras"),
+                ],
                 "clearml_id": [
                     toolkit.get_validator("ignore_missing"),
                     toolkit.get_converter("convert_to_extras"),
@@ -293,6 +297,10 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                     toolkit.get_validator("ignore_missing"),
                 ],
                 "new_or_existing": [
+                    toolkit.get_converter("convert_from_extras"),
+                    toolkit.get_validator("ignore_missing"),
+                ],
+                "subject_tags" : [
                     toolkit.get_converter("convert_from_extras"),
                     toolkit.get_validator("ignore_missing"),
                 ],

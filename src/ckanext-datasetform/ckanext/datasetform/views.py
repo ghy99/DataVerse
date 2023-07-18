@@ -184,6 +184,13 @@ class CreatePackageView(MethodView):
             except Exception as e:
                 return base.abort(404, _("ClearML ID not found"))
 
+        # ADDING THIS LINE TO PARSE "SUBJECT_TAGS"
+        if "subject_tags" in data_dict:
+            logging.warning(f"****************** SUBJECT TAGS:")
+            logging.warning(f"\t\t __** TAG BEFORE: {data_dict['subject_tags']}")
+            data_dict["subject_tags"] = _tag_string_to_list(data_dict["subject_tags"])
+            logging.warning(f"\t\t **__ TAG AFTER: {data_dict['subject_tags']}")
+
         try:
             if ckan_phase:
                 # prevent clearing of groups etc
