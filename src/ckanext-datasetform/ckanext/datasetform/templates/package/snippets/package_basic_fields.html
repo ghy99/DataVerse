@@ -75,13 +75,12 @@
         <label for="field-subject_tags" class="form-label">Subject Themes (Ctrl + Click themes)</label>
         <div class="controls">
             <select id="field-subject_tags" name="subject_tags" class="form-control" multiple>
-                {% for group in group_list %}
+                {% for group in groupList %}
                     <option value="{{ group }}">{{ group.replace('-', ' ')  }}</option>
                 {% endfor %}
             </select>
         </div>
     </div>
-    <div>bhetdhsbsfh{{ group_list }}</div>
     {{ form.select(
         'privacy_marking_classification', label=_('Privacy Marking - Classification'), options=[
             {'value': '0', 'text': _('[Choose Privacy Classification]')},

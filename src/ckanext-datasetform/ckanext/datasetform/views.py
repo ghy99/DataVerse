@@ -379,7 +379,7 @@ class CreatePackageView(MethodView):
             "stage": stage,
             "dataset_type": package_type,
             "form_style": "new",
-            
+            "groupList" : groupList,
         }
         errors_json = h.json.dumps(errors)
 
@@ -399,7 +399,7 @@ class CreatePackageView(MethodView):
                 "resources_json": resources_json,
                 "form_snippet": form_snippet,
                 "errors_json": errors_json,
-                "group_list" : groupList,
+                "groupList" : groupList,
             },
         )
 
