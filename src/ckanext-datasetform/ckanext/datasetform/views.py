@@ -125,7 +125,6 @@ def upload_to_clearml(
     dataset.finalize(verbose=True, raise_on_error=True, auto_upload=True)
     return dataset.id
 
-
 # dataset.py
 # For Package Form
 class CreatePackageView(MethodView):
@@ -187,9 +186,22 @@ class CreatePackageView(MethodView):
         # ADDING THIS LINE TO PARSE "SUBJECT_TAGS"
         if "subject_tags" in data_dict:
             logging.warning(f"****************** SUBJECT TAGS:")
-            logging.warning(f"\t\t __** TAG BEFORE: {data_dict['subject_tags']}")
-            data_dict["subject_tags"] = _tag_string_to_list(data_dict["subject_tags"])
-            logging.warning(f"\t\t **__ TAG AFTER: {data_dict['subject_tags']}")
+            logging.warning(f"\t\t __** TAG: {data_dict['subject_tags']}")
+            # data_dict["subject_tags"] = data_dict["subject_tags"].split(',')
+            # logging.warning(f"\t\t **__ TAG AFTER: {data_dict['subject_tags']}")
+            # check get_action("group_list") to retrieve list of groups
+            # check w.r.t. the ['subject_tags'] list, then add them into data_dict as
+            # ['groups'] = {"id" : id of group }
+            groups_list = []
+            for groupname in data_dict['subject_tags']:
+                groups_list.append({
+                    'name' : groupname
+                })
+            data_dict['groups'] = groups_list
+            del data_dict['subject_tags']
+
+            for key, val in data_dict.items():
+                logging.warning(f"******* {key} : {val}")
 
         try:
             if ckan_phase:
@@ -354,6 +366,10 @@ class CreatePackageView(MethodView):
             "groups__0__id"
         )
 
+        # Adding group list!!
+        groupList = get_action("group_list")({}, {})
+        logging.warning(f"*^*^*^*^ ***** __________ group list: {groupList}")
+
         form_snippet = _get_pkg_template("package_form", package_type=package_type)
         form_vars: dict[str, Any] = {
             "data": data,
@@ -363,6 +379,7 @@ class CreatePackageView(MethodView):
             "stage": stage,
             "dataset_type": package_type,
             "form_style": "new",
+            
         }
         errors_json = h.json.dumps(errors)
 
@@ -382,6 +399,7 @@ class CreatePackageView(MethodView):
                 "resources_json": resources_json,
                 "form_snippet": form_snippet,
                 "errors_json": errors_json,
+                "group_list" : groupList,
             },
         )
 
