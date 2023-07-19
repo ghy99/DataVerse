@@ -45,7 +45,7 @@
         {%- block header %}
         {% include "header.html" %}
         {% endblock -%}
-        <table class="versiontree">
+        {# <table class="versiontree">
             <tr>
                 <th>Project Name:</th>
                 <th>Dataset ID:</th>
@@ -60,7 +60,7 @@
                 <td>{{ dependency_graph[each_ID] }}</td>
             </tr>
             {% endfor %}
-        </table>
+        </table> #}
         {#<button onclick="renderTree(
                     {{ dependency_graph }}, 
                     {{ dataset_IDs }}, 
