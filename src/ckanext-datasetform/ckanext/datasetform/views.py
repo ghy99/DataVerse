@@ -19,6 +19,7 @@ from ckan.views.home import CACHE_PARAMETERS
 from ckan.lib.plugins import lookup_package_plugin
 from ckan.lib.search import SearchIndexError
 from ckan.types import Context, Response
+import ckan.plugins.toolkit as toolkit
 
 import os
 from werkzeug.datastructures import FileStorage
@@ -231,11 +232,15 @@ class CreatePackageView(MethodView):
 
                 for key, val in pkg_dict.items():
                     logging.warning(f"******* {key} : {val}")
-                
+                admin = toolkit.config.get("ckan_sysadmin_name")
+                password = toolkit.config.get("ckan_sysadmin_password")
+
+                logging.warning(f"*^_*^_*^_*^_ ADMIN: {admin}, PASSWORD: {password}")
+
                 pkg_dict = get_action("package_update")({
                     # "ignore_auth" : True,
-                    'user' : 'ckan_admin',
-                    'password' : 'test1234',
+                    'user' : admin,
+                    'password' : password,
                 }, pkg_dict)
 
                 for key, val in pkg_dict.items():
