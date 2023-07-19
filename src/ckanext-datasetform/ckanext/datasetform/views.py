@@ -213,6 +213,13 @@ class CreatePackageView(MethodView):
 
             data_dict["type"] = package_type
 
+            # Converting project and dataset title to lowercase
+            data_dict['project_title'] = data_dict['project_title'].lower()
+            data_dict['dataset_title'] = data_dict['dataset_title'].lower()
+
+            logging.warning(f"PROJECT TITLE: {data_dict['project_title']}")
+            logging.warning(f"DATASET TITLE: {data_dict['dataset_title']}")
+
             pkg_dict = get_action("package_create")(context, data_dict)
 
             # ADDING THIS LINE TO PARSE "SUBJECT_TAGS"
