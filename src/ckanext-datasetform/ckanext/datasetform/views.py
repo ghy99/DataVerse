@@ -125,7 +125,6 @@ def upload_to_clearml(
     dataset.finalize(verbose=True, raise_on_error=True, auto_upload=True)
     return dataset.id
 
-
 # dataset.py
 # For Package Form
 class CreatePackageView(MethodView):
@@ -184,13 +183,6 @@ class CreatePackageView(MethodView):
             except Exception as e:
                 return base.abort(404, _("ClearML ID not found"))
 
-        # ADDING THIS LINE TO PARSE "SUBJECT_TAGS"
-        if "subject_tags" in data_dict:
-            logging.warning(f"****************** SUBJECT TAGS:")
-            logging.warning(f"\t\t __** TAG BEFORE: {data_dict['subject_tags']}")
-            data_dict["subject_tags"] = _tag_string_to_list(data_dict["subject_tags"])
-            logging.warning(f"\t\t **__ TAG AFTER: {data_dict['subject_tags']}")
-
         try:
             if ckan_phase:
                 # prevent clearing of groups etc
@@ -222,6 +214,41 @@ class CreatePackageView(MethodView):
 
             pkg_dict = get_action("package_create")(context, data_dict)
 
+            # ADDING THIS LINE TO PARSE "SUBJECT_TAGS"
+            # THIS PART I FORCE AUTHORIZE ADD TO GROUP USING ADMIN CREDENTIALS... PLS CHANGE THIS PART
+            if "subject_tags" in pkg_dict:
+                pkg_dict['subject_tags'] = pkg_dict['subject_tags'].strip("{}")
+                pkg_dict['subject_tags'] = pkg_dict['subject_tags'].split(',')
+                # logging.warning(f"****************** SUBJECT TAGS:")
+                # logging.warning(f"\t\t __** TAG: {pkg_dict['subject_tags']}")
+                groups_list = []
+                for groupname in pkg_dict['subject_tags']:
+                    groups_list.append({
+                        'name' : groupname
+                    })
+                pkg_dict['groups'] = groups_list
+                del pkg_dict['subject_tags']
+
+                for key, val in pkg_dict.items():
+                    logging.warning(f"******* {key} : {val}")
+                
+                pkg_dict = get_action("package_update")({
+                    # "ignore_auth" : True,
+                    'user' : 'ckan_admin',
+                    'password' : 'test1234',
+                }, pkg_dict)
+
+                for key, val in pkg_dict.items():
+                    logging.warning(f"*******_____________ {key} : {val}")
+
+            logging.warning(
+                f"PRINTING THE LATEST PACKAGE DICT AFTER UPDATE, BEFORE I CREATE A RESOURCE"
+            )
+            # for key, val in pkg_dict.items():
+            #     logging.warning(f"-- -- __ __ {key} : {val}")
+            logging.warning(" ")
+            logging.warning(" ")    
+
             resource = get_action(f"resource_create")(
                 {},
                 {
@@ -235,18 +262,10 @@ class CreatePackageView(MethodView):
             pkg_dict["resources"].append(resource)
             pkg_dict = get_action("package_update")({}, pkg_dict)
 
-            logging.warning(
-                f"PRINTING THE LATEST PACKAGE DICT AFTER UPDATE, BEFORE I CREATE A RESOURCE"
-            )
-            for key, val in pkg_dict.items():
-                logging.warning(f"-- -- __ __ {key} : {val}")
-            logging.warning("")
-            logging.warning("")
-
-            logging.warning(f"IM GONNA PRINT THE RESOURCE FROM THE PACKAGE DICT ABOVE:")
-            for resource in pkg_dict["resources"]:
-                for key, val in resource.items():
-                    logging.warning(f"-- __ __ -- {key} : {val}")
+            # logging.warning(f"IM GONNA PRINT THE RESOURCE FROM THE PACKAGE DICT ABOVE:")
+            # for resource in pkg_dict["resources"]:
+            #     for key, val in resource.items():
+            #         logging.warning(f"-- __ __ -- {key} : {val}")
 
             # create_on_ui_requires_resources = config.get(
             #     'ckan.dataset.create_on_ui_requires_resources'
@@ -354,6 +373,10 @@ class CreatePackageView(MethodView):
             "groups__0__id"
         )
 
+        # Adding group list!!
+        groupList = get_action("group_list")({}, {})
+        logging.warning(f"*^*^*^*^ ***** __________ group list: {groupList}")
+
         form_snippet = _get_pkg_template("package_form", package_type=package_type)
         form_vars: dict[str, Any] = {
             "data": data,
@@ -363,6 +386,7 @@ class CreatePackageView(MethodView):
             "stage": stage,
             "dataset_type": package_type,
             "form_style": "new",
+            "groupList" : groupList,
         }
         errors_json = h.json.dumps(errors)
 
@@ -382,6 +406,7 @@ class CreatePackageView(MethodView):
                 "resources_json": resources_json,
                 "form_snippet": form_snippet,
                 "errors_json": errors_json,
+                "groupList" : groupList,
             },
         )
 
