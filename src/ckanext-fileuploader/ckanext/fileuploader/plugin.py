@@ -103,18 +103,18 @@ class Upload(DefaultUpload):
         requests the upload to be deleted.  This needs to be called before
         it reaches any validators"""
 
-        warning(f"---- ---- ---- WHAT IS URL_FIELD : {url_field}")
-        warning(f"---- ---- ---- PRINT THE DATADICT : {data_dict}")
+        # warning(f"---- ---- ---- WHAT IS URL_FIELD : {url_field}")
+        # warning(f"---- ---- ---- PRINT THE DATADICT : {data_dict}")
         self.url = data_dict.get(url_field, "")
         self.clear = data_dict.pop(clear_field, None)
         self.file_field = file_field
         self.upload_field_storage = data_dict.pop(file_field, None)
-        warning(f"---- ---- ---- self.url: {self.url}")
-        warning(f"---- ---- ---- self.clear: {self.clear}")
-        warning(f"---- ---- ---- self.file_field: {self.file_field}")
-        warning(
-            f"---- ---- ---- self.upload_field_storage: {self.upload_field_storage}"
-        )
+        # warning(f"---- ---- ---- self.url: {self.url}")
+        # warning(f"---- ---- ---- self.clear: {self.clear}")
+        # warning(f"---- ---- ---- self.file_field: {self.file_field}")
+        # warning(
+        #     f"---- ---- ---- self.upload_field_storage: {self.upload_field_storage}"
+        # )
         if not self.storage_path:
             return
 
@@ -140,10 +140,10 @@ class Upload(DefaultUpload):
         been validated and flushed to the db. This is so we do not store
         anything unless the request is actually good.
         max_size is size in MB maximum of the file"""
-        warning(
-            f"---------- bruh Package Uploader -- filename: {self.filename}"
-        )
-        warning(f"- ---- -- --- - show max size in Upload: {max_size}")
+        # warning(
+        #     f"---------- bruh Package Uploader -- filename: {self.filename}"
+        # )
+        # warning(f"- ---- -- --- - show max size in Upload: {max_size}")
         self.verify_type()
 
         if self.filename:
@@ -237,13 +237,13 @@ class ResourceUpload(DefaultResourceUpload):
     def get_directory(self, id: str) -> str:
         assert self.storage_path
         directory = os.path.join(self.storage_path, id[0:3], id[3:6])
-        warning(f"-- -- ---- ---- THE DIRECTORY: {directory}")
+        # warning(f"-- -- ---- ---- THE DIRECTORY: {directory}")
         return directory
 
     def get_path(self, id: str) -> str:
         directory = self.get_directory(id)
         filepath = os.path.join(directory, id[6:])
-        warning(f"-- -- ---- ---- FILE PATH: {filepath}")
+        # warning(f"-- -- ---- ---- FILE PATH: {filepath}")
         return filepath
 
     def upload(self, directory_id, max_size: int = 15):
@@ -257,10 +257,10 @@ class ResourceUpload(DefaultResourceUpload):
         filepath = self.get_path(directory_id)
         directory = self.get_directory(directory_id)
         if self.filename: # WHY DIDNT IT ENTER HERE SHOULD IT ENTER????
-            warning(
-                f"---------- Resource Uploader -- wtf is a self.filename: {self.filename}"
-            )
-            warning(f"- ---- -- --- - show max size in ResourceUpload: {max_size}")
+            # warning(
+            #     f"---------- Resource Uploader -- wtf is a self.filename: {self.filename}"
+            # )
+            # warning(f"- ---- -- --- - show max size in ResourceUpload: {max_size}")
             try:
                 os.makedirs(directory)
             except OSError as e:
@@ -305,15 +305,15 @@ class FileuploaderPlugin(plugins.SingletonPlugin):
     # IUploader
     def get_uploader(self, upload_to: str,
                      old_filename: Optional[str]) -> Optional[PUploader]:
-        warning(f"WHAT IS UPLOAD TO: {upload_to}")
-        warning(f"PRINT THE UPLOAD: {old_filename}")
+        # warning(f"WHAT IS UPLOAD TO: {upload_to}")
+        # warning(f"PRINT THE UPLOAD: {old_filename}")
         # upload_to = 'preview'
         return Upload(upload_to, old_filename)
 
     def get_resource_uploader(self, data_dict: dict[str, Any]):
         warning(f"---- ---- ---- PRINTING THE DATADICT FROM IUploader: ")
-        for key, val in data_dict.items():
-            warning(f"---- ---- {key} : {val}")
+        # for key, val in data_dict.items():
+        #     warning(f"---- ---- {key} : {val}")
         return ResourceUpload(data_dict)
 
     # IConfigurer
