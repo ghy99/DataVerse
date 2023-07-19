@@ -56,8 +56,31 @@
     {{ form.input('dataset_license', label=_('Dataset Rights & License'), id='field-dataset_license', placeholder=_('License'), value=data.dataset_license, error=errors.dataset_license, classes=['control-medium']) }}
 
     {% set tag_attrs = {'data-module': 'autocomplete', 'data-module-tags': '', 'data-module-source': '/api/2/util/tag/autocomplete?incomplete=?'} %}
-  {{ form.input('subject_tags', id='field-subject_tags', label=_('Subject Themes'), placeholder=_('eg. Computer Vision, Natural Language Processing, Time Series, etc.'), value=data.subject_tags, error=errors.subject_tags, classes=['control-full'], attrs=tag_attrs) }}
-
+    {# {% for group in h.groups_available(true) %}
+        { {{group['name']}} },
+    {% endfor %} #}
+    {# {% set groups = h.groups_available(true) %} #}
+    {# {{ form.input('subject_tags', id='field-subject_tags', label=_('Subject Themes'), placeholder=_('eg. Computer Vision, Natural Language Processing, Time Series, etc.'), value=data.subject_tags, error=errors.subject_tags, classes=['control-full'], attrs=tag_attrs) }} #}
+    {# {{
+        form.select(
+            'subject_tags', id='field-subject_tags', label=_('Subject Themes'), options=[
+                {'value': '0', 'text': _('[Choose Data Type]')}, 
+                {'value': '1', 'text': _('Private data')},
+                {'value': '2', 'text': _('Not private data')}
+            ],
+            selected=data.subject_tags if data.subject_tags else '0', is_required=true
+        )
+    }} #}
+    <div class="form-group control-select">
+        <label for="field-subject_tags" class="form-label">Subject Themes (Ctrl + Click themes)</label>
+        <div class="controls">
+            <select id="field-subject_tags" name="subject_tags" class="form-control" multiple>
+                {% for group in groupList %}
+                    <option value="{{ group }}">{{ group.replace('-', ' ')  }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
     {{ form.select(
         'privacy_marking_classification', label=_('Privacy Marking - Classification'), options=[
             {'value': '0', 'text': _('[Choose Privacy Classification]')},

@@ -1,0 +1,14 @@
+# iauthfunction-js:
+#   filter: rjsmin
+#   output: ckanext-iauthfunction/%(version)s-iauthfunction.js
+#   contents:
+#     - js/iauthfunction.js
+#   extra:
+#     preload:
+#       - base/main
+
+# iauthfunction-css:
+#   filter: cssrewrite
+#   output: ckanext-iauthfunction/%(version)s-iauthfunction.css
+#   contents:
+#     - css/iauthfunction.css
