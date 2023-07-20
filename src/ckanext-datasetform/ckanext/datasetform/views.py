@@ -24,6 +24,7 @@ import ckan.plugins.toolkit as toolkit
 import os
 from werkzeug.datastructures import FileStorage
 from clearml import Dataset
+import hashlib
 
 NotFound = logic.NotFound
 NotAuthorized = logic.NotAuthorized
@@ -192,6 +193,48 @@ class CreatePackageView(MethodView):
         data_dict['project_title'] = org_name['title']
         logging.warning(f"_*^_*^_*^_*^_*^_*^ PROJECT TITLE: {data_dict['project_title']}")
 
+        # Converting project and dataset title to lowercase
+        data_dict['project_title'] = data_dict['project_title'].lower()
+        data_dict['dataset_title'] = data_dict['dataset_title'].lower()
+
+
+        check_clearml = None
+        try:
+            check_clearml = Dataset.get(
+                dataset_project=data_dict['project_title'],
+                dataset_name=data_dict['dataset_title']
+            )
+        except Exception as e:
+            logging.warning(f"IT DOES NOT EXIST {e}")
+
+
+        new_name = None
+        if check_clearml == None:
+            new_name = data_dict['dataset_title'] + "_v1-0-0"
+        else:
+            ver = check_clearml._dataset_version.split(".")
+            ver[-1] = str(int(ver[-1]) + 1)
+            version = '.'.join(ver)
+            new_name = check_clearml.name + version
+            
+        new_name = new_name.replace(" ", "-")
+        new_name = new_name.replace(".", "-")
+        new_name = new_name.lower()
+
+
+        logging.warning(f"_*^_*^_*^ CHECK NEW NAME: {new_name}")
+
+        # Making data_dict["name"] into a gibberish
+        # sha_hash = hashlib.sha256()
+        # newname = data_dict['name'].encode('utf-8')
+        # sha_hash.update(newname)
+        # encoded_name = sha_hash.hexdigest()
+        
+        data_dict['name'] = new_name
+        logging.warning(f"__**^^__**^^__**^^ We reached hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+        for key, val in data_dict.items():
+            logging.warning(f"__^^__^^__^^__**__**__** {key} : {val}")
+
         try:
             if ckan_phase:
                 # prevent clearing of groups etc
@@ -222,9 +265,7 @@ class CreatePackageView(MethodView):
             data_dict["type"] = package_type
             
             
-            # Converting project and dataset title to lowercase
-            data_dict['project_title'] = data_dict['project_title'].lower()
-            data_dict['dataset_title'] = data_dict['dataset_title'].lower()
+            
 
             pkg_dict = get_action("package_create")(context, data_dict)
 
