@@ -30,7 +30,7 @@
     });
 </script>
 <div class="add" style="display: none;">
-    {{ form.input('project_title', label=_('Project Title'), id='field-project_title', placeholder=_('Project Title'), value=data.project_title, error=errors.project_title, classes=['control-medium']) }}
+    {# {{ form.input('project_title', label=_('Project Title'), id='field-project_title', placeholder=_('Project Title'), value=data.project_title, error=errors.project_title, classes=['control-medium']) }} #}
     {{ form.input('dataset_title', label=_('Dataset Title'), id='field-dataset_title', placeholder=_('Dataset Title'), value=data.dataset_title, error=errors.dataset_title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target', 'class': 'form-control'}) }}
     {% block package_metadata_fields_custom %}
     {% block custom_fields %}

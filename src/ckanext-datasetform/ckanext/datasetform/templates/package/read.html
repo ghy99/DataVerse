@@ -20,7 +20,7 @@
         {% endif %}
       {% endblock %}
     </h1>
-    <h4>Dataset Title: {{ h.dataset_display_name(pkg) }}</h4>
+    <h4>Dataset Title: {{ pkg.dataset_title }}</h4>
     <hr style="color: black; border-style:groove">
     {% block package_notes %}
       {% if pkg.notes %}
