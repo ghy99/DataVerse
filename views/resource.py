@@ -216,14 +216,15 @@ def change_dataset_title(pkg_dict):
 
     # Changing metadata fields for the things below
     pkg_dict["project_title"] = dataset.project
-    pkg_dict["dataset_title"] = dataset.name
-    new_title = dataset.name + "-v" + dataset._dataset_version
-    new_title = new_title.replace(" ", "-")
-    new_title = new_title.replace(".", "-")
-    new_title = new_title.lower()
+    pkg_dict["dataset_title"] = dataset.name + " v" + dataset._dataset_version
+    pkg_dict['version'] = dataset._dataset_version
+    # new_title = dataset.name + "-v" + dataset._dataset_version
+    # new_title = new_title.replace(" ", "-")
+    # new_title = new_title.replace(".", "-")
+    # new_title = new_title.lower()
     # warning(f"---------- NEW TITLE: {new_title}")
     # pkg_dict['name'] = new_name
-    pkg_dict["title"] = new_title
+    # pkg_dict["title"] = new_title
 
     new_pkg_dict = get_action("package_update")({}, pkg_dict)
     logging.warning(f"-----*****----- THIS IS THE UPDATED PKG DICT -----*****-----")

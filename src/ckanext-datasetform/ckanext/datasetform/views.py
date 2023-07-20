@@ -184,6 +184,14 @@ class CreatePackageView(MethodView):
             except Exception as e:
                 return base.abort(404, _("ClearML ID not found"))
 
+        # logging.warning(f"_*^_*^_*^ Data Dict: ")
+        # for key, val in data_dict.items():
+        #     logging.warning(f"{key} : {val}")
+        org_name = get_action("organization_show")({}, {"id" : data_dict['owner_org']})
+        logging.warning(f"_*^_*^_*^_*^_*^ ORGANIZATION NAME: {org_name['name']}")
+        data_dict['project_title'] = org_name['title']
+        logging.warning(f"_*^_*^_*^_*^_*^_*^ PROJECT TITLE: {data_dict['project_title']}")
+
         try:
             if ckan_phase:
                 # prevent clearing of groups etc
@@ -212,13 +220,11 @@ class CreatePackageView(MethodView):
                 context["allow_state_change"] = True
 
             data_dict["type"] = package_type
-
+            
+            
             # Converting project and dataset title to lowercase
             data_dict['project_title'] = data_dict['project_title'].lower()
             data_dict['dataset_title'] = data_dict['dataset_title'].lower()
-
-            logging.warning(f"PROJECT TITLE: {data_dict['project_title']}")
-            logging.warning(f"DATASET TITLE: {data_dict['dataset_title']}")
 
             pkg_dict = get_action("package_create")(context, data_dict)
 
