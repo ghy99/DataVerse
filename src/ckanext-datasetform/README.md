@@ -66,7 +66,20 @@ This extension is used to modify the package and resource creation form.
         When the uploaded files are stored here, we will call the `upload_to_clearml` function to upload the files to ClearML. 
 
         After the upload, we will then delete the uploaded files to reduce space wastage. 
+
+    I REMOVED THIS CLASS AS IT IS HARD TO MAINTAIN THIS AND RESOURCE.PY AT THE SAME TIME.
     '''
+
+    class DeleteView(MethodView):
+    '''
+    This class is used to delete datasets. 
+    '''
+        post(self, package_type)
+        '''
+            I will explain what we changed from the original `post` function from dataset.py.
+            Instead of using `package_delete` to just change the status of the dataset from active to deleted, we use `dataset_purge` to delete the dataset completely. 
+            This action of deleting the dataset cannot be undone. 
+        '''
 ```
 
 **plugin.py:**
