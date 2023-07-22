@@ -70,6 +70,21 @@ This extension is used to modify the package and resource creation form.
     I REMOVED THIS CLASS AS IT IS HARD TO MAINTAIN THIS AND RESOURCE.PY AT THE SAME TIME.
     '''
 
+    class CreatePackageView(MethodView):
+        post(self, package_type)
+        '''
+        I will explain what we changed from the original `post` function from dataset.py.
+        Instead of using package_update, i swapped it with package_patch.
+        package_update was causing form inputs that were not filled in to be deleted. 
+        '''
+
+        get(self, package_type, data, errors, error_summary)
+        '''
+        I retrieved the current existing group list and passed it in as groupList.
+        This is for the package form that will display all the groups that user will want to add the current dataset into.
+
+        '''
+
     class DeleteView(MethodView):
     '''
     This class is used to delete datasets. 
