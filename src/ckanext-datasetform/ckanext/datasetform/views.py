@@ -22,6 +22,7 @@ from ckan.types import Context, Response
 import ckan.plugins.toolkit as toolkit
 
 import os
+import shutil
 from werkzeug.datastructures import FileStorage
 from clearml import Dataset
 import hashlib
@@ -263,9 +264,6 @@ class CreatePackageView(MethodView):
                 context["allow_state_change"] = True
 
             data_dict["type"] = package_type
-            
-            
-            
 
             pkg_dict = get_action("package_create")(context, data_dict)
 
@@ -510,7 +508,11 @@ class EditPackageView(MethodView):
                 del data_dict["_ckan_phase"]
                 del data_dict["save"]
             data_dict["id"] = id
-            pkg_dict = get_action("package_update")(context, data_dict)
+
+            # i think this is a problem that its deleting the rest of the metadata, 
+            # # so im gonna change this to package_patch
+            # pkg_dict = get_action("package_update")(context, data_dict)
+            pkg_dict = get_action("package_patch")(context, data_dict)
 
             return _form_save_redirect(
                 pkg_dict["name"], "edit", package_type=package_type
@@ -559,7 +561,7 @@ class EditPackageView(MethodView):
             g.form_action = h.url_for("{}.new".format(package_type))
             g.form_style = "new"
 
-            return CreateView().get(
+            return CreatePackageView().get(
                 package_type, data=data, errors=errors, error_summary=error_summary
             )
 
@@ -575,6 +577,11 @@ class EditPackageView(MethodView):
             data["tag_string"] = ", ".join(
                 h.dict_list_reduce(pkg_dict.get("tags", {}), "name")
             )
+
+        # Adding group list!!
+        groupList = get_action("group_list")({}, {})
+        logging.warning(f"*^*^*^*^ ***** __________ group list: {groupList}")
+
         errors = errors or {}
         form_snippet = _get_pkg_template("package_form", package_type=package_type)
         form_vars: dict[str, Any] = {
@@ -584,6 +591,7 @@ class EditPackageView(MethodView):
             "action": "edit",
             "dataset_type": package_type,
             "form_style": "edit",
+            "groupList" : groupList,
         }
         errors_json = h.json.dumps(errors)
 
@@ -615,6 +623,213 @@ class EditPackageView(MethodView):
         )
 
 
+def deleteClearML(package_id):
+    """
+    This function is used to delete the dataset on ClearML side.
+
+    Args:
+        package_id (str): package ID to be deleted.
+
+    Returns:
+        status, errorMsg:
+            Status = True / False, depending on success of deleting in ClearML.
+            errorMsg = Error message if it fails.
+
+    """
+    package = get_action("package_show")(
+        {},
+        {
+            "id": package_id,
+        },
+    )
+    logging.warning(f"_*^_*^ DELETING CLEARML DATASET FIRST!!")
+    try:
+        logging.warning(f"_*^_*^_*^ ID: {package['clearml_id']}")
+        logging.warning(f"_*^_*^_*^ PROJECT TITLE: {package['project_title']}")
+        logging.warning(f"_*^_*^_*^ DATASET TITLE: {package['dataset_title']}")
+        logging.warning(f"_*^_*^_*^ VERSION: {package['version']}")
+        Dataset.delete(
+            dataset_id=package["clearml_id"],
+        )
+        logging.warning(f"_*^_*^ Successfully deleted Dataset in ClearML")
+        return True, None
+    except Exception as e:
+        logging.warning(f"_*^_*^_*^ Theres some issues babe: {e}")
+        return False, e
+    
+
+class DeletePackageView(MethodView):
+    def _prepare(self) -> Context:
+        context = cast(Context, {
+            u'model': model,
+            u'session': model.Session,
+            u'user': current_user.name,
+            u'auth_user_obj': current_user
+        })
+        return context
+
+    def post(self, package_type: str, id: str) -> Response:
+        if u'cancel' in request.form:
+            return h.redirect_to(u'{}.edit'.format(package_type), id=id)
+        context = self._prepare()
+        try:
+            # get_action(u'package_delete')(context, {u'id': id})
+            clearml_delete_status, errorMsg = deleteClearML(id)
+            
+            if clearml_delete_status == True:
+                admin = toolkit.config.get("ckan_sysadmin_name")
+                password = toolkit.config.get("ckan_sysadmin_password")
+                # Using sys_admin to override here
+                logging.warning(f"_*^_*^ PURGING DATASET NOW. GIMME A MOMENT BABE")
+                get_action("dataset_purge")({
+                    'user' : admin,
+                    'password' : password,
+                }, 
+                {
+                    "id": id,
+                })
+            else:
+                return base.abort(
+                    403, _(f"Unable to delete on ClearML side. Error: {errorMsg}")
+                )
+        except NotFound:
+            return base.abort(404, _(u'Dataset not found'))
+        except NotAuthorized:
+            return base.abort(
+                403,
+                _(u'Unauthorized to delete package %s') % u''
+            )
+
+        h.flash_notice(_(u'Dataset has been deleted.'))
+        return h.redirect_to(package_type + u'.search')
+
+    def get(self, package_type: str, id: str) -> Union[Response, str]:
+        context = self._prepare()
+        try:
+            pkg_dict = get_action(u'package_show')(context, {u'id': id})
+        except NotFound:
+            return base.abort(404, _(u'Dataset not found'))
+        except NotAuthorized:
+            return base.abort(
+                403,
+                _(u'Unauthorized to delete package %s') % u''
+            )
+
+        dataset_type = pkg_dict[u'type'] or package_type
+
+        # TODO: remove
+        g.pkg_dict = pkg_dict
+
+        return base.render(
+            u'package/confirm_delete.html', {
+                u'pkg_dict': pkg_dict,
+                u'dataset_type': dataset_type
+            }
+        )
+
+
+def change_dataset_title(pkg_dict):
+    """
+    This function is used to change the dataset title. 
+    Similar to the code written in `after_dataset_create()` in packagecontroller extension's `plugin.py`.
+
+    Args:
+        pkg_dict (dict): The whole package dictionary
+
+    Returns:
+        pkg_dict (dict): The whole package dictionary with the new titles.
+    """
+    dataset = None
+    try:
+        dataset = Dataset.get(dataset_id=pkg_dict["clearml_id"])
+        # put the download url in pkg_dict'
+    except Exception as e:
+        logging.warning(
+            f"ClearML ID:{pkg_dict['clearml_id']} does not exist in the ClearML database."
+        )
+
+    if dataset == None:
+        logging.warning(
+            f"****************CLEARML ID IS NOT VALID. DID NOT MANAGE TO RETRIEVE DATASET"
+        )
+        return pkg_dict
+
+    pkg_dict["clearml_download_url"] = dataset.get_default_storage()
+
+    # Changing metadata fields for the things below
+    pkg_dict["project_title"] = dataset.project
+    pkg_dict["dataset_title"] = dataset.name + " v" + dataset._dataset_version
+    pkg_dict["title"] = dataset.name + " v" + dataset._dataset_version
+    # new_title = dataset.name + " v" + dataset._dataset_version
+    pkg_dict['version'] = dataset._dataset_version
+    # new_title = dataset.name + "-v" + dataset._dataset_version
+    # new_title = new_title.replace(" ", "-")
+    # new_title = new_title.replace(".", "-")
+    # new_title = new_title.lower()
+    # logging.warning(f"---------- NEW NAME: {new_title}")
+    # pkg_dict['name'] = new_title
+    # pkg_dict["title"] = new_title
+
+    new_pkg_dict = get_action("package_update")({}, pkg_dict)
+    logging.warning(f"-----*****----- THIS IS THE UPDATED PKG DICT -----*****-----")
+    for key, val in new_pkg_dict.items():
+        logging.warning(f"***** {key} : {val} -----")
+
+    return new_pkg_dict
+
+
+def upload_to_clearml(
+    path_to_folder,
+    path_to_file,
+    package_id,
+    project_title,
+    dataset_title,
+    parent_datasets,
+):
+    """
+    This function handles the uploading to ClearML.
+    We retrieve the uploaded files through path_to_folder / path_to_file and upload them to ClearML as a dataset.
+    We also check for possible parent_datasets that users might want their dataset to inherit from.
+
+    Args:
+        path_to_folder (str): folder path for uploaded folders
+        path_to_file (str): file path for uploaded file
+        package_id (str): package ID (Not used)
+        project_title (str): Project title to be named in ClearML
+        dataset_title (str): Dataset title to be named in ClearML
+        parent_datasets (str): Parent Datasets that new dataset should inherit from.
+
+    Returns:
+        dataset.id (str): returns the ID of the newly created dataset in ClearML so that we can store this ID in DataVerse.
+    """
+    logging.warning(f"Package ID: {package_id}")
+    logging.warning(f"Folder Path: {path_to_folder}")
+    logging.warning(f"Project Title: {project_title}")
+    logging.warning(f"Dataset Title: {dataset_title}")
+    logging.warning(f"Parent Datasets: {parent_datasets}")
+    if parent_datasets:
+        dataset = Dataset.create(
+            dataset_project=project_title,
+            dataset_name=dataset_title,
+            parent_datasets=list(parent_datasets),
+        )
+    else:
+        dataset = Dataset.get(
+            dataset_project=project_title, dataset_name=dataset_title, auto_create=True
+        )
+
+    logging.warning(f"----------ADDING FILES TO DATASET----------")
+    if path_to_folder != None:
+        dataset.add_files(path=r"{}".format(path_to_folder))
+    if path_to_file != None:
+        dataset.add_files(path=r"{}".format(path_to_file))
+    logging.warning(f"----------UPLOADING TO CLEARML----------")
+    dataset.upload(show_progress=True, verbose=True)
+    logging.warning(f"----------FINALIZING DATASET----------")
+    # if resource_show['save'] =='go-metadata':
+    dataset.finalize(verbose=True, raise_on_error=True, auto_upload=True)
+    return dataset.id
+
 # resource.py
 # For Resource Form
 class CreateResourceView(MethodView):
@@ -628,6 +843,19 @@ class CreateResourceView(MethodView):
             "__________________________________________________________________________"
         )
         logging.warning("THIS IS THE FIRST LINE OF POST IN RESOURCE for VIEWS.PY")
+        package_details = get_action("package_show")({}, {"id": id})
+        logging.warning(f"Package Details: ")
+        for key, val in package_details.items():
+            logging.warning(f"{key} : {val}")
+        parent_ids = []
+        if "extras" in package_details:
+            for extra in package_details["extras"]:
+                parent_ids.append(extra["key"])
+        try:
+            for parent_id in parent_ids:
+                ds = Dataset.get(dataset_id=parent_id)
+        except Exception as e:
+            return base.abort(404, _("Invalid Parent ID"))
         save_action = request.form.get("save")
         data = clean_dict(dict_fns.unflatten(tuplize_dict(parse_params(request.form))))
         logging.warning(
@@ -670,14 +898,6 @@ class CreateResourceView(MethodView):
                         eachfile.save(filepath)
         logging.warning(f"____-----_____----- printing path to folder: {pathtofolder}")
         logging.warning(f"____-----_____----- printing path to file: {pathtofile}")
-        package_details = get_action("package_show")({}, {"id": id})
-        logging.warning(f"Package Details: ")
-        for key, val in package_details.items():
-            logging.warning(f"{key} : {val}")
-        parent_ids = []
-        if "extras" in package_details:
-            for extra in package_details["extras"]:
-                parent_ids.append(extra["key"])
         clearml_id = upload_to_clearml(
             pathtofolder,
             pathtofile,
@@ -688,6 +908,9 @@ class CreateResourceView(MethodView):
         )
 
         package_details["clearml_id"] = clearml_id
+
+        package_details = change_dataset_title(package_details)
+
         get_action("package_update")({}, package_details)
         # we don't want to include save as it is part of the form
         del data["save"]

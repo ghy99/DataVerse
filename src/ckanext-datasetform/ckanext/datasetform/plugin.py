@@ -7,7 +7,7 @@ from ckan.types import Schema
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 
-from ckanext.datasetform.views import CreatePackageView, CreateResourceView
+from ckanext.datasetform.views import CreatePackageView, EditPackageView, DeletePackageView, CreateResourceView
 
 
 class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
@@ -42,6 +42,18 @@ class DatasetformPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
             "/new",
             "overridePackageCreation",
             view_func=CreatePackageView.as_view(str("new")),
+        )
+
+        bp.add_url_rule(
+            u"/edit/<id>",
+            "overridePackageEdit",
+            view_func=EditPackageView.as_view(str("edit")),
+        )
+
+        bp.add_url_rule(
+            u"/delete/<id>",
+            "overridePackageDelete",
+            view_func=DeletePackageView.as_view(str("delete")),
         )
         return bp
 
