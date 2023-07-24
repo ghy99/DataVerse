@@ -76,6 +76,8 @@ This extension is used to modify the package and resource creation form.
         I will explain what we changed from the original `post` function from dataset.py.
         Instead of using package_update, i swapped it with package_patch.
         package_update was causing form inputs that were not filled in to be deleted. 
+
+        We also allowed users to add more groups through the edit form, and add new resources for preview.
         '''
 
         get(self, package_type, data, errors, error_summary)
