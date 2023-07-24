@@ -596,6 +596,9 @@ class EditPackageView(MethodView):
             # # but means i cant delete content??
             logging.warning(f"_*^_*^_*^_*^ Patching this package")
             temp = []
+            subject_tags = str(data_dict['subject_tags'])
+            logging.warning(f"subject Tags:::::::::::::::: {subject_tags}")
+            del data_dict['subject_tags']
             for key, val in data_dict.items():
                 # logging.warning(f"_*^_*^ {key} : {val} + {type(val)}")
                 if val == '':
@@ -604,9 +607,7 @@ class EditPackageView(MethodView):
                 del data_dict[key]
             # for key, val in data_dict.items():
             #     logging.warning(f"_*^_*^ {key} : {val}")
-            subject_tags = str(data_dict['subject_tags'])
-            logging.warning(f"subject Tags:::::::::::::::: {subject_tags}")
-            del data_dict['subject_tags']
+            
 
             pkg_dict = get_action("package_patch")(context, data_dict)
             pkg_dict['subject_tags'] = subject_tags
