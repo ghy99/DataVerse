@@ -709,6 +709,7 @@ class EditPackageView(MethodView):
             "dataset_type": package_type,
             "form_style": "edit",
             "groupList" : groupList,
+            "is_edit": True
         }
         errors_json = h.json.dumps(errors)
 
