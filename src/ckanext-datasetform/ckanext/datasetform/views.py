@@ -341,19 +341,19 @@ class CreatePackageView(MethodView):
             #     logging.warning(f"-- -- __ __ {key} : {val}")
             logging.warning(" ")
             logging.warning(" ")    
+            if data_dict['upload']:
+                resource = get_action(f"resource_create")(
+                    {},
+                    {
+                        "package_id": pkg_dict["id"],
+                        "upload": data_dict["upload"],
+                        "preview": True,
+                        "format": "",
+                    },
+                )
 
-            resource = get_action(f"resource_create")(
-                {},
-                {
-                    "package_id": pkg_dict["id"],
-                    "upload": data_dict["upload"],
-                    "preview": True,
-                    "format": "",
-                },
-            )
-
-            pkg_dict["resources"].append(resource)
-            pkg_dict = get_action("package_update")({}, pkg_dict)
+                pkg_dict["resources"].append(resource)
+                pkg_dict = get_action("package_update")({}, pkg_dict)
 
             # logging.warning(f"IM GONNA PRINT THE RESOURCE FROM THE PACKAGE DICT ABOVE:")
             # for resource in pkg_dict["resources"]:
@@ -594,11 +594,15 @@ class EditPackageView(MethodView):
             # if this is passing in empty things, 
             # # i think can just retrieve original package then fill in i guess. 
             # # but means i cant delete content??
+            for key, val in data_dict.items():
+                logging.warning(f"^^^^^^ {key} : {val}")
             logging.warning(f"_*^_*^_*^_*^ Patching this package")
             temp = []
-            subject_tags = str(data_dict['subject_tags'])
-            logging.warning(f"subject Tags:::::::::::::::: {subject_tags}")
-            del data_dict['subject_tags']
+            subject_tags = None
+            if "subject_tags" in data_dict:
+                subject_tags = str(data_dict['subject_tags'])
+                logging.warning(f"subject Tags:::::::::::::::: {subject_tags}")
+                del data_dict['subject_tags']
             for key, val in data_dict.items():
                 # logging.warning(f"_*^_*^ {key} : {val} + {type(val)}")
                 if val == '':
@@ -610,23 +614,24 @@ class EditPackageView(MethodView):
             
 
             pkg_dict = get_action("package_patch")(context, data_dict)
-            pkg_dict['subject_tags'] = subject_tags
-            pkg_dict = edit_groups(pkg_dict)
+            if subject_tags:
+                pkg_dict['subject_tags'] = subject_tags
+                pkg_dict = edit_groups(pkg_dict)
 
             
+            if data_dict['upload']:
+                resource = get_action(f"resource_create")(
+                    {},
+                    {
+                        "package_id": pkg_dict["id"],
+                        "upload": data_dict["upload"],
+                        "preview": True,
+                        "format": "",
+                    },
+                )
 
-            resource = get_action(f"resource_create")(
-                {},
-                {
-                    "package_id": pkg_dict["id"],
-                    "upload": data_dict["upload"],
-                    "preview": True,
-                    "format": "",
-                },
-            )
-
-            pkg_dict["resources"].append(resource)
-            pkg_dict = get_action("package_patch")({}, pkg_dict)
+                pkg_dict["resources"].append(resource)
+                pkg_dict = get_action("package_patch")({}, pkg_dict)
             logging.warning(f"____^^^*** LAST DATADICT IN EDIT:::::::::::")
             for key, val in pkg_dict.items():
                 logging.warning(f"_*^_*^ {key} : {val}")
