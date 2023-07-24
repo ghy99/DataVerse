@@ -128,6 +128,41 @@ def upload_to_clearml(
     dataset.finalize(verbose=True, raise_on_error=True, auto_upload=True)
     return dataset.id
 
+
+def add_groups(pkg_dict):
+    if "subject_tags" in pkg_dict:
+        logging.warning(f"________________*********************** {pkg_dict['subject_tags']}")
+        if isinstance(pkg_dict['subject_tags'], str):
+            pkg_dict['subject_tags'] = pkg_dict['subject_tags'].strip("{}")
+            pkg_dict['subject_tags'] = pkg_dict['subject_tags'].split(',')
+        # logging.warning(f"****************** SUBJECT TAGS:")
+        # logging.warning(f"\t\t __** TAG: {pkg_dict['subject_tags']}")
+        groups_list = []
+        for groupname in pkg_dict['subject_tags']:
+            groups_list.append({
+                'name' : groupname
+            })
+        pkg_dict['groups'] = groups_list
+        del pkg_dict['subject_tags']
+
+        for key, val in pkg_dict.items():
+            logging.warning(f"******* {key} : {val}")
+        admin = toolkit.config.get("ckan_sysadmin_name")
+        password = toolkit.config.get("ckan_sysadmin_password")
+
+        logging.warning(f"*^_*^_*^_*^_ ADMIN: {admin}, PASSWORD: {password}")
+
+        pkg_dict = get_action("package_patch")({
+            # "ignore_auth" : True,
+            'user' : admin,
+            'password' : password,
+        }, pkg_dict)
+
+        for key, val in pkg_dict.items():
+            logging.warning(f"*******_____________ {key} : {val}")
+    return pkg_dict
+
+
 # dataset.py
 # For Package Form
 class CreatePackageView(MethodView):
@@ -269,34 +304,35 @@ class CreatePackageView(MethodView):
 
             # ADDING THIS LINE TO PARSE "SUBJECT_TAGS"
             # THIS PART I FORCE AUTHORIZE ADD TO GROUP USING ADMIN CREDENTIALS... PLS CHANGE THIS PART
-            if "subject_tags" in pkg_dict:
-                pkg_dict['subject_tags'] = pkg_dict['subject_tags'].strip("{}")
-                pkg_dict['subject_tags'] = pkg_dict['subject_tags'].split(',')
-                # logging.warning(f"****************** SUBJECT TAGS:")
-                # logging.warning(f"\t\t __** TAG: {pkg_dict['subject_tags']}")
-                groups_list = []
-                for groupname in pkg_dict['subject_tags']:
-                    groups_list.append({
-                        'name' : groupname
-                    })
-                pkg_dict['groups'] = groups_list
-                del pkg_dict['subject_tags']
+            pkg_dict = add_groups(pkg_dict)
+            # if "subject_tags" in pkg_dict:
+            #     pkg_dict['subject_tags'] = pkg_dict['subject_tags'].strip("{}")
+            #     pkg_dict['subject_tags'] = pkg_dict['subject_tags'].split(',')
+            #     # logging.warning(f"****************** SUBJECT TAGS:")
+            #     # logging.warning(f"\t\t __** TAG: {pkg_dict['subject_tags']}")
+            #     groups_list = []
+            #     for groupname in pkg_dict['subject_tags']:
+            #         groups_list.append({
+            #             'name' : groupname
+            #         })
+            #     pkg_dict['groups'] = groups_list
+            #     del pkg_dict['subject_tags']
 
-                for key, val in pkg_dict.items():
-                    logging.warning(f"******* {key} : {val}")
-                admin = toolkit.config.get("ckan_sysadmin_name")
-                password = toolkit.config.get("ckan_sysadmin_password")
+            #     for key, val in pkg_dict.items():
+            #         logging.warning(f"******* {key} : {val}")
+            #     admin = toolkit.config.get("ckan_sysadmin_name")
+            #     password = toolkit.config.get("ckan_sysadmin_password")
 
-                logging.warning(f"*^_*^_*^_*^_ ADMIN: {admin}, PASSWORD: {password}")
+            #     logging.warning(f"*^_*^_*^_*^_ ADMIN: {admin}, PASSWORD: {password}")
 
-                pkg_dict = get_action("package_update")({
-                    # "ignore_auth" : True,
-                    'user' : admin,
-                    'password' : password,
-                }, pkg_dict)
+            #     pkg_dict = get_action("package_update")({
+            #         # "ignore_auth" : True,
+            #         'user' : admin,
+            #         'password' : password,
+            #     }, pkg_dict)
 
-                for key, val in pkg_dict.items():
-                    logging.warning(f"*******_____________ {key} : {val}")
+            #     for key, val in pkg_dict.items():
+            #         logging.warning(f"*******_____________ {key} : {val}")
 
             logging.warning(
                 f"PRINTING THE LATEST PACKAGE DICT AFTER UPDATE, BEFORE I CREATE A RESOURCE"
@@ -468,6 +504,44 @@ class CreatePackageView(MethodView):
         )
 
 
+def edit_groups(pkg_dict):
+    if "subject_tags" in pkg_dict:
+        logging.warning(f"________________*********************** {pkg_dict['subject_tags']}")
+        if isinstance(pkg_dict['subject_tags'], str):
+            pkg_dict['subject_tags'] = pkg_dict['subject_tags'].strip("[]")
+            pkg_dict['subject_tags'] = pkg_dict['subject_tags'].replace("'", "")
+            pkg_dict['subject_tags'] = pkg_dict['subject_tags'].split(', ')
+            logging.warning(f"subject tag: {pkg_dict['subject_tags']}")
+            # pkg_dict['subject_tags'] = list(pkg_dict['subject_tags'])
+        # logging.warning(f"****************** SUBJECT TAGS:")
+        # logging.warning(f"\t\t __** TAG: {pkg_dict['subject_tags']}")
+        groups_list = []
+        for groupname in pkg_dict['subject_tags']:
+            groups_list.append({
+                'name' : groupname
+            })
+        for group in groups_list:
+            pkg_dict['groups'].append(group)
+        del pkg_dict['subject_tags']
+
+        # for key, val in pkg_dict.items():
+        #     logging.warning(f"******* {key} : {val}")
+        admin = toolkit.config.get("ckan_sysadmin_name")
+        password = toolkit.config.get("ckan_sysadmin_password")
+
+        logging.warning(f"*^_*^_*^_*^_ ADMIN: {admin}, PASSWORD: {password}")
+        logging.warning(f"pkg_dict['groups'] : {pkg_dict['groups']}")
+        pkg_dict = get_action("package_patch")({
+            # "ignore_auth" : True,
+            'user' : admin,
+            'password' : password,
+        }, pkg_dict)
+
+        for key, val in pkg_dict.items():
+            logging.warning(f"*******_____________ {key} : {val}")
+    return pkg_dict
+
+
 class EditPackageView(MethodView):
     def _is_save(self) -> bool:
         return "save" in request.form
@@ -497,6 +571,11 @@ class EditPackageView(MethodView):
             data_dict = clean_dict(
                 dict_fns.unflatten(tuplize_dict(parse_params(request.form)))
             )
+            files = dict_fns.unflatten(tuplize_dict(parse_params(request.files)))
+
+            logging.warning(f"-- ---- ---- VIEWS.py ---------- EDITING PACKAGE ")
+            logging.warning(f"-- ---- ---- FILES: {files} ----------------------------")
+            data_dict.update(clean_dict(files))
         except dict_fns.DataError:
             return base.abort(400, _("Integrity Error"))
         try:
@@ -512,7 +591,45 @@ class EditPackageView(MethodView):
             # i think this is a problem that its deleting the rest of the metadata, 
             # # so im gonna change this to package_patch
             # pkg_dict = get_action("package_update")(context, data_dict)
+            # if this is passing in empty things, 
+            # # i think can just retrieve original package then fill in i guess. 
+            # # but means i cant delete content??
+            logging.warning(f"_*^_*^_*^_*^ Patching this package")
+            temp = []
+            for key, val in data_dict.items():
+                # logging.warning(f"_*^_*^ {key} : {val} + {type(val)}")
+                if val == '':
+                    temp.append(key)
+            for key in temp:
+                del data_dict[key]
+            # for key, val in data_dict.items():
+            #     logging.warning(f"_*^_*^ {key} : {val}")
+            subject_tags = str(data_dict['subject_tags'])
+            logging.warning(f"subject Tags:::::::::::::::: {subject_tags}")
+            del data_dict['subject_tags']
+
             pkg_dict = get_action("package_patch")(context, data_dict)
+            pkg_dict['subject_tags'] = subject_tags
+            pkg_dict = edit_groups(pkg_dict)
+
+            
+
+            resource = get_action(f"resource_create")(
+                {},
+                {
+                    "package_id": pkg_dict["id"],
+                    "upload": data_dict["upload"],
+                    "preview": True,
+                    "format": "",
+                },
+            )
+
+            pkg_dict["resources"].append(resource)
+            pkg_dict = get_action("package_patch")({}, pkg_dict)
+            logging.warning(f"____^^^*** LAST DATADICT IN EDIT:::::::::::")
+            for key, val in pkg_dict.items():
+                logging.warning(f"_*^_*^ {key} : {val}")
+
 
             return _form_save_redirect(
                 pkg_dict["name"], "edit", package_type=package_type
