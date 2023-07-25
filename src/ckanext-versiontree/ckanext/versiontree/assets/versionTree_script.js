@@ -81,7 +81,7 @@ function get_node_container(dataset_details, node) {
         .attr("rx", 5)
         .attr("ry", 5)
         .attr("width", 200)
-        .attr("height", 80);
+        .attr("height", 120);
 
     // Append the text inside the rectangle box
     nodeContainer

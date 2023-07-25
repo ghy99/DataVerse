@@ -505,6 +505,15 @@ class CreatePackageView(MethodView):
 
 
 def edit_groups(pkg_dict):
+    """
+    This function is used to add more groups for a dataset.
+
+    Args:
+        pkg_dict (dict): pkg_dict is a dictionary of the form that the user submitted
+
+    Returns:
+        pkg_dict (dict): updated pkg_dict with new groups
+    """
     if "subject_tags" in pkg_dict:
         logging.warning(f"________________*********************** {pkg_dict['subject_tags']}")
         if isinstance(pkg_dict['subject_tags'], str):
