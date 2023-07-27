@@ -32,7 +32,12 @@ The non-CKAN images are as follows:
 
 The site is configured using environment variables that you can set in the `.env` file.
 
-## 2.  Installing Docker
+## 2.1 Installing Ubuntu
+
+Install Ubuntu by opening Microsoft Store, and enter Ubuntu in the search function.
+Click on the first Ubuntu and install it.
+
+## 2.2 Installing Docker
 
 Install Docker by following the following instructions: [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
 
