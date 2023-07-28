@@ -2,6 +2,7 @@
 
 # Table of Content:
 
+- [Instruction to install DataVerse](#installation)
 - [Important Docker Commands](#docker-commands)
 - [src Changes](#changes)
     - [lib Folder](#lib)
@@ -18,6 +19,20 @@
 
 ---
 ---
+
+## Instruction to install DataVerse
+
+Install [Ubuntu](https://apps.microsoft.com/store/detail/ubuntu/9PDXGNCFSCZV) from Microsoft Store. 
+
+Install [Docker](https://docs.docker.com/desktop/install/windows-install/).
+
+Open Docker Desktop.  It may prompt you to run wsl --update on cmd / powershell. (if you run this step, you will be able to use docker commands on cmd or powershell)
+
+To enable Docker to be accessed via Ubuntu command line:
+- Open Settings > Resources > Enable integration with Ubuntu
+- Restart Docker desktop (Right click icon and restart)
+
+Git clone the [DataVerse Repository](https://github.com/ghy99/DataVerse) from ghy99 github.
 
 ## Important Docker Commands: <a id="docker-commands"></a>
 
@@ -84,7 +99,8 @@ Important ones that we looked through:
 >
 > The extensions `audio_view`, `datatables_view`, `image_view`, `text_view`, `video_view` are the current available view types for the resource page. 
 >
-> `text_view` currently has some issue where it is not loading my css file changes.
+>> Extension `text_view` currently has a `BUG` where it is not loading my css file changes.
+>> Original `text_view` code is overriding my CSS changes to change the font colour to white. Currently the font colour is black so cannot see on screen.
 
 ### logic Folder <a id="logic"></a>
 
