@@ -99,7 +99,8 @@ Important ones that we looked through:
 >
 > The extensions `audio_view`, `datatables_view`, `image_view`, `text_view`, `video_view` are the current available view types for the resource page. 
 >
-> `text_view` currently has some issue where it is not loading my css file changes.
+>> Extension `text_view` currently has a `BUG` where it is not loading my css file changes.
+>> Original `text_view` code is overriding my CSS changes to change the font colour to white. Currently the font colour is black so cannot see on screen.
 
 ### logic Folder <a id="logic"></a>
 
